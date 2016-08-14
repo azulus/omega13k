@@ -16,7 +16,7 @@ var fs = require('fs'),
     config = { js: [] };
 
 
-gulp.task('build', ['initbuild', 'jsmin', 'addjs', 'zip', 'unzip', 'clean', 'report']);
+gulp.task('build', ['initbuild', 'jsconcat', 'addjs', 'zip', 'unzip', 'clean', 'report']);
 
 
 gulp.task('serve', function() {
@@ -63,11 +63,18 @@ gulp.task('initbuild', function() {
 
 });
 
-gulp.task('webpack', ['initbuild'], function() {
-  var stream = gulp.src(config.js)
-    // .pipe(concat('g.js'))
+gulp.task('webpack', ['jsconcat'], function() {
+  var stream = gulp.src('g.js')
     .pipe(gulpWebpack(require('./webpack.config.js'), webpack))
+    .pipe(gulp.dest('g.min.js'));
+});
+
+gulp.task('jsconcat', ['initbuild'], function() {
+  var stream = gulp.src(config.js)
+    .pipe(concat('g.js'))
     .pipe(gulp.dest('.'));
+
+  return stream;
 });
 
 gulp.task('jsmin', ['initbuild'], function() {
@@ -81,7 +88,7 @@ gulp.task('jsmin', ['initbuild'], function() {
 
 });
 
-gulp.task('addjs', ['jsmin'], function() {
+gulp.task('addjs', ['webpack'], function() {
 
     var js = fs.readFileSync('g.js', 'utf-8', function(e, data) {
       return data;
