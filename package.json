@@ -1,0 +1,19 @@
+{
+  "name": "hello",
+  "private": true,
+  "devDependencies": {
+    "cheerio": "^0.20.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-rimraf": "^0.2.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-unzip": "^0.1.4",
+    "gulp-webpack": "^1.5.0",
+    "gulp-webserver": "^0.9.1",
+    "gulp-zip": "^3.2.0",
+    "webpack": "^1.13.1"
+  }
+}
