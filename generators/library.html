@@ -10,15 +10,8 @@
 		window.SHAPES = {}
 
 		function renderSeed(type, seed) {
-			//let r = $.gen(seed)
-			// let shape = $.rs(r, 100, 100, SHAPES[type].shapes)
 			let r = $.gen(seed)
-
-		    shapes = []
-		    while (1) {
-		      shapes.push($.rs(r, 100, 100, SHAPES[type].shapes))
-		      if(r() < 0.5) break;
-		    }
+			shapes = $.rs(r, 100, 100, SHAPES[type].shapes);
 
 			con = $.ce('div')
 		    $.ac(results, con)
@@ -27,17 +20,18 @@
 		    cnv = $.ce('canvas');
 		    $.ac(con, cnv);
 		    ctx = $.gc(cnv)
-		    //$[shape.r ? 'dc' : 'dp'](ctx, shape)
 		    shapes.forEach(rs => $[rs.r ? 'dc' : 'dp'](ctx, rs))
 		}
 
 		window.addEventListener('load', () => {
+			renderSeed('clouds', 72)
 			renderSeed('computerterminal', 360058)
 			renderSeed('person', 430393)
 			renderSeed('rocket', 4119618)
 		})
 	</script>
 	<script src='../js/renderer.js'></script>
+	<script src='./fitness/clouds.js'></script>
 	<script src='./fitness/computerterminal.js'></script>
 	<script src='./fitness/person.js'></script>
 	<script src='./fitness/rocket.js'></script>
