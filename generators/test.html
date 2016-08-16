@@ -6,8 +6,8 @@
 </head>
 <body>
 	<ul id="types">
-		<li><a href="#" data-type="person">Person</a></li>
-		<li><a href="#" data-type="rocket">Rocket</a></li>
+		<li><a href="?person">Person</a></li>
+		<li><a href="?rocket">Rocket</a></li>
 	</ul>
 	<div id='results'></div>
 	<script type="text/javascript">
@@ -17,36 +17,43 @@
 			results = $.gid('results')
 			$.write(results)
 			success = 0
-			for (let i = 0; success < 1000 && i < 10000000; i++) {
-			  let r = $.gen(i)
-			  
-			  shapes = []
-			  while (1) {
-			    shapes.push($.rs(r, 100, 100, SHAPES[type].shapes))
-			    if(r() < 0.5) break;
-			  }
-			  
-			  if (i % 100 === 0) console.log(i)
-			  if (SHAPES[type].fitness(shapes)) {
-			    success++
-			    con = $.ce('div')
-			    $.ac(results, con)
-			    cnt = $.write($.ce('div'), i)
-			    $.ac(con, cnt)
-			    cnv = $.ce('canvas');
-			    $.ac(con, cnv);
-			    ctx = $.gc(cnv)
-			    shapes.forEach(rs => $[rs.r ? 'dc' : 'dp'](ctx, rs))
-			  }
+			let i = 0
+
+			function chunk() {
+				if (i > 10000000 || success > 1000) return;
+				for (let j = 0; j < 10000; j++) {
+				  i++
+				  let r = $.gen(i)
+				  
+				  shapes = []
+				  while (1) {
+				    shapes.push($.rs(r, 100, 100, SHAPES[type].shapes))
+				    if(r() < 0.5) break;
+				  }
+				  
+				  if (i % 100 === 0) console.log(i)
+				  if (SHAPES[type].fitness(shapes)) {
+				    success++
+				    con = $.ce('div')
+				    $.ac(results, con)
+				    cnt = $.write($.ce('div'), i)
+				    $.ac(con, cnt)
+				    cnv = $.ce('canvas');
+				    $.ac(con, cnv);
+				    ctx = $.gc(cnv)
+				    shapes.forEach(rs => $[rs.r ? 'dc' : 'dp'](ctx, rs))
+				  }
+				}
+				setTimeout(chunk, 0)
 			}
+			chunk()
 		}
 
-		var types = document.getElementById('types')
-		types.addEventListener('click', e => {
-			e.preventDefault();
-			if (!e.target || !e.target.dataset.type) return;
-			generate(e.target.dataset.type)
-		});
+		if (location.search) {
+			window.addEventListener('load', () => {
+				generate(location.search.substring(1))
+			})
+		}
 	</script>
 	<script src='../js/renderer.js'></script>
 	<script src='./fitness/person.js'></script>
