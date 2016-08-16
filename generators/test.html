@@ -27,10 +27,10 @@
 				  i++
 				  let r = $.gen(i)
 
-				  shapes = $.rs(r, 100, 100, SHAPES[type].shapes);
+				  shapes = $.rs(r, 100, 100);
 
 				  if (i % 10000 === 0) console.log(i)
-				  if (SHAPES[type].fitness(shapes)) {
+				  if (true || SHAPES[type].fitness(shapes)) {
 				    success++
 				    con = $.ce('div')
 				    $.ac(results, con)

@@ -109,7 +109,15 @@ $ = {
      $.btwn(r, 0, my)
   ], col: $.rcol(r)}),
 
-  rs: (r, mx, my, s) => s.split('').map(is => {
+  rss: (r) => {
+    s = ''
+    while (1) {
+      s += $.rarr(r,['c','r','i','t'])
+      if (r() < 0.5) return s
+    }
+  },
+
+  rs: (r, mx, my, s) => (s||$.rss(r)).split('').map(is => {
     return $['r' + is](r, mx, my, 5, 30)
   })
 }
