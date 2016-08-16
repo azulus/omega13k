@@ -3,19 +3,9 @@ SHAPES.person = {}
 SHAPES.person.shapes = 'tc'
 
 SHAPES.person.fitness = (shapes) => {
-  if (shapes.length !== 2) return false
   // circle above a triangle
-  var _c, _t
+  let [_t, _c] = shapes;
   try {
-    shapes.forEach(shape => {
-      if (shape.r) {
-        _c = shape
-      } else if (shape.pts.length === 6) {
-        _t = shape
-      }
-    })
-    if (!_c || !_t) return false
-
     let pts = _t.pts
 
     let topIdx = pts.reduce((l, n, idx) => (n < pts[l] && idx % 2 === 1 ? idx : l), 1);
