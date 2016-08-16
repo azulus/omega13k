@@ -1,3 +1,7 @@
+body {
+	background: #010B26;
+}
+
 #results > div {
   display: inline-block
 }
