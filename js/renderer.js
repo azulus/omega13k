@@ -1,5 +1,6 @@
 _ = {
-  c: '0123456789abcdef'
+  //c: '0123456789abcdef'
+  c: '456789abcdef'
 }
 $ = {
   f: Math.floor,
