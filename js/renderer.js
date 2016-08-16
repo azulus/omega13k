@@ -3,19 +3,14 @@
 // triangle: {x1, y1, x2, y2, x3, y3}
 
 _ = {
-  c: '0123456789abcdef',
-  
-  CIRCLE: 1,
-  TRIANGLE: 2,
-  ITRIANGLE: 3,
-  RECTANGLE: 4
+  c: '0123456789abcdef'
 }
 
 $ = {
   f: Math.floor,
   r: Math.round,
   d: document,
-  
+
   gid: (id) => $.d.getElementById(id),
   ce: (type) => $.d.createElement(type),
   ac: (p, c) => p.appendChild(c) && p,
@@ -24,16 +19,16 @@ $ = {
   write: (el, txt = '') => {el.innerHTML = txt; return el},
   gc: (cnv) => cnv.getContext('2d'),
   btwn: (r, min, max) => $.f(r() * (max-min) + min),
-  
+
   gen: (s) => {
     return () => {
       const rnd = Math.sin(s++) * 10000
       return rnd - $.f(rnd)
     }
   },
-  
+
   rarr: (r, arr) => arr[$.f($.btwn(r, 0, arr.length))],
-  
+
   rcol: (r) => {c = $.rarr(r, _.c);return `#${c}${c}${c}`},
   col: (ctx, c) => ctx.fillStyle = c,
   bp: (ctx) => ctx.beginPath(),
@@ -54,20 +49,22 @@ $ = {
     }
     $.cp(ctx);
   },
+
   /**
    * Circle.
    */
-  rc: (r, minr, maxr, mx, my) => {
+  rc: (r, mx, my, minr, maxr) => {
     rad = $.btwn(r, minr, maxr)
     x = $.btwn(r, rad, mx-rad)
     y = $.btwn(r, rad, my-rad)
     col = $.rcol(r)
     return {r:rad, x, y, col}
   },
+
   /**
    * Rectangle.
    */
-  rr: (r, mins, maxs, mx, my) => {
+  rr: (r, mx, my, mins, maxs) => {
     w = $.btwn(r, mins, maxs)
     h = $.btwn(r, mins, maxs)
     x = $.btwn(r, 0, mx-w)
@@ -76,9 +73,9 @@ $ = {
     return {pts:[x,y,x+w,y,x+w,y+h,x,y+h],col}
   },
   /**
-   * Triangle.
+   * Isoceles Triangle.
    */
-  rit: (r, mx, my) => {
+  ri: (r, mx, my) => {
     let x1, y1, x2, y2, x3, y3
     x1 = $.btwn(r, 0, mx)
     y1 = $.btwn(r, 0, my)
@@ -95,6 +92,14 @@ $ = {
     }
     return {pts: [x1, y1, x2, y2, x3, y3], col: $.rcol(r)}
   },
+
+  /**
+   * Triangle
+   * @param  {[type]} r  [description]
+   * @param  {[type]} mx [description]
+   * @param  {[type]} my [description]
+   * @return {[type]}    [description]
+   */
   rt: (r, mx, my) => ({pts: [
      $.btwn(r, 0, mx),
      $.btwn(r, 0, my),
@@ -103,12 +108,8 @@ $ = {
      $.btwn(r, 0, mx),
      $.btwn(r, 0, my)
   ], col: $.rcol(r)}),
-  rs: (r, mx, my, s) => {
-      switch($.rarr(r, s)) {
-        case _.CIRCLE: return $.rc(r, 5, 30, mx, my)
-        case _.TRIANGLE: return $.rit(r, mx, my)
-        case _.RECTANGLE: return $.rr(r, 5, 30, mx, my)
-        default: throw new Error('NOOOO')
-      }
-  }
+
+  rs: (r, mx, my, s) => s.split('').map(is => {
+    return $['r' + is](r, mx, my, 5, 30)
+  })
 }

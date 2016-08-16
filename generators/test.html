@@ -26,14 +26,10 @@
 				for (let j = 0; j < 10000; j++) {
 				  i++
 				  let r = $.gen(i)
-				  
-				  shapes = []
-				  while (1) {
-				    shapes.push($.rs(r, 100, 100, SHAPES[type].shapes))
-				    if(r() < 0.5) break;
-				  }
-				  
-				  if (i % 100 === 0) console.log(i)
+
+				  shapes = $.rs(r, 100, 100, SHAPES[type].shapes);
+
+				  if (i % 10000 === 0) console.log(i)
 				  if (SHAPES[type].fitness(shapes)) {
 				    success++
 				    con = $.ce('div')

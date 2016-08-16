@@ -1,6 +1,6 @@
 SHAPES.computerterminal = {}
 
-SHAPES.computerterminal.shapes = [_.RECTANGLE]
+SHAPES.computerterminal.shapes = 'rrr'
 
 SHAPES.computerterminal.fitness = (shapes) => {
   if (shapes.length < 3) return false
