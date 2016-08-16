@@ -74,7 +74,7 @@ $ = {
     s = ''
     while (1) {
       s += $.rarr(r,$.es('crit'))
-      if (s.length >= 2 && r() < 0.5) return s
+      if (s.length >= 5 || (s.length >= 2 && r() < 0.5)) return s
     }
   },
   rs: (r, mx, my, s) => $.es(s||$.rss(r)).map(is => {
