@@ -57,8 +57,8 @@ $ = {
       x2 = r() < 0.5 ? $.btwn(r, 0, x1) : $.btwn(r, x1, mx),
       y3 = r() < 0.5 ? $.btwn(r, 0, y1) : $.btwn(r, y1, my),
       cv = r(),
-      x3 = cv < 0.5 ? (x1 + nx) / 2 : x1,
-      y2 = cv >= 0.5 ? (y1 + ny) / 2 : y1
+      x3 = cv < 0.5 ? (x1 + x2) / 2 : x1,
+      y2 = cv >= 0.5 ? (y1 + y3) / 2 : y1
     return {pts: [x1, y1, x2, y2, x3, y3], col: $.rcol(r)}
   },
   es: (s) => s.split(''),
