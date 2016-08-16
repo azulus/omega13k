@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Seed Generation</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+	<div id='results'></div>
+	<script type="text/javascript">
+		window.SHAPES = {}
+
+		function renderSeed(type, seed) {
+			//let r = $.gen(seed)
+			// let shape = $.rs(r, 100, 100, SHAPES[type].shapes)
+			let r = $.gen(seed)
+				  
+		    shapes = []
+		    while (1) {
+		      shapes.push($.rs(r, 100, 100, SHAPES[type].shapes))
+		      if(r() < 0.5) break;
+		    }
+
+			con = $.ce('div')
+		    $.ac(results, con)
+		    cnt = $.write($.ce('div'), type + ':' + seed)
+		    $.ac(con, cnt)
+		    cnv = $.ce('canvas');
+		    $.ac(con, cnv);
+		    ctx = $.gc(cnv)
+		    //$[shape.r ? 'dc' : 'dp'](ctx, shape)
+		    shapes.forEach(rs => $[rs.r ? 'dc' : 'dp'](ctx, rs))
+		}
+
+		window.addEventListener('load', () => {
+			renderSeed('computerterminal', 360058)
+			renderSeed('person', 430393)
+			renderSeed('rocket', 4119618)
+		})
+	</script>
+	<script src='../js/renderer.js'></script>
+	<script src='./fitness/computerterminal.js'></script>
+	<script src='./fitness/person.js'></script>
+	<script src='./fitness/rocket.js'></script>
+</body>
+</html>
