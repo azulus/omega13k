@@ -1,3 +1,7 @@
+// circle: {x, y, r}
+// rectangle: {pts:[x,y,x+w,y,x+w,y+h,x,y+h],col}
+// triangle: {x1, y1, x2, y2, x3, y3}
+
 _ = {
   c: '0123456789abcdef',
   
@@ -50,6 +54,9 @@ $ = {
     }
     $.cp(ctx);
   },
+  /**
+   * Circle.
+   */
   rc: (r, minr, maxr, mx, my) => {
     rad = $.btwn(r, minr, maxr)
     x = $.btwn(r, rad, mx-rad)
@@ -57,6 +64,9 @@ $ = {
     col = $.rcol(r)
     return {r:rad, x, y, col}
   },
+  /**
+   * Rectangle.
+   */
   rr: (r, mins, maxs, mx, my) => {
     w = $.btwn(r, mins, maxs)
     h = $.btwn(r, mins, maxs)
@@ -65,6 +75,9 @@ $ = {
     col=$.rcol(r)
     return {pts:[x,y,x+w,y,x+w,y+h,x,y+h],col}
   },
+  /**
+   * Triangle.
+   */
   rit: (r, mx, my) => {
     let x1, y1, x2, y2, x3, y3
     x1 = $.btwn(r, 0, mx)
