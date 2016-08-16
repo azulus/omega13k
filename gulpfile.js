@@ -10,7 +10,7 @@ var fs = require('fs'),
     uglify = require('gulp-uglify'),
     unzip = require('gulp-unzip'),
     zip = require('gulp-zip'),
-    exclude_min = ['js/lib/jsfxr.min.js'],
+    exclude_min = [], //['js/lib/jsfxr.min.js'],
     webpack = require('webpack'),
     gulpWebpack = require('gulp-webpack'),
     config = { js: [] };
@@ -88,7 +88,7 @@ gulp.task('jsmin', ['initbuild'], function() {
 
 });
 
-gulp.task('addjs', ['webpack'], function() {
+gulp.task('addjs', ['jsconcat'], function() {
 
     var js = fs.readFileSync('g.js', 'utf-8', function(e, data) {
       return data;
