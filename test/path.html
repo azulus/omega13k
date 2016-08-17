@@ -40,12 +40,37 @@
         num_points = $.btwn(r, 3, 5)
 
         sx = w + 20
-        let pts = [sx, $.btwn(r, 5, uh)]
-        while (pts.length < (num_points*2) - 1) {
-            nx = $.btwn(r, uw/2, uw)
-            pts = [...pts, nx, $.btwn(r, 5, uh)];
+        sy = $.btwn(r, 5, uh)
+        let pts = [sx, sy]
+        for (incr = 1; incr <= num_points; incr++) {
+            sa = r() < 0.5
+            cx = pts[pts.length - 2]
+            cy = pts[pts.length - 1]
+            nx = incr === num_points ? -2 * shw : $.btwn(r, uw/2, uw)
+            ny = $.btwn(r, 5, uh)
+            if (sa) {
+                ctrl = [
+                    $.btwn(r, cx, nx),
+                    $.btwn(r, cy, ny)
+                ]
+            }
+            dst = $.dist([cx, cy], [nx, ny])
+
+            time = r() * 2 + 2
+            // 25 different points per second
+            dpt = dst/time/25
+
+            for (i = 0; i <= 100; i+= 4) {
+                if (sa) {
+                    np = $.ap([cx,cy], ctrl, [nx,ny], i/100)
+                } else {
+                    np = $.lp([cx,cy], [nx,ny], i/100)
+                }
+
+                pts = [...pts, ...np];
+            }
         }
-        pts = [...pts, sx, $.btwn(r, 5, uh)];
+        // pts = [...pts, sx, $.btwn(r, 5, uh)];
         ships = [];
 
         for (let sn = 0; sn < num_ships; sn++) {
@@ -56,15 +81,17 @@
             }
         }
 
-        $.bp(ctx);
         ships.forEach((spts, idx) => {
-            $.bp(ctx);
-            $.dp(ctx, {col:'#000', pts:spts});
-            $.cp(ctx);
-            ctx.stroke()
+            len = spts.length;
+            spts.forEach((pt, idx) => {
+                p = idx / len
+                shade = _.c[$.f(p * _.c.length)]
+                if (idx % 2 === 0) {
+                    $.dc(ctx, {x: pt, y: spts[idx+1], r: 2, col: `#${shade}${shade}${shade}`})
+                    ctx.fill();
+                }
+            })
         })
-        $.cp(ctx);
-        ctx.stroke();
 
 
         //
