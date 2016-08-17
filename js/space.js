@@ -13,10 +13,16 @@ function renderSeed(gameObject) {
 
 // [usedObjects, seed, width, height, DomElement, transformX, transformY]
 gameObjects = [
-	['', 4181, 100, 100, null, 0, 0]
+	// Player
+	['', 4181, 100, 100, null, 0, 0],
+
+	// Enemy 1
+	['', 9531, 100, 100, null, 600, 50],
 ]
 
 downKeys = {}
+
+enemyAdjust = 5
 
 drawLoop = () => {
 	// Update player based on arrows.
@@ -24,6 +30,10 @@ drawLoop = () => {
 	if (downKeys.ArrowUp) gameObjects[0][6] -= PLAYER_SPEED;
 	if (downKeys.ArrowRight) gameObjects[0][5] += PLAYER_SPEED;
 	if (downKeys.ArrowLeft) gameObjects[0][5] -= PLAYER_SPEED;
+
+	// Stub enemy movement
+	gameObjects[1][6] += enemyAdjust
+	if (gameObjects[1][6] > 300 || gameObjects[1][6] < 50) enemyAdjust = 0 - enemyAdjust;
 
 	// Render all game objects
 	gameObjects.forEach(obj => {
