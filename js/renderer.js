@@ -9,14 +9,6 @@ $ = {
   p: Math.pow,
   d: document,
 
-  /**
-   * line point
-   */
-  lp: (s, e, p) => [
-    (e[0]-s[0]) * p + s[0],
-    (e[1]-s[1]) * p + s[1]
-  ],
-
   dist: (s, e) => Math.sqrt($.p(e[0]-s[0],2) + $.p(e[1]-s[1],2)),
 
   /**
@@ -39,6 +31,15 @@ $ = {
           pt[1] + (1-rat) * dist
       ]
   },
+
+  /**
+   * line point
+   */
+  lp: (s, e, p) => [
+    (e[0]-s[0]) * p + s[0],
+    (e[1]-s[1]) * p + s[1]
+  ],
+
 
   // arc point
   ap: (s, c, e, p) => [
@@ -81,7 +82,7 @@ $ = {
   dp: (ctx, p) => {
     $.col(ctx, p.col)
   	$.bp(ctx)
-    pts = p.pts
+    let pts = p.pts
     for (let i = 0; i < pts.length; i+=2) {
     	ctx[(i === 0 ? 'moveTo' : 'lineTo')](pts[i], pts[i+1])
     }
