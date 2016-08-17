@@ -46,7 +46,7 @@
             sa = r() < 0.5
             cx = pts[pts.length - 2]
             cy = pts[pts.length - 1]
-            nx = incr === num_points ? -2 * shw : $.btwn(r, uw/2, uw)
+            nx = incr === num_points ? (-2 * shw) : $.btwn(r, uw/2, uw)
             ny = $.btwn(r, 5, uh)
             if (sa) {
                 ctrl = [
@@ -56,11 +56,17 @@
             }
             dst = $.dist([cx, cy], [nx, ny])
 
-            time = (r() * 2 + 2) * 100
+            time = (2 + (r() * dst / 100)) * 100
+            // pause for between 0.5 and 3 seconds
+            pause = (r() * 2.5 + 0.5) * 100
 
             for (i = 0; i <= time; i+= 4) {
-                np = sa ? $.ap([cx,cy], ctrl, [nx,ny], i/time) : $.lp([cx,cy], [nx,ny], i/100)
-                pts = [...pts, ...np];
+                if (i < time) {
+                    np = sa ? $.ap([cx,cy], ctrl, [nx,ny], i/time) : $.lp([cx,cy], [nx,ny], i/time)
+                    pts = [...pts, ...np];
+                } else {
+                    pts = [...pts, nx, ny]
+                }
             }
         }
 
