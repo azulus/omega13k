@@ -86,6 +86,7 @@
             spts.forEach((pt, idx) => {
                 p = idx / len
                 shade = _.c[$.f(p * _.c.length)]
+                if (shade === 'f') shade = 'e'
                 if (idx % 2 === 0) {
                     $.dc(ctx, {x: pt, y: spts[idx+1], r: 2, col: `#${shade}${shade}${shade}`})
                     ctx.fill();
