@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Path Generation</title>
+</head>
+<body>
+    <a id='prev'></a>
+    <span id='curr'></span>
+    <a id='next'></a>
+
+	<div id='results'><canvas style='border:1px #f00 solid' id='testCanvas' width=500 height=500 /></div>
+	<script src='../js/renderer.js'></script>
+    <script type="text/javascript">
+        seed = 100
+        if (document.location.search.length) {
+            seed = parseInt(document.location.search.substr(1), 10);
+        }
+        $.write($.gid('prev'), seed-1);
+        $.gid('prev').href = 'path.html?' + (seed-1)
+        $.write($.gid('curr'), seed);
+        $.write($.gid('next'), seed+1);
+        $.gid('next').href = 'path.html?' + (seed+1)
+
+        w = 500, h = 500
+
+		// generate a path
+		ctx = $.gc($.gid('testCanvas'));
+		r = $.gen(seed)
+
+        is_symmetrical = r() < 0.5
+        num_ships = $.btwn(r, 2, 7)
+        if (is_symmetrical) {
+            num_ships = $.f(num_ships / 2)
+        }
+
+        shh = 50
+        shw = 50
+        uh = w - (shh * num_ships) - 5
+        uw = w - shw - 5
+        num_points = $.btwn(r, 3, 5)
+
+        sx = w + 20
+        let pts = [sx, $.btwn(r, 5, uh)]
+        while (pts.length < (num_points*2) - 1) {
+            nx = $.btwn(r, uw/2, uw)
+            pts = [...pts, nx, $.btwn(r, 5, uh)];
+        }
+        pts = [...pts, sx, $.btwn(r, 5, uh)];
+        ships = [];
+
+        for (let sn = 0; sn < num_ships; sn++) {
+            let npts = $.opts(pts, 0, shh * sn)
+            ships.push(npts);
+            if (is_symmetrical) {
+                ships.push($.ipts(npts, h))
+            }
+        }
+
+        $.bp(ctx);
+        ships.forEach((spts, idx) => {
+            $.bp(ctx);
+            $.dp(ctx, {col:'#000', pts:spts});
+            $.cp(ctx);
+            ctx.stroke()
+        })
+        $.cp(ctx);
+        ctx.stroke();
+
+
+        //
+        //
+        // s = $.rcoord(r, 500, 500);
+        // e = $.rcoord(r, 500, 500);
+        // ctrl = [
+        //     $.btwn(r, s[0], e[0]),
+        //     $.btwn(r, s[1], e[1])
+        // ]
+        // console.log(s, ctrl, e)
+        // // ctrl = $.nps(c, $.sl(e, s), 20)
+        // path = []
+        // path2 = []
+        // path3 = []
+        // for (i = 0; i <= 100; i++) {
+        //     path = [...path, ...$.lp(s,e,i/100)];
+        //     path2 = [...path2, ...$.ap(s, ctrl, e, i/100)];
+        //     path3 = [...path3, ...$.lp(s, ctrl, i/100)];
+        // }
+        //
+        // $.bp(ctx);
+        // $.dp(ctx, {col:'#f00', pts:path});
+        // $.cp(ctx);
+        // ctx.stroke();
+        //
+        // $.bp(ctx);
+        // $.dp(ctx, {col:'#000', pts:path2});
+        // $.cp(ctx);
+        // ctx.stroke();
+        //
+        // $.bp(ctx);
+        // $.dp(ctx, {col:'#0f0', pts:path3});
+        // $.cp(ctx);
+        // ctx.stroke();
+
+
+	</script>
+</body>
+</html>

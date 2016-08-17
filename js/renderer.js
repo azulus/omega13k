@@ -32,6 +32,9 @@ $ = {
       ]
   },
 
+  opts: (pts, x, y) => pts.map((pt,idx) => pt + (idx % 2 === 0 ? x : y)),
+  ipts: (pts, my) => pts.map((pt,idx) => (idx % 2 === 0 ? pt : (my-pt))),
+
   /**
    * line point
    */
