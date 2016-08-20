@@ -1,14 +1,14 @@
 PLAYER_SPEED = 5
 
-gameBoard = $.gid('g')
+gameBoard = $.getElementById('g')
 function renderSeed(gameObject) {
-	let cnv = $.ce('canvas');
+	let cnv = $.createElement('canvas');
 	gameObject[4] = cnv
-	$.ac(gameBoard, cnv);
-	let ctx = $.gc(cnv)
-	let r = $.gen(gameObject[1])
-	shapes = $.rs(r, gameObject[2], gameObject[3], gameObject[0]);
-    shapes.forEach(rs => $[rs.r ? 'dc' : 'dp'](ctx, rs))
+	$.appendChild(gameBoard, cnv);
+	let ctx = $.getContext(cnv)
+	let r = $.getRandomNumberGenerator(gameObject[1])
+	shapes = $.getRandomShapes(r, gameObject[2], gameObject[3], gameObject[0]);
+    shapes.forEach(rs => $[rs.r ? 'drawCircle' : 'drawPolygon'](ctx, rs))
 }
 
 // [usedObjects, seed, width, height, DomElement, transformX, transformY]
