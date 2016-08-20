@@ -14,10 +14,10 @@ function renderSeed(gameObject) {
 // [usedObjects, seed, width, height, DomElement, transformX, transformY]
 gameObjects = [
 	// Player
-	['', 4181, 100, 100, null, 0, 0],
+	['', 5745, 100, 100, null, 0, 0],
 
 	// Enemy 1
-	['', 9531, 100, 100, null, 600, 50],
+	['', 6480, 100, 100, null, 600, 50]
 ]
 
 downKeys = {}
