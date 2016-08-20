@@ -9,52 +9,59 @@
     <a id='next'></a>
 
 	<div id='results'><canvas style='border:1px #f00 solid' id='testCanvas' width=500 height=500 /></div>
-	<script src='../js/renderer.js'></script>
+	<script src='../js/lib/jsfxr.js'></script>
+	<script src="../js/init.js"></script>
+
+	<script src="../js/dom.js"></script>
+	<script src="../js/drawing.js"></script>
+	<script src="../js/geometry.js"></script>
+	<script src="../js/math.js"></script>
+	<script src="../js/rand.js"></script>
     <script type="text/javascript">
         seed = 100
         if (document.location.search.length) {
             seed = parseInt(document.location.search.substr(1), 10);
         }
-        $.write($.gid('prev'), seed-1);
-        $.gid('prev').href = 'path.html?' + (seed-1)
-        $.write($.gid('curr'), seed);
-        $.write($.gid('next'), seed+1);
-        $.gid('next').href = 'path.html?' + (seed+1)
+        $.write($.getElementById('prev'), seed-1);
+        $.getElementById('prev').href = 'path.html?' + (seed-1)
+        $.write($.getElementById('curr'), seed);
+        $.write($.getElementById('next'), seed+1);
+        $.getElementById('next').href = 'path.html?' + (seed+1)
 
         w = 500, h = 500
 
 		// generate a path
-		ctx = $.gc($.gid('testCanvas'));
-		r = $.gen(seed)
+		ctx = $.getContext($.getElementById('testCanvas'));
+		r = $.getRandomNumberGenerator(seed)
 
         is_symmetrical = r() < 0.5
-        num_ships = $.btwn(r, 2, 7)
+        num_ships = $.randBetween(r, 2, 7)
         if (is_symmetrical) {
-            num_ships = $.f(num_ships / 2)
+            num_ships = $.floor(num_ships / 2)
         }
 
         shh = 50
         shw = 50
         uh = w - (shh * num_ships) - 5
         uw = w - shw - 5
-        num_points = $.btwn(r, 3, 5)
+        num_points = $.randBetween(r, 3, 5)
 
         sx = w + 20
-        sy = $.btwn(r, 5, uh)
+        sy = $.randBetween(r, 5, uh)
         let pts = [sx, sy]
         for (incr = 1; incr <= num_points; incr++) {
             sa = r() < 0.5
             cx = pts[pts.length - 2]
             cy = pts[pts.length - 1]
-            nx = incr === num_points ? (-2 * shw) : $.btwn(r, uw/2, uw)
-            ny = $.btwn(r, 5, uh)
+            nx = incr === num_points ? (-2 * shw) : $.randBetween(r, uw/2, uw)
+            ny = $.randBetween(r, 5, uh)
             if (sa) {
                 ctrl = [
-                    $.btwn(r, cx, nx),
-                    $.btwn(r, cy, ny)
+                    $.randBetween(r, cx, nx),
+                    $.randBetween(r, cy, ny)
                 ]
             }
-            dst = $.dist([cx, cy], [nx, ny])
+            dst = $.distance([cx, cy], [nx, ny])
 
             time = (r() * 2 + (dst / 100)) * 100
             // pause for between 0.5 and 3 seconds
@@ -62,7 +69,7 @@
 
             for (i = 0; i <= time; i+= 4) {
                 if (i < time) {
-                    np = sa ? $.ap([cx,cy], ctrl, [nx,ny], i/time) : $.lp([cx,cy], [nx,ny], i/time)
+                    np = sa ? $.arcPoint([cx,cy], ctrl, [nx,ny], i/time) : $.linePoint([cx,cy], [nx,ny], i/time)
                     pts = [...pts, ...np];
                 } else {
                     pts = [...pts, nx, ny]
@@ -72,19 +79,19 @@
 
         ships = [];
         for (let sn = 0; sn < num_ships; sn++) {
-            let npts = $.opts(pts, 0, shh * sn)
+            let npts = $.offsetPoints(pts, 0, shh * sn)
             ships.push(npts);
-            if (is_symmetrical) ships.push($.ipts(npts, h))
+            if (is_symmetrical) ships.push($.invertPoints(npts, h))
         }
 
         ships.forEach((spts, idx) => {
             len = spts.length;
             spts.forEach((pt, idx) => {
                 p = idx / len
-                shade = _.c[$.f(p * _.c.length)]
+                shade = $.USABLE_COLORS[$.floor(p * $.USABLE_COLORS.length)]
                 if (shade === 'f') shade = 'e'
                 if (idx % 2 === 0) {
-                    $.dc(ctx, {x: pt, y: spts[idx+1], r: 2, col: `#${shade}${shade}${shade}`})
+                    $.drawCircle(ctx, {x: pt, y: spts[idx+1], r: 2, col: `#${shade}${shade}${shade}`})
                     ctx.fill();
                 }
             })

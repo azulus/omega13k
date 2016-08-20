@@ -9,18 +9,25 @@
     <a id='next'></a>
 
     <script src='../js/lib/jsfxr.js'></script>
-	<script src='../js/renderer.js'></script>
+		<script src="../js/init.js"></script>
+
+		<script src="../js/dom.js"></script>
+		<script src="../js/drawing.js"></script>
+		<script src="../js/geometry.js"></script>
+		<script src="../js/math.js"></script>
+		<script src="../js/rand.js"></script>
+
     <script type="text/javascript">
         seed = 100
         if (document.location.search.length) {
             seed = parseInt(document.location.search.substr(1), 10);
         }
-        r = $.gen(seed)
-        $.write($.gid('prev'), seed-1);
-        $.gid('prev').href = 'beepboop.html?' + (seed-1)
-        $.write($.gid('curr'), seed);
-        $.write($.gid('next'), seed+1);
-        $.gid('next').href = 'beepboop.html?' + (seed+1)
+        r = $.getRandomNumberGenerator(seed)
+        $.write($.getElementById('prev'), seed-1);
+        $.getElementById('prev').href = 'beepboop.html?' + (seed-1)
+        $.write($.getElementById('curr'), seed);
+        $.write($.getElementById('next'), seed+1);
+        $.getElementById('next').href = 'beepboop.html?' + (seed+1)
 
         getSound = () => {
             _masterVolume = 0.5;
@@ -54,7 +61,7 @@
     		_changeSpeed = 0.0;
     		_changeAmount = 0.0;
 
-    		_waveType = $.f(r() * 2);
+    		_waveType = $.floor(r() * 2);
     		if(_waveType == 0) _squareDuty = r() * 0.6;
     		_startFrequency = 0.2 +r() * 0.4;
     		_sustainTime = 0.1 + r() * 0.1;

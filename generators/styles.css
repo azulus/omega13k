@@ -6,3 +6,7 @@ body {
 #results > div {
   display: inline-block
 }
+
+#results > div canvas {
+	border: 1px #888 solid;
+}

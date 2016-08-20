@@ -10,17 +10,17 @@
 		window.SHAPES = {}
 
 		function renderSeed(type, seed) {
-			let r = $.gen(seed)
-			shapes = $.rs(r, 100, 100, SHAPES[type].shapes);
+			let r = $.getRandomNumberGenerator(seed)
+			shapes = $.getRandomShapes(r, 100, 100, SHAPES[type].shapes);
 
-			con = $.ce('div')
-		    $.ac(results, con)
-		    cnt = $.write($.ce('div'), type + ':' + seed)
-		    $.ac(con, cnt)
-		    cnv = $.ce('canvas');
-		    $.ac(con, cnv);
-		    ctx = $.gc(cnv)
-		    shapes.forEach(rs => $[rs.r ? 'dc' : 'dp'](ctx, rs))
+			con = $.createElement('div')
+	    $.appendChild(results, con)
+	    cnt = $.write($.createElement('div'), type + ':' + seed)
+	    $.appendChild(con, cnt)
+	    cnv = $.createElement('canvas');
+	    $.appendChild(con, cnv);
+	    ctx = $.getContext(cnv)
+	    shapes.forEach(rs => $[rs.r ? 'drawCircle' : 'drawPolygon'](ctx, rs))
 		}
 
 		window.addEventListener('load', () => {
@@ -57,7 +57,15 @@
 			renderSeed('boss1', 9894)
 		})
 	</script>
-	<script src='../js/renderer.js'></script>
+	<script src='../js/lib/jsfxr.js'></script>
+	<script src="../js/init.js"></script>
+
+	<script src="../js/dom.js"></script>
+	<script src="../js/drawing.js"></script>
+	<script src="../js/geometry.js"></script>
+	<script src="../js/math.js"></script>
+	<script src="../js/rand.js"></script>
+
 	<script src='./fitness/boss1.js'></script>
 	<script src='./fitness/clouds.js'></script>
 	<script src='./fitness/computerterminal.js'></script>
