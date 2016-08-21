@@ -22,16 +22,14 @@ gameObjects = [
 	['', 6480, 100, 100, null, 600, 50]
 ]
 
-downKeys = {}
-
 enemyAdjust = 5
 
 drawLoop = () => {
 	// Update player based on arrows.
-	if (downKeys.ArrowDown) gameObjects[0][6] += PLAYER_SPEED;
-	if (downKeys.ArrowUp) gameObjects[0][6] -= PLAYER_SPEED;
-	if (downKeys.ArrowRight) gameObjects[0][5] += PLAYER_SPEED;
-	if (downKeys.ArrowLeft) gameObjects[0][5] -= PLAYER_SPEED;
+	if ($.downKeys.ArrowDown) gameObjects[0][6] += PLAYER_SPEED;
+	if ($.downKeys.ArrowUp) gameObjects[0][6] -= PLAYER_SPEED;
+	if ($.downKeys.ArrowRight) gameObjects[0][5] += PLAYER_SPEED;
+	if ($.downKeys.ArrowLeft) gameObjects[0][5] -= PLAYER_SPEED;
 
 	// Stub enemy movement
 	gameObjects[1][6] += enemyAdjust
@@ -48,6 +46,3 @@ drawLoop = () => {
 
 gameObjects.forEach(renderSeed)
 drawLoop()
-
-addEventListener('keydown', e => downKeys[e.key] = true)
-addEventListener('keyup', e => downKeys[e.key] = false)
