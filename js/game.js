@@ -1,6 +1,8 @@
 PLAYER_SPEED = 5
 
-gameBoard = $.getElementById('g')
+gameBoard = $.createElement('div')
+gameBoard.id = 'g'
+$.appendChild(document.body, gameBoard);
 function renderSeed(gameObject) {
 	let cnv = $.createElement('canvas');
 	gameObject[4] = cnv
