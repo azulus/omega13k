@@ -1,3 +1,5 @@
+const _ = {};
+
 const $ = {
   USABLE_COLORS: '456789abcdef',
 
@@ -7,6 +9,7 @@ const $ = {
   round: Math.round,
   pow: Math.pow,
   document: document,
+  parseFloat: parseFloat,
 
   splitString: (s) => s.split(''),
 };
