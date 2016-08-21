@@ -30,3 +30,12 @@ drawLoop = () => {
 
 gameObjects.forEach(renderSeed)
 drawLoop()
+
+/**
+ * Adds an instantiated game object to the list of objects
+ * and renders the game object canvas.
+ */
+$.createGameObject = (obj) => {
+	renderSeed(obj)
+	gameObjects.push(obj)
+}

@@ -1,6 +1,6 @@
 SHAPES.random = {}
 
-SHAPES.random.shapes = undefined
+SHAPES.random.shapes = 'c'
 
 SHAPES.random.fitness = (shapes) => {
   return true
