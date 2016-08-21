@@ -12,7 +12,7 @@ $.PlayerProjectileGameObject = function (seed = 1465, x, y) {
 	// Play sound when constructed.
 	$.playSound(sound);
 
-	return {
+	let obj = {
 		// The seed
 		s: seed,
 		// Used seed objects
@@ -33,6 +33,8 @@ $.PlayerProjectileGameObject = function (seed = 1465, x, y) {
 		// Logic on player tick
 		t: () => {
 			x += speed
+			$.destroyIfOutsideGameRect(obj)
 		}
 	}
+	return obj;
 }

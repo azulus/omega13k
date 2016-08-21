@@ -4,7 +4,7 @@ $.PlayerGameObject = function (seed = 5745) {
 		y = 0,
 		lastShotTime = 0
 
-	return {
+	let obj = {
 		// The seed
 		s: seed,
 		// Width
@@ -36,4 +36,5 @@ $.PlayerGameObject = function (seed = 5745) {
 			}
 		}
 	}
+	return obj
 }

@@ -1,3 +1,6 @@
+$.gameWidth = 800
+$.gameHeight = 600
+
 let gameBoard = $.createElement('div')
 gameBoard.id = 'g'
 $.appendChild(document.body, gameBoard);
@@ -18,13 +21,22 @@ let gameObjects = [
 ]
 
 drawLoop = () => {
-	// Call .t (tick) on all objects
-	gameObjects.forEach(obj => obj.t())
+	let i = gameObjects.length
+	while (i--) {
+		let obj = gameObjects[i]
+		// Call .t (tick) on all objects
+		obj.t()
 
-	// Render all game objects
-	gameObjects.forEach(obj => {
-		obj.d.style.transform = `translate(${obj.x}px, ${obj.y}px)`
-	})
+		// Check if the object is destroyed.
+		if (obj.destroy) {
+			// Remove the object and splice the array
+			$.removeChild(gameBoard, obj.d)
+			gameObjects.splice(i, 1)
+		} else {
+			// Render the game object
+			obj.d.style.transform = `translate(${obj.x}px, ${obj.y}px)`
+		}
+	}
 	setTimeout(drawLoop, 16)
 }
 
@@ -38,4 +50,14 @@ drawLoop()
 $.createGameObject = (obj) => {
 	renderSeed(obj)
 	gameObjects.push(obj)
+}
+
+/**
+ * Destroys an object if it's outside the game rect.
+ * To destroy an object we set the destroy flag and remove all destroyed objects after rendering.
+ */
+$.destroyIfOutsideGameRect = (obj) => {
+	if (obj.x < 0 || obj.x > $.gameWidth || obj.y < 0 || obj.y > $.gameHeight) {
+		obj.destroy = true
+	}
 }
