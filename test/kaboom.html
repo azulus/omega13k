@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Sound Generation</title>
+</head>
+<body>
+    <a id='prev'></a>
+    <span id='curr'></span>
+    <a id='next'></a>
+
+    <script src='../js/lib/jsfxr.js'></script>
+		<script src="../js/init.js"></script>
+
+		<script src="../js/dom.js"></script>
+		<script src="../js/drawing.js"></script>
+		<script src="../js/geometry.js"></script>
+		<script src="../js/math.js"></script>
+		<script src="../js/rand.js"></script>
+		<script src="../js/audio.js"></script>
+
+    <script type="text/javascript">
+        seed = 100
+        if (document.location.search.length) {
+            seed = parseInt(document.location.search.substr(1), 10);
+        }
+        r = $.getRandomNumberGenerator(seed)
+        $.write($.getElementById('prev'), seed-1);
+        $.getElementById('prev').href = 'beepboop.html?' + (seed-1)
+        $.write($.getElementById('curr'), seed);
+        $.write($.getElementById('next'), seed+1);
+        $.getElementById('next').href = 'beepboop.html?' + (seed+1)
+
+        playNextSound = () => {
+            let sound = $.createExplosionSound(r);
+            $.playSound(sound);
+            setTimeout(playNextSound, (sound[2]*1000) + 50);
+        }
+
+        playNextSound();
+
+	</script>
+</body>
+</html>

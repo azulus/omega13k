@@ -61,6 +61,46 @@ $.assign($, {
     ));
   },
 
+  createExplosionSound: (r) => {
+    let sound = $.getBaseSound();
+
+    sound[AudioIndex.WAVE_TYPE] = 3;
+
+			if(r() < 0.5)
+			{
+				sound[AudioIndex.START_FREQUENCY] = 0.1 + r() * 0.4;
+				sound[AudioIndex.SLIDE] = -0.1 + r() * 0.4;
+			}
+			else
+			{
+				sound[AudioIndex.START_FREQUENCY] = 0.2 + r() * 0.7;
+				sound[AudioIndex.SLIDE] = -0.2 - r() * 0.2;
+			}
+
+			sound[AudioIndex.START_FREQUENCY] *= sound[AudioIndex.START_FREQUENCY];
+
+			if(r() < 0.2) sound[AudioIndex.SLIDE] = 0.0;
+			if(r() < 0.33) sound[AudioIndex.REPEAT_SPEED] = 0.3 + r() * 0.5;
+
+			sound[AudioIndex.SUSTAIN_TIME] = 0.1 + r() * 0.3;
+			sound[AudioIndex.DECAY_TIME] = r() * 0.5;
+			sound[AudioIndex.SUSTAIN_PUNCH] = 0.2 + r() * 0.6;
+
+			if(r() < 0.5)
+			{
+				sound[AudioIndex.PHASER_OFFSET] = -0.3 + r() * 0.9;
+				sound[AudioIndex.PHASER_SWEEP] = -r() * 0.3;
+			}
+
+			if(r() < 0.33)
+			{
+				sound[AudioIndex.CHANGE_SPEED] = 0.6 + r() * 0.3;
+				sound[AudioIndex.CHANGE_AMOUNT] = 0.8 - r() * 1.6;
+			}
+
+      return $.formatSound(sound);
+  },
+
   createLaserSound: (r) => {
     let sound = $.getBaseSound();
 
