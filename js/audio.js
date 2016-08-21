@@ -106,5 +106,11 @@ $.assign($, {
     return $.formatSound(sound);
   },
 
-  formatSound: (sound) => sound.map((el, idx) => idx === 0 ? el : $.to4DP(el))
+  formatSound: (sound) => sound.map((el, idx) => idx === 0 ? el : $.to4DP(el)),
+
+  playSound: (sound) => {
+    var player = new Audio();
+    player.src = jsfxr(sound);
+    player.play();
+  }
 });

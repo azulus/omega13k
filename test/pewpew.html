@@ -32,9 +32,7 @@
 
         playNextSound = () => {
             let sound = $.createLaserSound(r);
-            var player = new Audio();
-            player.src = jsfxr(sound);
-            player.play();
+            $.playSound(sound);
             setTimeout(playNextSound, (sound[2]*1000) + 50);
         }
 
