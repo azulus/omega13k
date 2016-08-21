@@ -61,5 +61,50 @@ $.assign($, {
     ));
   },
 
+  createLaserSound: (r) => {
+    let sound = $.getBaseSound();
+
+    sound[AudioIndex.WAVE_TYPE] = $.floor(r() * 3);
+		if (sound[AudioIndex.WAVE_TYPE] === 2 && r() < 0.5) sound[AudioIndex.WAVE_TYPE] = $.floor(r() * 2);
+
+		sound[AudioIndex.START_FREQUENCY] = 0.5 + r() * 0.5;
+		sound[AudioIndex.MIN_FREQUENCY] = sound[AudioIndex.START_FREQUENCY] - 0.2 - r() * 0.6;
+		if(sound[AudioIndex.MIN_FREQUENCY] < 0.2) sound[AudioIndex.MIN_FREQUENCY] = 0.2;
+
+		sound[AudioIndex.SLIDE] = -0.15 - r() * 0.2;
+
+		if(r() < 0.33)
+		{
+			sound[AudioIndex.START_FREQUENCY] = 0.3 + r() * 0.6;
+			sound[AudioIndex.MIN_FREQUENCY] = r() * 0.1;
+			sound[AudioIndex.SLIDE] = -0.35 - r() * 0.3;
+		}
+
+		if(r() < 0.5)
+		{
+			sound[AudioIndex.SQUARE_DUTY] = r() * 0.5;
+			sound[AudioIndex.DUTY_SWEEP] = r() * 0.2;
+		}
+		else
+		{
+			sound[AudioIndex.SQUARE_DUTY] = 0.4 + r() * 0.5;
+			sound[AudioIndex.DUTY_SWEEP] =- r() * 0.7;
+		}
+
+		sound[AudioIndex.SUSTAIN_TIME] = 0.1 + r() * 0.2;
+		sound[AudioIndex.DECAY_TIME] = r() * 0.4;
+		if(r() < 0.5) sound[AudioIndex.SUSTAIN_PUNCH] = r() * 0.3;
+
+		if(r() < 0.33)
+		{
+			sound[AudioIndex.PHASER_OFFSET] = r() * 0.2;
+			sound[AudioIndex.PHASER_SWEEP] = -r() * 0.2;
+		}
+
+		if(r() < 0.5) sound[AudioIndex.HP_FILTER_CUTOFF] = r() * 0.3;
+
+    return $.formatSound(sound);
+  },
+
   formatSound: (sound) => sound.map((el, idx) => idx === 0 ? el : $.to4DP(el))
 });
