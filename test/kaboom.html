@@ -25,10 +25,10 @@
         }
         r = $.getRandomNumberGenerator(seed)
         $.write($.getElementById('prev'), seed-1);
-        $.getElementById('prev').href = 'beepboop.html?' + (seed-1)
+        $.getElementById('prev').href = 'kaboom.html?' + (seed-1)
         $.write($.getElementById('curr'), seed);
         $.write($.getElementById('next'), seed+1);
-        $.getElementById('next').href = 'beepboop.html?' + (seed+1)
+        $.getElementById('next').href = 'kaboom.html?' + (seed+1)
 
         playNextSound = () => {
             let sound = $.createExplosionSound(r);
