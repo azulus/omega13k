@@ -56,7 +56,7 @@ $.assign($, {
       case 'c': return $.getRandomCircle(r, mx, my, 5, 30)
       case 'r': return $.getRandomRectangle(r, mx, my, 5, 30)
       case 'i': return $.getRandomIsocelesTriangle(r, mx, my, 5, 30)
-      case 't': return $.getRandomRectangle(r, mx, my, 5, 30)
+      case 't': return $.getRandomTriangle(r, mx, my, 5, 30)
     }
   })
 });
