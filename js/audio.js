@@ -38,27 +38,27 @@ $.assign($, {
     return $.parseFloat(out);
   },
 
-  getBaseSound: () => {
-    let sound = Array(24).fill(0);
-    sound[AudioIndex.MASTER_VOLUME] = 0.5;
-    sound[AudioIndex.START_FREQUENCY] = 0.3;
-    sound[AudioIndex.SUSTAIN_TIME] = 0.3;
-    sound[AudioIndex.DECAY_TIME] = 0.4;
-    sound[AudioIndex.LP_FILTER_CUTOFF] = 1.0;
-    return sound;
-  },
+  getBaseSound: () => $.setArrayVals(
+    Array(24).fill(0),
+    AudioIndex.MASTER_VOLUME, 0.5,
+    AudioIndex.START_FREQUENCY, 0.3,
+    AudioIndex.SUSTAIN_TIME, 0.3,
+    AudioIndex.DECAY_TIME, 0.4,
+    AudioIndex.LP_FILTER_CUTOFF, 1.0
+  ),
 
   createBlipSound: (r) => {
-    let sound = $.getBaseSound();
+    let waveType = $.floor(r() * 2);
 
-    sound[AudioIndex.WAVE_TYPE] = $.floor(r() * 2);
-    if(sound[AudioIndex.WAVE_TYPE] == 0) sound[AudioIndex.SQUARE_DUTY] = r() * 0.6;
-    sound[AudioIndex.START_FREQUENCY] = 0.2 + r() * 0.4;
-    sound[AudioIndex.SUSTAIN_TIME] = 0.1 + r() * 0.1;
-    sound[AudioIndex.DECAY_TIME] = r() * 0.2;
-    sound[AudioIndex.HP_FILTER_CUTOFF] = 0.1;
-
-    return $.formatSound(sound);
+    return $.formatSound($.setArrayVals(
+      $.getBaseSound(),
+      AudioIndex.WAVE_TYPE, waveType,
+      AudioIndex.SQUARE_DUTY, waveType === 0 ? (r() * 0.6) : 0.3,
+      AudioIndex.START_FREQUENCY, 0.2 + r() * 0.4,
+      AudioIndex.SUSTAIN_TIME, 0.1 + r() * 0.1,
+      AudioIndex.DECAY_TIME, r() * 0.2,
+      AudioIndex.HP_FILTER_CUTOFF, 0.1
+    ));
   },
 
   formatSound: (sound) => sound.map((el, idx) => idx === 0 ? el : $.to4DP(el))

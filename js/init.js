@@ -12,4 +12,11 @@ const $ = {
   parseFloat: parseFloat,
 
   splitString: (s) => s.split(''),
+
+  setArrayVals: (arr, ...vals) => {
+    for (i = 0; i < vals.length - 1; i+= 2) {
+      arr[vals[i]] = vals[i + 1];
+    }
+    return arr;
+  }
 };
