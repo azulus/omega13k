@@ -2,6 +2,8 @@
   "name": "hello",
   "private": true,
   "devDependencies": {
+    "ast-types": "^0.9.0",
+    "babylon": "^6.9.0",
     "cheerio": "^0.20.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
@@ -14,6 +16,8 @@
     "gulp-webpack": "^1.5.0",
     "gulp-webserver": "^0.9.1",
     "gulp-zip": "^3.2.0",
+    "oid": "^1.2.0",
+    "recast": "^0.11.12",
     "webpack": "^1.13.1"
   }
 }
