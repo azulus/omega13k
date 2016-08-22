@@ -1,8 +1,8 @@
+var babel = require('babel-core');
 var babylon = require('babylon');
 var fs = require('fs');
 var oid = require('oid');
 var path = require('path');
-var recast = require('recast');
 var types = require('ast-types');
 
 var def = types.Type.def;
@@ -13,11 +13,7 @@ def('ObjectMethod').bases('Node');
 types.finalize();
 
 var src = fs.readFileSync(path.join(__dirname, '..', 'g.js'));
-var ast = recast.parse(
-  src,
-  {parser: {
-    parse: function (source, opts) {
-      return babylon.parse(source, {
+var ast = babylon.parse(String(src), {
         sourceType: 'module',
         plugins: [
           'jsx',
@@ -35,10 +31,7 @@ var ast = recast.parse(
           'functionBind',
           'functionSent'
         ]
-      })
-    }
-  }}
-);
+      });
 
 var parentHash = {};
 
@@ -90,23 +83,42 @@ var visit = function (node, visitor, parent, initialKey, idx) {
 };
 
 visit(ast, {
-  'CommentBlock': (node, key, idx) => {
-    var parent = parentOf(node);
-    if (!parent) return;
-
-    if (key.toLowerCase().indexOf('comment') !== -1) {
-      parent[key] = [];
-    } else if (key === 'tokens') {
-      parent[key] = parent[key].filter(item => {
-        return !item || typeof item !== 'object' || ['CommentBlock', 'CommentLine'].indexOf(item.type) !== -1;
-      });
-    } else {
-      throw new Error(parent.type, key, idx)
-    }
-  },
+  // 'CommentBlock': (node, key, idx) => {
+  //   var parent = parentOf(node);
+  //   if (!parent) return;
+  //
+  //   if (key.toLowerCase().indexOf('comment') !== -1) {
+  //     parent[key] = [];
+  //   } else if (key === 'tokens') {
+  //     parent[key] = parent[key].filter(item => {
+  //       return !item || typeof item !== 'object' || ['CommentBlock', 'CommentLine'].indexOf(item.type) !== -1;
+  //     });
+  //   } else {
+  //     throw new Error(parent.type, key, idx)
+  //   }
+  // },
+  //
+  // 'CommentLine': (node, key, idx) => {
+  //   var parent = parentOf(node);
+  //   if (!parent) return;
+  //
+  //   if (key.toLowerCase().indexOf('comment') !== -1) {
+  //     parent[key] = [];
+  //   } else if (key === 'tokens') {
+  //     parent[key] = parent[key].filter(item => {
+  //       return !item || typeof item !== 'object' || ['CommentBlock', 'CommentLine'].indexOf(item.type) !== -1;
+  //     });
+  //   } else {
+  //     throw new Error(parent.type, key, idx)
+  //   }
+  // },
 
   'BlockStatement': (node) => {
-    console.log(node);
+    // console.log(node);
+  },
+
+  'AssignmentExpression': (node) => {
+    // console.log(node);
   },
 
   'Node': (node) => {
@@ -117,12 +129,14 @@ visit(ast, {
         node.loc.indent = 0;
       }
     }
-    // node.leadingComments = null;
-    // node.comments = null;
-    // node.trailingComments = null;
-    // console.log(node.type);
+    node.leadingComments = null;
+    node.comments = null;
+    node.trailingComments = null;
   }
 });
 
-var transpiledSource = recast.print(ast).code;
+var transpiledSource = babel.transformFromAst(ast, src, {
+  compact:true,
+  comments:false
+}).code;
 console.log(transpiledSource);
