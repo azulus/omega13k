@@ -3,14 +3,7 @@ var babylon = require('babylon');
 var fs = require('fs');
 var oid = require('oid');
 var path = require('path');
-var types = require('ast-types');
-
-var def = types.Type.def;
-def('ObjectProperty').bases('Node');
-def('ClassMethod').bases('Node');
-def('StringLiteral').bases('Node');
-def('ObjectMethod').bases('Node');
-types.finalize();
+var types = require('babel-types');
 
 var src = fs.readFileSync(path.join(__dirname, '..', 'g.js'));
 var ast = babylon.parse(String(src), {
@@ -82,50 +75,63 @@ var visit = function (node, visitor, parent, initialKey, idx) {
     }
 };
 
-visit(ast, {
-  // 'CommentBlock': (node, key, idx) => {
-  //   var parent = parentOf(node);
-  //   if (!parent) return;
-  //
-  //   if (key.toLowerCase().indexOf('comment') !== -1) {
-  //     parent[key] = [];
-  //   } else if (key === 'tokens') {
-  //     parent[key] = parent[key].filter(item => {
-  //       return !item || typeof item !== 'object' || ['CommentBlock', 'CommentLine'].indexOf(item.type) !== -1;
-  //     });
-  //   } else {
-  //     throw new Error(parent.type, key, idx)
-  //   }
-  // },
-  //
-  // 'CommentLine': (node, key, idx) => {
-  //   var parent = parentOf(node);
-  //   if (!parent) return;
-  //
-  //   if (key.toLowerCase().indexOf('comment') !== -1) {
-  //     parent[key] = [];
-  //   } else if (key === 'tokens') {
-  //     parent[key] = parent[key].filter(item => {
-  //       return !item || typeof item !== 'object' || ['CommentBlock', 'CommentLine'].indexOf(item.type) !== -1;
-  //     });
-  //   } else {
-  //     throw new Error(parent.type, key, idx)
-  //   }
-  // },
+var erasableDeclarations = {};
+var currentIndexNode = null;
+var currentIndex = null;
+var indexMap = {};
 
-  'BlockStatement': (node) => {
-    // console.log(node);
+visit(ast, {
+  'VariableDeclarator': (node) => {
+    if (node.id &&
+        node.id.type === 'Identifier' &&
+        node.id.name.indexOf('Index') !== -1) {
+      currentIndexNode = node;
+      currentIndex = {};
+      indexMap[node.id.name] = currentIndex;
+
+      erasableDeclarations[oid.hash(parentOf(node))] = true;
+    }
   },
 
-  'AssignmentExpression': (node) => {
-    // console.log(node);
+  'MemberExpression': (node, key, idx) => {
+    if (node.object.type === 'Identifier' && indexMap[node.object.name]) {
+        var parent = parentOf(node);
+        if (idx) {
+          parent[key][idx] = types.numericLiteral(indexMap[node.object.name][node.property.name]);
+        } else {
+          parent[key] = types.numericLiteral(indexMap[node.object.name][node.property.name]);
+        }
+        // console.log('replace', node.object.name, node.property.name);
+
+    }
+  },
+
+  'VariableDeclaration:exit': (node, key, idx) => {
+    if (erasableDeclarations[oid.hash(node)]) {
+      var parent = parentOf(node);
+      parent[key] = parent[key].filter(n => n !== node)
+    }
+  },
+
+  'VariableDeclarator:exit': (node, key, idx) => {
+    if (node === currentIndexNode) {
+      currentIndexNode = null;
+      currentIndex = null;
+
+      var parent = parentOf(node);
+      var root = parentOf(parent);
+    }
+  },
+
+  'ObjectProperty': (node) => {
+    if (currentIndexNode) {
+      currentIndex[node.key.name] = node.value.value;
+    }
   },
 
   'Node': (node) => {
     if (['CommentBlock', 'CommentLine'].indexOf(node.type) === -1) {
-      // console.log(node.type);
       if (node.loc) {
-        // console.log(node.type, node.loc.indent);
         node.loc.indent = 0;
       }
     }

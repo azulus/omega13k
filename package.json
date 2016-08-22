@@ -5,6 +5,8 @@
     "ast-types": "^0.9.0",
     "babel": "^6.5.2",
     "babel-core": "^6.13.2",
+    "babel-template": "^6.9.0",
+    "babel-types": "^6.13.0",
     "babylon": "^6.9.0",
     "cheerio": "^0.20.0",
     "gulp": "^3.9.1",
