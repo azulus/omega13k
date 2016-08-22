@@ -137,6 +137,7 @@ visit(ast, {
 
 var transpiledSource = babel.transformFromAst(ast, src, {
   compact:true,
-  comments:false
+  comments:false,
+  minified:true
 }).code;
 console.log(transpiledSource);
