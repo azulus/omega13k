@@ -51,12 +51,57 @@ $.assign($, {
     }
   },
 
-  getRandomShapes: (r, mx, my, s) => $.splitString(s || $.getRandomShapeString(r)).map(is => {
-    switch(is) {
-      case 'c': return $.getRandomCircle(r, mx, my, 5, 30)
-      case 'r': return $.getRandomRectangle(r, mx, my, 5, 30)
-      case 'i': return $.getRandomIsocelesTriangle(r, mx, my, 5, 30)
-      case 't': return $.getRandomTriangle(r, mx, my, 5, 30)
+  getRandomShapes: (r, mx, my, s = '') => {
+    let shouldMirror = s.indexOf('m') !== -1;
+    s = s.replace(/m/g, '')
+    let shapeString = s.length ? s : $.getRandomShapeString(r);
+    let shapes = [];
+    $.splitString(shapeString).forEach(is => {
+      let shape;
+      switch(is) {
+        case 'c':
+          shape = $.getRandomCircle(r, mx, my, 5, 30);
+          break;
+        case 'r':
+          shape = $.getRandomRectangle(r, mx, my, 5, 30);
+          break;
+        case 'i':
+          shape = $.getRandomIsocelesTriangle(r, mx, my, 5, 30);
+          break;
+        case 't':
+          shape = $.getRandomTriangle(r, mx, my, 5, 30);
+          break;
+      }
+      shapes.push(shape);
+      if (shouldMirror) {
+        if (shape.r) {
+          shapes.push($.assign({}, shape, {y:my-shape.y}));
+        } else {
+          shapes.push($.assign({}, shape, {pts:$.invertPoints(shape.pts, my)}));
+        }
+      }
+    });
+    return shapes;
+  },
+
+  checkCollision: (firstOffset, firstShapes, secondOffset, secondShapes) => {
+    // rectangle - rectangle = bounding boxes collide
+    // rectangle - circle = bounding boxes collide AND
+    // rectangle - triangle
+    // circle - circle
+    // circle - triangle
+    // triangle - triangle
+  },
+
+  getBoundingBox: (shape) => {
+    if (shape.r) {
+      return [shape.x-shape.r, shape.y-shape.r, shape.r*2, shape.r*2];
+    } else {
+
     }
-  })
+  },
+
+  mergeBoundingBoxes: (boxes) => {
+
+  }
 });
