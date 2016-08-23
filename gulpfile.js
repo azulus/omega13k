@@ -1,6 +1,7 @@
 var fs = require('fs'),
     cheerio = require('cheerio'),
     gulp = require('gulp'),
+    cleanCSS = require('gulp-clean-css'),
     concat = require('gulp-concat'),
     htmlmin = require('gulp-htmlmin'),
     rimraf = require('gulp-rimraf'),
@@ -90,6 +91,7 @@ gulp.task('jsmin', ['initbuild'], function() {
 
 gulp.task('addcss', function() {
     var stream = gulp.src('game.css')
+      .pipe(cleanCSS())
       .pipe(rename('g.css'))
       .pipe(gulp.dest('./tmp'));
 
