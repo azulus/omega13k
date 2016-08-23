@@ -1,8 +1,5 @@
 # Generated build assets
-*.zip
-index.html
-g.css
-g.js
+dist/
 
 .DS_Store
 

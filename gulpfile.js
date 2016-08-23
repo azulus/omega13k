@@ -36,15 +36,8 @@ gulp.task('initbuild', function() {
   var stream, html, $, src, js = [];
 
   // delete prev files
-  stream = gulp.src('game.zip')
+  stream = gulp.src('dist/')
         .pipe(rimraf());
-
-  stream = gulp.src('g.js')
-        .pipe(rimraf());
-
-  stream = gulp.src('index.html')
-        .pipe(rimraf());
-
 
   // get a list of all js scripts from our dev file
   html = fs.readFileSync('dev.html', 'utf-8', function(e, data) {
@@ -65,14 +58,14 @@ gulp.task('initbuild', function() {
 });
 
 gulp.task('webpack', ['jsconcat'], function() {
-  var stream = gulp.src('g.js')
+  var stream = gulp.src('dist/g.js')
     .pipe(gulpWebpack(require('./webpack.config.js'), webpack))
     .pipe(gulp.dest('g.min.js'));
 });
 
 gulp.task('jsconcat', ['initbuild'], function() {
   var stream = gulp.src(config.js)
-    .pipe(concat('g.js'))
+    .pipe(concat('dist/g.js'))
     .pipe(gulp.dest('.'));
 
   return stream;
@@ -83,7 +76,7 @@ gulp.task('jsmin', ['initbuild'], function() {
   var stream = gulp.src(config.js)
     .pipe(concat('g.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('.'));
+    .pipe(gulp.dest('dist/'));
 
   return stream;
 
@@ -100,7 +93,7 @@ gulp.task('addcss', function() {
 
 gulp.task('addjs', ['jsconcat'], function() {
 
-    var js = fs.readFileSync('g.js', 'utf-8', function(e, data) {
+    var js = fs.readFileSync('dist/g.js', 'utf-8', function(e, data) {
       return data;
     });
 
@@ -129,16 +122,16 @@ gulp.task('addjs', ['jsconcat'], function() {
 gulp.task('zip', ['addjs', 'addcss'], function() {
   var stream = gulp.src(['tmp/index.html', 'tmp/g.css'])
       .pipe(zip('game.zip'))
-      .pipe(gulp.dest('.'));
+      .pipe(gulp.dest('dist/'));
 
   return stream;
 });
 
 
 gulp.task('unzip', ['zip'], function() {
-  var stream = gulp.src('game.zip')
+  var stream = gulp.src('dist/game.zip')
       .pipe(unzip())
-      .pipe(gulp.dest('.'));
+      .pipe(gulp.dest('dist/'));
 
   return stream;
 });
@@ -153,7 +146,7 @@ gulp.task('clean', ['unzip'], function() {
 });
 
 gulp.task('report', ['clean'], function() {
-  var stat = fs.statSync('game.zip'),
+  var stat = fs.statSync('dist/game.zip'),
       limit = 1024 * 13,
       size = stat.size,
       remaining = limit - size,
