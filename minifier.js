@@ -79,6 +79,9 @@ module.exports = function (src) {
   var currentIndexNode = null;
   var currentIndex = null;
   var indexMap = {};
+  var toDeleteMap = {};
+
+  var globalMap = null;
 
   visit(ast, {
     'VariableDeclarator': (node) => {
@@ -90,6 +93,24 @@ module.exports = function (src) {
         indexMap[node.id.name] = currentIndex;
 
         erasableDeclarations[oid.hash(parentOf(node))] = true;
+      } else if (node.id && node.id.type === 'Identifier' && node.id.name === '$') {
+        globalMap = node.init;
+      }
+    },
+
+    'CallExpression': (node, key, idx) => {
+      if (node.callee.type === 'MemberExpression' &&
+          node.callee.object.type === 'Identifier' &&
+          node.callee.object.name === '$' &&
+          node.callee.property.name === 'assign' &&
+          node.arguments.length === 2 &&
+          node.arguments[0].type === 'Identifier' &&
+          node.arguments[0].name === '$') {
+        globalMap.properties = globalMap.properties.concat(node.arguments[1].properties);
+        node.arguments[1].properties = [];
+
+        var parent = parentOf(node);
+        toDeleteMap[oid.hash(parent)] = true;
       }
     },
 
@@ -101,8 +122,8 @@ module.exports = function (src) {
           } else {
             parent[key] = types.numericLiteral(indexMap[node.object.name][node.property.name]);
           }
-          // console.log('replace', node.object.name, node.property.name);
-
+      } else if (node.object.type === 'Identifier' && node.object.name === '$') {
+        // console.log(node.property.name);
       }
     },
 
@@ -138,13 +159,25 @@ module.exports = function (src) {
       node.leadingComments = null;
       node.comments = null;
       node.trailingComments = null;
+    },
+
+    'Node:exit': (node, key, idx) => {
+      if (toDeleteMap[oid.hash(node)]) {
+        var parent = parentOf(node);
+        if (!parent) throw new Error('Unable to delete without parent');
+        if (idx) {
+          parent[key] = parent[key].filter(n => n !== node);
+        } else {
+          throw new Error('Unable to delete type ' + node.type + ' as ' + key);
+        }
+      }
     }
   });
 
   var transpiledSource = babel.transformFromAst(ast, src, {
-    compact:true,
+    // compact:true,
     comments:false,
-    minified:true
+    // minified:true
   }).code;
 
   return new Buffer(transpiledSource, 'utf8');
