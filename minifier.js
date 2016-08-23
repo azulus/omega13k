@@ -7,12 +7,25 @@ var types = require('babel-types');
 
 // to be implemented
 const SHOULD_RENAME_LOCALS = true;
-
-// already implemented
 const SHOULD_REMOVE_COMMENTS = true;
 const SHOULD_INLINE_CONSTS = true;
 const SHOULD_RENAME_GLOBALS = true;
-const SHOULD_MINIFY = false;
+const SHOULD_MINIFY = true;
+
+var keyCounter = 0;
+var keySpace = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(
+  '');
+var generateKey = (idx) => {
+  var keyString = '';
+  while (true) {
+    keyString = keySpace[idx % keySpace.length] + keyString;
+    if (idx < keySpace.length) {
+      return keyString;
+    } else {
+      idx = Math.floor(idx / keySpace.length);
+    }
+  }
+};
 
 module.exports = function(src) {
   var srcLines = String(src).split(/\n/);
@@ -21,7 +34,7 @@ module.exports = function(src) {
     var loc = node.loc;
     var lines = [];
     for (var l = loc.start.line; l <= loc.end.line; l++) {
-      var line = srcLines[l-1];
+      var line = srcLines[l - 1];
 
       if (l === loc.end.line) {
         line = line.substr(0, loc.end.column);
@@ -204,27 +217,12 @@ module.exports = function(src) {
       'Node:exit': handleDelete
     });
 
-    var keyCounter = 0;
-    var keySpace = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(
-      '');
-    var keyMap = {};
-
-    var generateKey = (idx) => {
-      var keyString = '';
-      while (true) {
-        keyString = keySpace[idx % keySpace.length] + keyString;
-        if (idx < keySpace.length) {
-          return keyString;
-        } else {
-          idx = Math.floor(idx / keySpace.length);
-        }
-      }
-    };
+    var globalKeyMap = {};
 
     globalProperties.properties.forEach(prop => {
       var oldKey = prop.key.name;
       var newKey = generateKey(keyCounter++);
-      keyMap[oldKey] = newKey;
+      globalKeyMap[oldKey] = newKey;
       prop.key.name = newKey;
     });
 
@@ -241,7 +239,7 @@ module.exports = function(src) {
             throw new Error('Unable to reason about $ reference:' +
               JSON.stringify(node.property));
           }
-          var newKey = keyMap[node.property.name];
+          var newKey = globalKeyMap[node.property.name];
           if (typeof newKey !== 'string') {
             throw new Error('Unable to rename', node.property.name);
           }
@@ -272,12 +270,41 @@ module.exports = function(src) {
         'addEventListener': 'addEventListener',
         'removeEventListener': 'removeEventListener',
         'undefined': 'undefined',
-        'Date': 'Date'
+        'Date': 'Date',
+        'console': 'console'
       }
     }];
 
     var addMapping = (v) => {
-      functionStack[functionStack.length - 1].variables[v] = v;
+      var key;
+      if (functionStack.length === 1) {
+        key = v;
+      } else {
+        var idx = 0;
+        key;
+        while (true) {
+          key = generateKey(idx);
+          if (!isMapped(key)) {
+            break;
+          }
+          idx++;
+        }
+      }
+      functionStack[functionStack.length - 1].variables[v] = key;
+
+      return key;
+    }
+
+    var isMapped = (v) => {
+      for (var i = functionStack.length - 1; i >= 0; i--) {
+        var vars = functionStack[i].variables;
+        for (var j in vars) {
+          if (vars[j] === v) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     var getMapping = (v) => {
@@ -288,20 +315,24 @@ module.exports = function(src) {
       }
     }
 
+    var changedNodes = {};
+
     // all references must be to $, _, a constant, or in a local let
     // all params will be renamed
     // all variables
 
     var pushFunction = (node) => {
-      var curr = {variables:{}};
+      var curr = {
+        variables: {}
+      };
       functionStack.push(curr);
       node.params.forEach(param => {
         if (param.type === 'AssignmentPattern') {
-          curr.variables[param.left.name] = param.left.name;
+          addMapping(param.left.name);
         } else if (param.type === 'RestElement') {
-          curr.variables[param.argument.name] = param.argument.name;
+          addMapping(param.argument.name);
         } else {
-          curr.variables[param.name] = param.name;
+          addMapping(param.name);
         }
       });
     };
@@ -312,18 +343,22 @@ module.exports = function(src) {
 
     visit(ast, {
       'Node': (node, key, idx) => {
-        if(nodeTypes.indexOf(node.type) === -1) {
-            nodeTypes.push(node.type);
+        if (nodeTypes.indexOf(node.type) === -1) {
+          nodeTypes.push(node.type);
         }
       },
 
       'Identifier': (node, key, idx) => {
-        if (['property', 'key'].indexOf(key) !== -1) return;
+        if (key === 'key') return;
+        if (key === 'property' && parentOf(node).computed !== true) return;
 
         var mapping = getMapping(node.name);
         if (!mapping) {
-          console.log('NO MAPPING FOR', node.name, 'as', parentOf(node).type, key, idx);
-          console.log(getSource(parentOf(node)));
+          console.log(
+            'VARIABLE ' + node.name + ' MUST BE DEFINED ON $ namespace or in a let/const',
+            getSource(parentOf(node)));
+        } else if (node.name !== mapping){
+          node.name = mapping;
         }
       },
 
