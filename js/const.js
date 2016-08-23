@@ -24,3 +24,8 @@ const AudioIndex = {
   HP_FILTER_CUTOFF_SWEEP: 22,
   MASTER_VOLUME: 23
 };
+
+const GameIndex = {
+  WIDTH: 800,
+  HEIGHT: 600
+};

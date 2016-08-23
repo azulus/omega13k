@@ -1,6 +1,3 @@
-$.gameWidth = 800
-$.gameHeight = 600
-
 let gameBoard = $.createElement('div')
 gameBoard.id = 'g'
 $.appendChild(document.body, gameBoard);
@@ -57,7 +54,7 @@ $.createGameObject = (obj) => {
  * To destroy an object we set the destroy flag and remove all destroyed objects after rendering.
  */
 $.destroyIfOutsideGameRect = (obj) => {
-	if (obj.x < 0 || obj.x > $.gameWidth || obj.y < 0 || obj.y > $.gameHeight) {
+	if (obj.x < 0 || obj.x > GameIndex.WIDTH || obj.y < 0 || obj.y > GameIndex.HEIGHT) {
 		obj.destroy = true
 	}
 }

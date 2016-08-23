@@ -28,9 +28,9 @@ $.PlayerGameObject = function (seed = 5745) {
 
 			// Update player based on arrows.
 			// Prevent the player from going out of bounds.
-			if ($.downKeys.ArrowDown && y < $.gameHeight - speed - spriteHeight) y += speed;
+			if ($.downKeys.ArrowDown && y < GameIndex.HEIGHT - speed - spriteHeight) y += speed;
 			if ($.downKeys.ArrowUp && y > speed) y -= speed;
-			if ($.downKeys.ArrowRight && x < $.gameWidth - speed - spriteWidth) x += speed;
+			if ($.downKeys.ArrowRight && x < GameIndex.WIDTH - speed - spriteWidth) x += speed;
 			if ($.downKeys.ArrowLeft && x > speed) x -= speed;
 
 			if ($.downKeys[' '] && now - lastShotTime > 300) {
