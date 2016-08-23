@@ -25,7 +25,11 @@ $.assign($, {
   	$.beginPath(ctx)
     let pts = p.pts
     for (let i = 0; i < pts.length; i+=2) {
-    	ctx[(i === 0 ? 'moveTo' : 'lineTo')](pts[i], pts[i+1])
+      if (i === 0) {
+        ctx.moveTo(pts[i], pts[i+1])
+      } else {
+        ctx.lineTo(pts[i], pts[i+1])
+      }
     }
     $.closePath(ctx);
     ctx.fill();

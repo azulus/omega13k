@@ -1,10 +1,17 @@
 let gameBoard = $.getElementById('g')
 
 $.assign($, {
-	gameObjects: [
-		new $.PlayerGameObject(),
-		new $.EnemyGameObject(6480, 600, 50)
-	],
+	_gameObjects: null,
+
+	gameObjects: () => {
+		if (!$._gameObjects) {
+			$._gameObjects = [
+				new $.PlayerGameObject(),
+				new $.EnemyGameObject(6480, 600, 50)
+			]
+		}
+		return $._gameObjects;
+	},
 
 	/**
 	 * Adds an instantiated game object to the list of objects
@@ -12,7 +19,7 @@ $.assign($, {
 	 */
 	createGameObject: (obj) => {
 		renderSeed(obj)
-		$.gameObjects.push(obj)
+		$.gameObjects().push(obj)
 	},
 
 	/**
@@ -34,13 +41,13 @@ renderSeed = (gameObject) => {
 	let ctx = $.getContext(cnv)
 	let r = $.getRandomNumberGenerator(gameObject.s)
 	let shapes = $.getRandomShapes(r, gameObject.w, gameObject.h, gameObject.so);
-    shapes.forEach(rs => $[rs.r ? 'drawCircle' : 'drawPolygon'](ctx, rs))
+    shapes.forEach(rs => (rs.r ? $.drawCircle : $.drawPolygon)(ctx, rs))
 }
 
 drawLoop = () => {
-	let i = $.gameObjects.length
+	let i = $.gameObjects().length
 	while (i--) {
-		let obj = $.gameObjects[i]
+		let obj = $.gameObjects()[i]
 		// Call .t (tick) on all objects
 		obj.t()
 
@@ -48,7 +55,7 @@ drawLoop = () => {
 		if (obj.destroy) {
 			// Remove the object and splice the array
 			$.removeChild(gameBoard, obj.d)
-			$.gameObjects.splice(i, 1)
+			$.gameObjects().splice(i, 1)
 		} else {
 			// Render the game object
 			obj.d.style.transform = `translate(${obj.x}px, ${obj.y}px)`
@@ -59,7 +66,7 @@ drawLoop = () => {
 
 
 let startGame = () => {
-	$.gameObjects.forEach(renderSeed)
+	$.gameObjects().forEach(renderSeed)
 	drawLoop()
 }
 

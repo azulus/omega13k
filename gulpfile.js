@@ -89,7 +89,6 @@ gulp.task('minifyjs', ['jsconcat'], function() {
 
     if (file.isBuffer()) {
       file.path = file.path.replace(/\.js$/, '.min.js');
-      console.log(file.path);
       file.contents = minifier(file.contents);
     }
     this.push(file);
