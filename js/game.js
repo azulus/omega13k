@@ -84,4 +84,4 @@ $.assign($, {
 	}
 })
 
-addEventListener('keydown', $.splashKeyListener)
+$.addEventListener('keydown', $.splashKeyListener)
