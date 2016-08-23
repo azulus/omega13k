@@ -1,7 +1,10 @@
-.DS_Store
+# Generated build assets
 *.zip
 index.html
+g.css
 g.js
+
+.DS_Store
 
 # Logs
 logs

@@ -16,7 +16,7 @@ var fs = require('fs'),
     config = { js: [] };
 
 
-gulp.task('build', ['initbuild', 'jsconcat', 'addjs', 'zip', 'unzip', 'clean', 'report']);
+gulp.task('build', ['initbuild', 'jsconcat', 'addcss', 'addjs', 'zip', 'unzip', 'clean', 'report']);
 
 
 gulp.task('serve', function() {
@@ -88,6 +88,14 @@ gulp.task('jsmin', ['initbuild'], function() {
 
 });
 
+gulp.task('addcss', function() {
+    var stream = gulp.src('game.css')
+      .pipe(rename('g.css'))
+      .pipe(gulp.dest('./tmp'));
+
+    return stream;
+});
+
 gulp.task('addjs', ['jsconcat'], function() {
 
     var js = fs.readFileSync('g.js', 'utf-8', function(e, data) {
@@ -107,6 +115,7 @@ gulp.task('addjs', ['jsconcat'], function() {
     var stream = gulp.src('dev.html')
       .pipe(replace(/<.*?script.*?>.*?<\/.*?script.*?>/igm, ''))
       .pipe(replace(/<\/body>/igm, '<script>'+extra_js+' '+js+'</script></body>'))
+      .pipe(replace(/game.css/igm, 'g.css'))
       .pipe(htmlmin({collapseWhitespace: true}))
       .pipe(rename('index.html'))
       .pipe(gulp.dest('./tmp'));
@@ -115,8 +124,8 @@ gulp.task('addjs', ['jsconcat'], function() {
 
 });
 
-gulp.task('zip', ['addjs'], function() {
-  var stream = gulp.src('tmp/index.html')
+gulp.task('zip', ['addjs', 'addcss'], function() {
+  var stream = gulp.src(['tmp/index.html', 'tmp/g.css'])
       .pipe(zip('game.zip'))
       .pipe(gulp.dest('.'));
 
