@@ -10,7 +10,6 @@ const $ = {
   pow: Math.pow,
   document: document,
   parseFloat: parseFloat,
-  addEventListener: addEventListener.bind(window),
 
   splitString: (s) => s.split(''),
 
