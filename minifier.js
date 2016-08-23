@@ -10,7 +10,7 @@ const SHOULD_RENAME_LOCALS = true;
 const SHOULD_REMOVE_COMMENTS = true;
 const SHOULD_INLINE_CONSTS = true;
 const SHOULD_RENAME_GLOBALS = true;
-const SHOULD_MINIFY = false;
+const SHOULD_MINIFY = true;
 
 var keyCounter = 0;
 var keySpace = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(
