@@ -5,10 +5,14 @@ var oid = require('oid');
 var path = require('path');
 var types = require('babel-types');
 
+// to be implemented
+const SHOULD_RENAME_ARGUMENTS = true;
+
+// already implemented
 const SHOULD_REMOVE_COMMENTS = true;
 const SHOULD_INLINE_CONSTS = true;
 const SHOULD_RENAME_GLOBALS = true;
-const SHOULD_MINIFY = true;
+const SHOULD_MINIFY = false;
 
 module.exports = function(src) {
   var ast = babylon.parse(String(src), {
@@ -223,6 +227,40 @@ module.exports = function(src) {
           }
           node.property.name = newKey;
         }
+      }
+    });
+  }
+
+  if (SHOULD_RENAME_ARGUMENTS) {
+    var nodeTypes = [];
+    var functionStack = [];
+    var argumentStack = [];
+
+    var pushFunction = (node) => {
+
+    };
+
+    var popFunction = (node) => {
+
+    };
+
+
+
+    visit(ast, {
+      'Node': (node, key, idx) => {
+        if(nodeTypes.indexOf(node.type) === -1) {
+            // console.log(node.type);
+            nodeTypes.push(node.type);
+        }
+      },
+
+      'FunctionExpression': (node, key, idx) => {
+        functionStack.push(node)
+        // console.log('functionExpression', node);
+      },
+
+      'ArrowFunctionExpression': (node, key, idx) => {
+        // console.log('arrow', node);
       }
     });
   }
