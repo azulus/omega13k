@@ -1,6 +1,6 @@
 SHAPES.mirror = {}
 
-SHAPES.mirror.shapes = 'c'
+SHAPES.mirror.shapes = 'mv';
 
 SHAPES.mirror.fitness = (shapes) => {
   return true

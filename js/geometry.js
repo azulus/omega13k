@@ -53,7 +53,8 @@ $.assign($, {
 
   getRandomShapes: (r, mx, my, s = '') => {
     let shouldMirror = s.indexOf('m') !== -1;
-    s = s.replace(/m/g, '')
+    let shouldInvert = s.indexOf('v') !== -1;
+    s = s.replace(/[mv]/g, '')
     let shapeString = s.length ? s : $.getRandomShapeString(r);
     let shapes = [];
     $.splitString(shapeString).forEach(is => {
@@ -71,6 +72,13 @@ $.assign($, {
         case 't':
           shape = $.getRandomTriangle(r, mx, my, 5, 30);
           break;
+      }
+      if (shouldInvert) {
+        if (shape.r) {
+          shape.x = mx - shape.x;
+        } else {
+          shape.pts = $.invertPoints(shape.pts, mx, 1);
+        }
       }
       shapes.push(shape);
       if (shouldMirror) {

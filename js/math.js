@@ -16,8 +16,8 @@ $.assign($, {
   /**
    * Inverts an array of points vertically
    */
-  invertPoints: (pts, maxY) => pts.map(
-    (pt,idx) => (idx % 2 === 0 ? pt : (maxY - pt))
+  invertPoints: (pts, max, isX) => pts.map(
+    (pt,idx) => (idx % 2 === (isX ? 1 : 0) ? pt : (max - pt))
   ),
 
   /**
