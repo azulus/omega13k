@@ -1,16 +1,5 @@
 $.assign($, {
-	_gameObjects: null,
 	_gameBoard: null,
-
-	gameObjects: () => {
-		if (!$._gameObjects) {
-			$._gameObjects = [
-				new $.PlayerGameObject(),
-				new $.EnemyGameObject(6480, 600, 50)
-			]
-		}
-		return $._gameObjects;
-	},
 
 	gameBoard: () => {
 		if (!$._gameBoard) {
@@ -19,13 +8,16 @@ $.assign($, {
 		return $._gameBoard;
 	},
 
+	// GameObjects are assigned when the game starts.
+	gameObjects: [],
+
 	/**
 	 * Adds an instantiated game object to the list of objects
 	 * and renders the game object canvas.
 	 */
 	createGameObject: (obj) => {
 		$.renderSeed(obj)
-		$.gameObjects().push(obj)
+		$.gameObjects.push(obj)
 	},
 
 	/**
@@ -50,9 +42,9 @@ $.assign($, {
 	},
 
 	drawLoop: () => {
-		let i = $.gameObjects().length
+		let i = $.gameObjects.length
 		while (i--) {
-			let obj = $.gameObjects()[i]
+			let obj = $.gameObjects[i]
 			// Call .t (tick) on all objects
 			obj.t()
 
@@ -60,7 +52,7 @@ $.assign($, {
 			if (obj.destroy) {
 				// Remove the object and splice the array
 				$.removeChild($.gameBoard(), obj.d)
-				$.gameObjects().splice(i, 1)
+				$.gameObjects.splice(i, 1)
 			} else {
 				// Render the game object
 				obj.d.style.transform = `translate(${obj.x}px, ${obj.y}px)`
@@ -70,7 +62,14 @@ $.assign($, {
 	},
 
 	startGame: () => {
-		$.gameObjects().forEach($.renderSeed)
+		// Initialize gameObjects
+		$.gameObjects = [
+			new $.PlayerGameObject(),
+			new $.EnemyGameObject(6480, 600, 50)
+		]
+
+		// Begin draw loop
+		$.gameObjects.forEach($.renderSeed)
 		$.drawLoop()
 	},
 
