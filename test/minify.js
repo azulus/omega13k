@@ -5,7 +5,7 @@ var oid = require('oid');
 var path = require('path');
 var types = require('babel-types');
 
-var src = fs.readFileSync(path.join(__dirname, '..', 'g.js'));
+var src = fs.readFileSync(path.join(__dirname, '..', 'dist', 'g.js'));
 var ast = babylon.parse(String(src), {
         sourceType: 'module',
         plugins: [
