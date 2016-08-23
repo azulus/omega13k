@@ -66,6 +66,7 @@ let splashKeyListener = (e) => {
 		startGame()
 		document.body.className = 'g'
 		removeEventListener('keydown', splashKeyListener)
+		$.initKeyboard()
 	}
 }
 
