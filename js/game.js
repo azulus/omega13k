@@ -37,9 +37,6 @@ drawLoop = () => {
 	setTimeout(drawLoop, 16)
 }
 
-gameObjects.forEach(renderSeed)
-drawLoop()
-
 /**
  * Adds an instantiated game object to the list of objects
  * and renders the game object canvas.
@@ -58,3 +55,18 @@ $.destroyIfOutsideGameRect = (obj) => {
 		obj.destroy = true
 	}
 }
+
+let startGame = () => {
+	gameObjects.forEach(renderSeed)
+	drawLoop()
+}
+
+let splashKeyListener = (e) => {
+	if (e.key == ' ') {
+		startGame()
+		document.body.className = 'g'
+		removeEventListener('keydown', splashKeyListener)
+	}
+}
+
+addEventListener('keydown', splashKeyListener)
