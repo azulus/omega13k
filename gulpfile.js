@@ -1,6 +1,7 @@
 var fs = require('fs'),
     cheerio = require('cheerio'),
     gulp = require('gulp'),
+    gutil = require('gulp-util'),
     cleanCSS = require('gulp-clean-css'),
     concat = require('gulp-concat'),
     htmlmin = require('gulp-htmlmin'),
@@ -12,12 +13,11 @@ var fs = require('fs'),
     unzip = require('gulp-unzip'),
     zip = require('gulp-zip'),
     exclude_min = ['js/lib/jsfxr.min.js'],
-    webpack = require('webpack'),
-    gulpWebpack = require('gulp-webpack'),
     config = { js: [] };
 
+var PluginError = gutil.PluginError;
 
-gulp.task('build', ['initbuild', 'jsconcat', 'addcss', 'addjs', 'zip', 'unzip', 'clean', 'report']);
+gulp.task('build', ['initbuild', 'jsconcat', 'minifyjs', 'addcss', 'addjs', 'zip', 'unzip', 'clean', 'report']);
 
 
 gulp.task('serve', function() {
@@ -57,29 +57,12 @@ gulp.task('initbuild', function() {
 
 });
 
-gulp.task('webpack', ['jsconcat'], function() {
-  var stream = gulp.src('dist/g.js')
-    .pipe(gulpWebpack(require('./webpack.config.js'), webpack))
-    .pipe(gulp.dest('g.min.js'));
-});
-
 gulp.task('jsconcat', ['initbuild'], function() {
   var stream = gulp.src(config.js)
     .pipe(concat('dist/g.js'))
     .pipe(gulp.dest('.'));
 
   return stream;
-});
-
-gulp.task('jsmin', ['initbuild'], function() {
-
-  var stream = gulp.src(config.js)
-    .pipe(concat('g.js'))
-    .pipe(uglify())
-    .pipe(gulp.dest('dist/'));
-
-  return stream;
-
 });
 
 gulp.task('addcss', function() {
@@ -91,9 +74,36 @@ gulp.task('addcss', function() {
     return stream;
 });
 
-gulp.task('addjs', ['jsconcat'], function() {
+gulp.task('minifyjs', ['jsconcat'], function() {
+  var through = require('through2');
+  var minifier = require('./minifier');
 
-    var js = fs.readFileSync('dist/g.js', 'utf-8', function(e, data) {
+  var transform = through.obj(function(file, encoding, callback) {
+    if (file.isStream()) {
+      this.emit('error', new PluginError({
+        plugin: 'MinifyJs',
+        message: 'Streams are not supported.'
+      }));
+      callback();
+    }
+
+    if (file.isBuffer()) {
+      file.path = file.path.replace(/\.js$/, '.min.js');
+      console.log(file.path);
+      file.contents = minifier(file.contents);
+    }
+    this.push(file);
+    return callback();
+  });
+
+  return gulp.src('dist/g.js')
+    .pipe(transform)
+    .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('addjs', ['minifyjs'], function() {
+
+    var js = fs.readFileSync('dist/g.min.js', 'utf-8', function(e, data) {
       return data;
     });
 
