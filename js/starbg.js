@@ -17,7 +17,6 @@ $.assign($, {
 				$.round(r() * 2) + 1
 			])
 		}
-		console.log(stars);
 
 		let draw = () => {
 			// Draw stars
@@ -31,7 +30,6 @@ $.assign($, {
 					// Randomize the starting y value so we don't repeat patterns.
 					stars[i][1] = $.round(r() * GameIndex.HEIGHT)
 				}
-
 
 				context.beginPath()
 				context.moveTo(stars[i][0], stars[i][1])
