@@ -6,7 +6,7 @@ var path = require('path');
 var types = require('babel-types');
 
 // to be implemented
-const SHOULD_RENAME_ARGUMENTS = true;
+const SHOULD_RENAME_LOCALS = true;
 
 // already implemented
 const SHOULD_REMOVE_COMMENTS = true;
@@ -15,6 +15,26 @@ const SHOULD_RENAME_GLOBALS = true;
 const SHOULD_MINIFY = false;
 
 module.exports = function(src) {
+  var srcLines = String(src).split(/\n/);
+
+  var getSource = (node) => {
+    var loc = node.loc;
+    var lines = [];
+    for (var l = loc.start.line; l <= loc.end.line; l++) {
+      var line = srcLines[l-1];
+
+      if (l === loc.end.line) {
+        line = line.substr(0, loc.end.column);
+      }
+
+      if (l === loc.start.line) {
+        line = line.substr(loc.start.column);
+      }
+      lines.push(line);
+    }
+    return lines.join('\n');
+  }
+
   var ast = babylon.parse(String(src), {
     sourceType: 'module',
     plugins: [
@@ -231,37 +251,92 @@ module.exports = function(src) {
     });
   }
 
-  if (SHOULD_RENAME_ARGUMENTS) {
+  if (SHOULD_RENAME_LOCALS) {
+    const VariableTypes = {
+      PARAM: 1,
+      GLOBAL: 2,
+      LOCAL: 3
+    };
+
     var nodeTypes = [];
-    var functionStack = [];
-    var argumentStack = [];
+    var functionStack = [{
+      variables: {
+        'Math': 'Math',
+        'Object': 'Object',
+        'Array': 'Array',
+        'document': 'document',
+        'parseFloat': 'parseFloat',
+        'Audio': 'Audio',
+        'jsfxr': 'jsfxr',
+        'setTimeout': 'setTimeout',
+        'addEventListener': 'addEventListener',
+        'removeEventListener': 'removeEventListener',
+        'undefined': 'undefined',
+        'Date': 'Date'
+      }
+    }];
+
+    var addMapping = (v) => {
+      functionStack[functionStack.length - 1].variables[v] = v;
+    }
+
+    var getMapping = (v) => {
+      for (var i = functionStack.length - 1; i >= 0; i--) {
+        if (functionStack[i].variables[v]) {
+          return functionStack[i].variables[v];
+        }
+      }
+    }
+
+    // all references must be to $, _, a constant, or in a local let
+    // all params will be renamed
+    // all variables
 
     var pushFunction = (node) => {
-
+      var curr = {variables:{}};
+      functionStack.push(curr);
+      node.params.forEach(param => {
+        if (param.type === 'AssignmentPattern') {
+          curr.variables[param.left.name] = param.left.name;
+        } else if (param.type === 'RestElement') {
+          curr.variables[param.argument.name] = param.argument.name;
+        } else {
+          curr.variables[param.name] = param.name;
+        }
+      });
     };
 
     var popFunction = (node) => {
-
+      functionStack.pop();
     };
-
-
 
     visit(ast, {
       'Node': (node, key, idx) => {
         if(nodeTypes.indexOf(node.type) === -1) {
-            // console.log(node.type);
             nodeTypes.push(node.type);
         }
       },
 
-      'FunctionExpression': (node, key, idx) => {
-        functionStack.push(node)
-        // console.log('functionExpression', node);
+      'Identifier': (node, key, idx) => {
+        if (['property', 'key'].indexOf(key) !== -1) return;
+
+        var mapping = getMapping(node.name);
+        if (!mapping) {
+          console.log('NO MAPPING FOR', node.name, 'as', parentOf(node).type, key, idx);
+          console.log(getSource(parentOf(node)));
+        }
       },
 
-      'ArrowFunctionExpression': (node, key, idx) => {
-        // console.log('arrow', node);
-      }
+      'VariableDeclarator': (node, key, idx) => {
+        if (node.id.type === 'Identifier') {
+          addMapping(node.id.name);
+        }
+      },
+
+      'FunctionExpression': pushFunction,
+      'FunctionExpression:exit': popFunction,
+      'ArrowFunctionExpression': pushFunction,
+      'ArrowFunctionExpression:exit': popFunction
     });
   }
 

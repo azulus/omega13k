@@ -19,7 +19,7 @@ for (i = 0; i < num; i++) {
 let draw = () => {
 	// Draw stars
 	context.fillRect(0, 0, GameIndex.WIDTH, GameIndex.HEIGHT);
-	for (i = 0; i < num; i++) {
+	for (var i = 0; i < num; i++) {
 		// Update positions of stars
 		stars[i][0] -= stars[i][2]
 		if (stars[i][0] < 0) {

@@ -23,7 +23,7 @@ $.assign($, {
    * Get a random usable color
    */
   getRandomUsableColor: (r) => {
-    c = $.getRandomFromArray(r, $.USABLE_COLORS);
+    let c = $.getRandomFromArray(r, $.USABLE_COLORS);
     return `#${c}${c}${c}`
   }
 });

@@ -8,19 +8,19 @@ $.assign($, {
    * Get a random circle
    */
   getRandomCircle: (r, mx, my, minr, maxr) => {
-    rad = $.randBetween(r, minr, maxr)
-    x = $.randBetween(r, rad, mx-rad)
-    y = $.randBetween(r, rad, my-rad)
-    col = $.getRandomUsableColor(r)
+    let rad = $.randBetween(r, minr, maxr),
+      x = $.randBetween(r, rad, mx-rad),
+      y = $.randBetween(r, rad, my-rad),
+      col = $.getRandomUsableColor(r)
     return {r:rad, x, y, col}
   },
 
   getRandomRectangle: (r, mx, my, mins, maxs) => {
-    w = $.randBetween(r, mins, maxs)
-    h = $.randBetween(r, mins, maxs)
-    x = $.randBetween(r, 0, mx-w)
-    y = $.randBetween(r, 0, my-h)
-    col=$.getRandomUsableColor(r)
+    let w = $.randBetween(r, mins, maxs),
+      h = $.randBetween(r, mins, maxs),
+      x = $.randBetween(r, 0, mx-w),
+      y = $.randBetween(r, 0, my-h),
+      col=$.getRandomUsableColor(r)
     return {pts:[x,y,x+w,y,x+w,y+h,x,y+h],col}
   },
 
@@ -44,7 +44,7 @@ $.assign($, {
   ], col: $.getRandomUsableColor(r)}),
 
   getRandomShapeString: (r) => {
-    s = ''
+    let s = ''
     while (1) {
       s += $.getRandomFromArray(r,$.splitString('crit'))
       if (s.length >= 5 || (s.length >= 2 && r() < 0.5)) return s
