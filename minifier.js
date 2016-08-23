@@ -82,7 +82,15 @@ module.exports = function (src) {
   var toDeleteMap = {};
 
   var globalMap = null;
+  var keySpace = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  var keyMap = {};
 
+  /**
+   * Phase 1
+   *   inline constants
+   *   move all $.assign into initial definition
+   *   strip comments / indents (necessary?)
+   */
   visit(ast, {
     'VariableDeclarator': (node) => {
       if (node.id &&
@@ -172,6 +180,18 @@ module.exports = function (src) {
         }
       }
     }
+  });
+
+  globalMap.properties.forEach(prop => {
+    console.log(prop);
+  });
+
+  /**
+   * Phase 2
+   *   rename any referenced global properties
+   */
+  visit(ast, {
+
   });
 
   var transpiledSource = babel.transformFromAst(ast, src, {
