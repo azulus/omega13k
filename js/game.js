@@ -76,7 +76,7 @@ $.assign($, {
 	splashKeyListener: (e) => {
 		if (e.key == ' ') {
 			$.startGame()
-			document.body.className = 'g'
+			$.document.body.className = 'g'
 			removeEventListener('keydown', $.splashKeyListener)
 			$.initKeyboard()
 		}
