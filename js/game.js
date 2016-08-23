@@ -1,6 +1,4 @@
-let gameBoard = $.createElement('div')
-gameBoard.id = 'g'
-$.appendChild(document.body, gameBoard);
+let gameBoard = $.getElementById('g')
 
 $.assign($, {
 	gameObjects: [

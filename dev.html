@@ -7,14 +7,18 @@
 <link rel="stylesheet" type="text/css" href="css/game.css">
 </head>
 <body>
-<div id="s">
-	<h1>Omega</h1>
-	<p id="i">
-		<strong>Instructions</strong><br>
-		Press arrow keys to move.<br>
-		Spacebar to shoot.<br>
-	</p>
-	<p>Press `space` to start!</p>
+<div id="w">
+	<div id="s">
+		<h1>Omega</h1>
+		<p id="i">
+			<strong>Instructions</strong><br>
+			Press arrow keys to move.<br>
+			Spacebar to shoot.<br>
+		</p>
+		<p>Press `space` to start!</p>
+	</div>
+	<div id="g"></div>
+	<canvas id="f" width="800" height="600"></canvas>
 </div>
 
 <script src='js/lib/jsfxr.min.js'></script>
@@ -26,6 +30,7 @@
 <script src="js/drawing.js"></script>
 <script src="js/geometry.js"></script>
 <script src="js/keyboard.js"></script>
+<script src="js/starbg.js"></script>
 <script src="js/math.js"></script>
 <script src="js/rand.js"></script>
 <script src="js/path.js"></script>

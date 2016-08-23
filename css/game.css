@@ -12,21 +12,44 @@ body {
   	justify-content: center;
 }
 
-canvas {
-	position: absolute;
-	transform: translate(-1000px, -1000px);
+/**
+ * Wrapper
+ */
+#w {
+	position: relative;
+	height: 600px;
+	width: 800px;
+	overflow: hidden;
 }
 
+/**
+ * Splash page
+ */
 #s {
 	width: 800px;
 	color: #fff;
+	position: absolute;
+	z-index: 2;
 }
 
+/**
+ * Starfield
+ */
+#f {
+	position: absolute;
+	z-index: 1;
+}
+
+/**
+ * Game Board
+ */
 #g {
 	height: 600px;
 	width: 800px;
 	border: 1px solid #000;
 	display: none;
+	position: absolute;
+	z-index: 2;
 }
 
 .g #g {
@@ -35,4 +58,9 @@ canvas {
 
 .g #s {
 	display: none;
+}
+
+#g canvas {
+	position: absolute;
+	transform: translate(-1000px, -1000px);
 }
