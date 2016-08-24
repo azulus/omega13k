@@ -65,7 +65,7 @@ $.assign($, {
 			// Call .t (tick) on all objects
 			obj[ObjectIndex.TICK]()
 
-			$.processProjectile(obj)
+			$.collisionsForObject(obj)
 
 			// Check if the object is destroyed.
 			if (obj[ObjectIndex.DESTROYED]) {
@@ -105,7 +105,7 @@ $.assign($, {
 	/**
 	 * Processes all collisions for game objects.
 	 */
-	processProjectile: (gameObject) => {
+	collisionsForObject: (gameObject) => {
 		let i,
 			// TODO: We can save space if we can just have $.checkCollision take these arguments
 			doCheck = (gameObject, projectile) => {
