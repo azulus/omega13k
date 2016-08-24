@@ -106,16 +106,11 @@ $.assign($, {
 	 * Processes all collisions for game objects.
 	 */
 	processProjectile: (gameObject) => {
-		let i
-		// TODO: Some duplication below.
-		if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.ENEMY) {
-			// Process player projectiles
-			i = $.playerProjectiles.length
-			while (i--) {
-				let projectile = $.playerProjectiles[i],
-				collision = $.checkCollision(
+		let i,
+			// TODO: We can save space if we can just have $.checkCollision take these arguments
+			doCheck = (gameObject, projectile) => {
+				return $.checkCollision(
 					gameObject[ObjectIndex.GENERATED_SHAPES],
-					// TODO: We can save space if we can just pass in a projectile and another game object
 					[
 						projectile[ObjectIndex.POSITION_X],
 						projectile[ObjectIndex.POSITION_Y],
@@ -124,6 +119,14 @@ $.assign($, {
 					gameObject[ObjectIndex.POSITION_X],
 					gameObject[ObjectIndex.POSITION_Y]
 				)
+			}
+
+		if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.ENEMY) {
+			// Process player projectiles
+			i = $.playerProjectiles.length
+			while (i--) {
+				let projectile = $.playerProjectiles[i],
+					collision = doCheck(gameObject, projectile)
 				if (collision) {
 					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
 					projectile[ObjectIndex.DESTROYED] = true
@@ -136,17 +139,8 @@ $.assign($, {
 			i = $.enemyProjectiles.length
 			while (i--) {
 				let projectile = $.enemyProjectiles[i],
-				collision = $.checkCollision(
-					gameObject[ObjectIndex.GENERATED_SHAPES]
-					// TODO: We can save space if we can just pass in a projectile and another game object
-					[
-						projectile[ObjectIndex.POSITION_X],
-						projectile[ObjectIndex.POSITION_Y],
-						2
-					],
-					gameObject[ObjectIndex.POSITION_X],
-					gameObject[ObjectIndex.POSITION_Y]
-				)
+					collision = doCheck(gameObject, projectile)
+
 				if (collision) {
 					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
 					projectile[ObjectIndex.DESTROYED] = true
