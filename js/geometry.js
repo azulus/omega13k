@@ -133,8 +133,8 @@ $.assign($, {
 
         // verify that the circle is both within range of the x and y along their
         // respective axis
-        if (xDist > (halfWidth + projectile[ProjectileIndex.RADIUS])) return false;
-        if (yDist > (halfHeight + projectile[ProjectileIndex.RADIUS])) return false;
+        if (xDist > (halfWidth + projectile[ProjectileIndex.RADIUS])) continue;
+        if (yDist > (halfHeight + projectile[ProjectileIndex.RADIUS])) continue;
 
         // exit early if close enough to the center along either axis
         if (xDist <= w/2) return true;
@@ -142,7 +142,7 @@ $.assign($, {
 
         // calculate the distance from center to center and
         let cornerDist = $.distance([xDist, yDist], [halfWidth, halfHeight]);
-        return cornerDist <= $.pow(projectile[ProjectileIndex.RADIUS],2);
+        if (cornerDist <= $.pow(projectile[ProjectileIndex.RADIUS],2)) return true
 
       } else if ($.isTriangle(shape)) {
         // vertex is inside circle
@@ -184,15 +184,13 @@ $.assign($, {
           }
         }
 
-        return false;
-
       } else if ($.isCircle(shape)) {
         // circle to circle
         let dist = $.distance(
           [shape.x + offsetX, shape.y + offsetY],
           [projectile[ProjectileIndex.POSITION_X], projectile[ProjectileIndex.POSITION_Y]]
         );
-        return dist <= $.pow(shape.r + projectile[ProjectileIndex.RADIUS],2);
+        if (dist <= $.pow(shape.r + projectile[ProjectileIndex.RADIUS],2)) return true
       }
     }
 
