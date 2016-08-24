@@ -1,10 +1,8 @@
 $.assign($, {
   /**
-   * Calculate the distance between 2 points
+   * Calculate the distance between 2 points (as a square, don't sqrt)
    */
-  distance: (start, end) => Math.sqrt(
-    $.pow(end[0] - start[0], 2) + $.pow(end[1] - start[1], 2)
-  ),
+  distance: (start, end) => $.pow(end[0] - start[0], 2) + $.pow(end[1] - start[1], 2),
 
   /**
    * Offsets an array of points by a given x and y

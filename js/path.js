@@ -24,7 +24,7 @@ $.assign($, {
       let nextY = $.randBetween(r, 5, usableHeight);
 
       let dist = $.distance([currentX, currentY], [nextX, nextY]);
-      let travelTime = $.floor((r() * 2 + (dist / 100)) * 100);
+      let travelTime = $.floor((r() * 2 + (Math.sqrt(dist) / 100)) * 100);
 
       let path = {
         start: startTime,
