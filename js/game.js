@@ -25,19 +25,19 @@ $.assign($, {
 	 * To destroy an object we set the destroy flag and remove all destroyed objects after rendering.
 	 */
 	destroyIfOutsideGameRect: (obj) => {
-		if (obj.x < 0 || obj.x > GameIndex.WIDTH || obj.y < 0 || obj.y > GameIndex.HEIGHT) {
-			obj.destroy = true
+		if (obj[ObjectIndex.POSITION_X] < 0 || obj[ObjectIndex.POSITION_X] > GameIndex.WIDTH || obj[ObjectIndex.POSITION_Y] < 0 || obj[ObjectIndex.POSITION_Y] > GameIndex.HEIGHT) {
+			obj[ObjectIndex.DESTROYED] = true
 		}
 	},
 
 	renderSeed: (gameObject) => {
 		let cnv = $.createElement('canvas');
 		// TEMP: Store a reference to the canvas on each game object while things move with CSS.
-		gameObject.d = cnv
+		gameObject[ObjectIndex.DOM] = cnv
 		$.appendChild($.gameBoard(), cnv);
 		let ctx = $.getContext(cnv)
-		let r = $.getRandomNumberGenerator(gameObject.s)
-		let shapes = $.getRandomShapes(r, gameObject.w, gameObject.h, gameObject.so);
+		let r = $.getRandomNumberGenerator(gameObject[ObjectIndex.SEED])
+		let shapes = $.getRandomShapes(r, gameObject[ObjectIndex.WIDTH], gameObject[ObjectIndex.HEIGHT], gameObject[ObjectIndex.SEED_SHAPE_STR]);
 	    shapes.forEach(rs => (rs.r ? $.drawCircle : $.drawPolygon)(ctx, rs))
 	},
 
@@ -46,16 +46,16 @@ $.assign($, {
 		while (i--) {
 			let obj = $.gameObjects[i]
 			// Call .t (tick) on all objects
-			obj.t()
+			obj[ObjectIndex.TICK]()
 
 			// Check if the object is destroyed.
-			if (obj.destroy) {
+			if (obj[ObjectIndex.DESTROYED]) {
 				// Remove the object and splice the array
-				$.removeChild($.gameBoard(), obj.d)
+				$.removeChild($.gameBoard(), obj[ObjectIndex.DOM])
 				$.gameObjects.splice(i, 1)
 			} else {
 				// Render the game object
-				obj.d.style.transform = `translate(${obj.x}px, ${obj.y}px)`
+				obj[ObjectIndex.DOM].style.transform = `translate(${obj[ObjectIndex.POSITION_X]}px, ${obj[ObjectIndex.POSITION_Y]}px)`
 			}
 		}
 		setTimeout($.drawLoop, 16)

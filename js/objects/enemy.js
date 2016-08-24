@@ -5,24 +5,24 @@ $.assign($, {
 
 		return {
 			// The seed
-			s: seed,
+			[ObjectIndex.SEED]: seed,
 			// Used seed objects
-			so: 'm',
+			[ObjectIndex.SEED_SHAPE_STR]: 'm',
 			// Width
-			w: 100,
+			[ObjectIndex.WIDTH]: 100,
 			// Height
-			h: 100,
+			[ObjectIndex.HEIGHT]: 100,
 			// X Position
-			get x () {
+			get [ObjectIndex.POSITION_X] () {
 				return x
 			},
 			// Y Position
-			get y () {
+			get [ObjectIndex.POSITION_Y] () {
 				return y
 			},
 
 			// Logic on enemy tick
-			t: () => {
+			[ObjectIndex.TICK]: () => {
 				// Simple movement for now
 				y += tickMovement
 				if (y > 450 || y < 50) tickMovement = 0 - tickMovement;

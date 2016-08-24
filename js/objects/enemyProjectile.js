@@ -1,14 +1,8 @@
 $.assign($, {
-	PlayerProjectileGameObject: function (seed = 1465, x, y) {
+	EnemyProjectileGameObject: function (seed = 1465, x, y) {
 		let speed = 10,
 			soundSeed = 102,
 			sound = $.createLaserSound($.getRandomNumberGenerator(102));
-
-		// Adjust bullet position for player.
-		// TODO: This should probably be passed in from the player.
-		x += 46
-		y += 36
-
 
 		// Play sound when constructed.
 		$.playSound(sound);
@@ -33,7 +27,7 @@ $.assign($, {
 
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
-				x += speed
+				x -= speed
 				$.destroyIfOutsideGameRect(obj)
 			}
 		}

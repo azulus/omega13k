@@ -9,24 +9,24 @@ $.assign($, {
 
 		let obj = {
 			// The seed
-			s: seed,
+			[ObjectIndex.SEED]: seed,
 			// Used seed objects
-			so: 'm',
+			[ObjectIndex.SEED_SHAPE_STR]: 'm',
 			// Width
-			w: 100,
+			[ObjectIndex.WIDTH]: 100,
 			// Height
-			h: 100,
+			[ObjectIndex.HEIGHT]: 100,
 			// X Position
-			get x () {
+			get [ObjectIndex.POSITION_X] () {
 				return x
 			},
 			// Y Position
-			get y () {
+			get [ObjectIndex.POSITION_Y] () {
 				return y
 			},
 
 			// Logic on player tick
-			t: () => {
+			[ObjectIndex.TICK]: () => {
 				let now = Date.now()
 
 				// Update player based on arrows.

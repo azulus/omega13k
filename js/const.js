@@ -29,3 +29,16 @@ const GameIndex = {
   WIDTH: 800,
   HEIGHT: 600
 };
+
+const ObjectIndex = {
+  SEED: 0,
+  SEED_SHAPE_STR: 1,
+  GENERATED_SHAPES: 2,
+  DOM: 3,
+  WIDTH: 4,
+  HEIGHT: 5,
+  POSITION_X: 6,
+  POSITION_Y: 7,
+  TICK: 8,
+  DESTROYED: 9
+}
