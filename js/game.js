@@ -114,7 +114,8 @@ $.assign($, {
 					[
 						projectile[ObjectIndex.POSITION_X],
 						projectile[ObjectIndex.POSITION_Y],
-						2
+						// Projectiles currently only have a single shape, so get the radius from that shape.
+						projectile[ObjectIndex.GENERATED_SHAPES][0].r
 					],
 					gameObject[ObjectIndex.POSITION_X],
 					gameObject[ObjectIndex.POSITION_Y]
