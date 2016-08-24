@@ -24,38 +24,17 @@
 		}
 
 		window.addEventListener('load', () => {
-			renderSeed('ships', 5745)
-			renderSeed('ships', 6480)
-			renderSeed('random', 152);
-			renderSeed('random', 4);
-			renderSeed('mirror', 5);
-			renderSeed('mirror', 61);
-			renderSeed('random', 101);
-			renderSeed('mirror', 154);
-			renderSeed('random', 166);
-			renderSeed('mirror', 207);
-			renderSeed('mirror', 239);
-			renderSeed('mirror', 242);
-			renderSeed('mirror', 266);
-			renderSeed('mirror', 305);
-			renderSeed('mirror', 345);
-			renderSeed('random', 391);
-			renderSeed('mirror', 407);
-			renderSeed('mirror', 420);
-			renderSeed('mirror', 462);
-			renderSeed('mirror', 532);
-			renderSeed('mirror', 533);
-			renderSeed('random', 535);
-			renderSeed('random', 603);
-			renderSeed('random', 604);
-			renderSeed('random', 620);
-			renderSeed('random', 644);
-			renderSeed('random', 769);
-			renderSeed('random', 792);
-			renderSeed('random', 819);
-			renderSeed('random', 970);
-			renderSeed('random', 1097);
-			renderSeed('mirror', 1097);
+			[
+				5, 15, 122, 165,
+				207, 226, 540, 541, 621,
+				672, 752,
+			].forEach(idx => renderSeed('random', idx));
+			[
+				68, 152, 205, 220,
+				224, 272, 366, 394, 417,
+				420, 421, 521, 522, 589,
+				604, 768, 798, 810, 818
+			].forEach(idx => renderSeed('mirror', idx));
 		})
 	</script>
 	<script src='../js/lib/jsfxr.js'></script>

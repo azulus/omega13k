@@ -84,8 +84,8 @@ $.assign($, {
 		// Initialize gameObjects
 		$.gameObjects = [
 			new $.PlayerGameObject(),
-			new $.EnemyGameObject(6480, 600, 50, 'mv'),
-			new $.EnemyGameObject(9004, 600, 250, 'm')
+			new $.EnemyGameObject(224, 600, 50, 'mv'),
+			new $.EnemyGameObject(522, 600, 250, 'mv')
 		]
 
 		// Begin draw loop

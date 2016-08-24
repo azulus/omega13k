@@ -8,7 +8,7 @@ $.assign($, {
 			// The seed
 			[ObjectIndex.SEED]: seed,
 			// Used seed objects
-			[ObjectIndex.SEED_SHAPE_STR]: 'm',
+			[ObjectIndex.SEED_SHAPE_STR]: seedObjects,
 			// Width
 			[ObjectIndex.WIDTH]: 100,
 			// Height

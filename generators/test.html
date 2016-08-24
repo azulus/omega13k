@@ -41,7 +41,7 @@
 				    cnv = $.createElement('canvas');
 				    $.appendChild(con, cnv);
 				    ctx = $.getContext(cnv)
-				    shapes.forEach(rs => $[rs.r ? 'drawCircle' : 'drawPolygon'](ctx, rs))
+				    shapes.forEach(rs => $.drawShape(ctx, rs))
 				  }
 				}
 				setTimeout(chunk, 0)

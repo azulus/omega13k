@@ -76,6 +76,7 @@ $.assign($, {
           break;
       }
       if (shouldInvert) {
+          console.log('INVERTING');
           shape[ShapeIndex.POINTS] = $.invertPoints(shape[ShapeIndex.POINTS], mx, 1);
       }
       shapes.push(shape);
