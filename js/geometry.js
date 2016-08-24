@@ -12,7 +12,7 @@ $.assign($, {
       x = $.randBetween(r, rad, mx-rad),
       y = $.randBetween(r, rad, my-rad),
       col = $.getRandomUsableColor(r)
-    return {r:rad, x, y, col}
+    return [col,rad,[x,y]];
   },
 
   getRandomRectangle: (r, mx, my, mins, maxs) => {
@@ -21,7 +21,7 @@ $.assign($, {
       x = $.randBetween(r, 0, mx-w),
       y = $.randBetween(r, 0, my-h),
       col=$.getRandomUsableColor(r)
-    return {pts:[x,y,x+w,y,x+w,y+h,x,y+h],col}
+    return [col,,[x,y,x+w,y,x+w,y+h,x,y+h]]
   },
 
   getRandomIsocelesTriangle: (r, mx, my) => {
@@ -30,18 +30,20 @@ $.assign($, {
       y3 = r() < 0.5 ? $.randBetween(r, 0, y1) : $.randBetween(r, y1, my),
       cv = r(),
       x3 = cv < 0.5 ? (x1 + x2) / 2 : x1,
-      y2 = cv >= 0.5 ? (y1 + y3) / 2 : y1
-    return {pts: [x1, y1, x2, y2, x3, y3], col: $.getRandomUsableColor(r)}
+      y2 = cv >= 0.5 ? (y1 + y3) / 2 : y1;
+     return [$.getRandomUsableColor(r),,[x1, y1, x2, y2, x3, y3]]
   },
 
-  getRandomTriangle: (r, mx, my) => ({pts: [
-     $.randBetween(r, 0, mx),
-     $.randBetween(r, 0, my),
-     $.randBetween(r, 0, mx),
-     $.randBetween(r, 0, my),
-     $.randBetween(r, 0, mx),
-     $.randBetween(r, 0, my)
-  ], col: $.getRandomUsableColor(r)}),
+  getRandomTriangle: (r, mx, my) => [
+    $.getRandomUsableColor(r),,[
+       $.randBetween(r, 0, mx),
+       $.randBetween(r, 0, my),
+       $.randBetween(r, 0, mx),
+       $.randBetween(r, 0, my),
+       $.randBetween(r, 0, mx),
+       $.randBetween(r, 0, my)
+    ]
+  ],
 
   getRandomShapeString: (r) => {
     let s = ''
@@ -74,38 +76,31 @@ $.assign($, {
           break;
       }
       if (shouldInvert) {
-        if (shape.r) {
-          shape.x = mx - shape.x;
-        } else {
-          shape.pts = $.invertPoints(shape.pts, mx, 1);
-        }
+          shape[ShapeIndex.POINTS] = $.invertPoints(shape[ShapeIndex.POINTS], mx, 1);
       }
       shapes.push(shape);
       if (shouldMirror) {
-        let newShape;
-        if (shape.r) {
-          newShape = $.assign({}, shape, {y:my-shape.y});
-        } else {
-          newShape = $.assign({}, shape, {pts:$.invertPoints(shape.pts, my)});
-        }
-        newShape.box = $.getBoundingBox(newShape);
+        let newShape = $.setArrayVals(
+            [].concat(shape),
+            ShapeIndex.POINTS,
+            $.invertPoints(shape[ShapeIndex.POINTS], my)
+        );
         shapes.push(newShape);
       }
-      shape.box = $.getBoundingBox(shape);
     });
     return shapes;
   },
 
   isRectangle: (shape) => {
-    return !$.isCircle(shape) && shape.pts.length === 8
+    return shape[ShapeIndex.POINTS].length === 8
   },
 
   isTriangle: (shape) => {
-    return !$.isCircle(shape) && shape.pts.length === 6
+    return shape[ShapeIndex.POINTS].length === 6
   },
 
   isCircle: (shape) => {
-    return !!shape.r;
+    return shape[ShapeIndex.POINTS].length === 2
   },
 
   getTriangleSign: (x1, y1, x2, y2, x3, y3) => (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3),
@@ -114,7 +109,7 @@ $.assign($, {
     // check bounding boxes first
     for (let i = 0; i < shapes.length; i++) {
       let shape = shapes[i],
-        pts = shape.pts;
+        pts = shape[ShapeIndex.POINTS];
       if (pts && (offsetX !== 0 || offsetY !== 0 )) pts = $.offsetPoints(pts, offsetX, offsetY);
 
       if ($.isRectangle(shape)) {
@@ -187,10 +182,10 @@ $.assign($, {
       } else if ($.isCircle(shape)) {
         // circle to circle
         let dist = $.distance(
-          [shape.x + offsetX, shape.y + offsetY],
+          [pts[0] + offsetX, pts[1] + offsetY],
           [projectile[ProjectileIndex.POSITION_X], projectile[ProjectileIndex.POSITION_Y]]
         );
-        if (dist <= $.pow(shape.r + projectile[ProjectileIndex.RADIUS],2)) return true
+        if (dist <= $.pow(shape[ShapeIndex.RADIUS]+ projectile[ProjectileIndex.RADIUS],2)) return true
       }
     }
 
@@ -198,22 +193,29 @@ $.assign($, {
   },
 
   getBoundingBox: (shape) => {
-    if (shape.box) return shape.box;
-
-    if (shape.r) {
-      return [shape.x-shape.r, shape.y-shape.r, shape.r*2, shape.r*2];
-    } else {
-      let pts = shape.pts;
-      var rect = [pts[0], pts[1], pts[0], pts[1]];
-      pts.forEach((val, idx) => {
-        let offset = idx % 2;
-        if (val < rect[offset]) rect[offset] = val;
-        if (val > rect[2 + offset]) rect[2 + offset] = val;
-      });
-      rect[2] -= rect[0];
-      rect[3] -= rect[1];
-      return rect;
+    if (!shape[ShapeIndex.BOUNDING_BOX]) {
+        let box, pts = shape.pts;
+        if (shape[ShapeIndex.RADIUS]) {
+          box = [
+              pts[0]-shape[ShapeIndex.RADIUS],
+              pts[1]-shape[ShapeIndex.RADIUS],
+              shape[ShapeIndex.RADIUS]*2,
+              shape[ShapeIndex.RADIUS]*2
+          ];
+        } else {
+          var rect = [pts[0], pts[1], pts[0], pts[1]];
+          pts.forEach((val, idx) => {
+            let offset = idx % 2;
+            if (val < rect[offset]) rect[offset] = val;
+            if (val > rect[2 + offset]) rect[2 + offset] = val;
+          });
+          rect[2] -= rect[0];
+          rect[3] -= rect[1];
+          box = rect;
+        }
+        shape[ShapeIndex.BOUNDING_BOX] = box;
     }
+    return shape[ShapeIndex.BOUNDING_BOX];
   },
 
   checkBoundingBoxesCollide: (box1, box2, offset1 = [0,0], offset2 = [0,0]) => {

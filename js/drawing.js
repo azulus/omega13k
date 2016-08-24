@@ -12,18 +12,27 @@ $.assign($, {
   beginPath: (ctx) => ctx.beginPath(),
   closePath: (ctx) => ctx.closePath(),
 
+  drawShape: (ctx, s) => s[ShapeIndex.RADIUS] ? $.drawCircle(ctx, s) : $.drawPolygon(ctx, s),
+
   drawCircle: (ctx, c) => {
-    $.setColor(ctx, c.col)
+    $.setColor(ctx, c[ShapeIndex.COLOR])
     $.beginPath(ctx)
-    ctx.arc(c.x, c.y, c.r, 0, 2 * Math.PI, false);
+    ctx.arc(
+        c[ShapeIndex.POINTS][0],
+        c[ShapeIndex.POINTS][1],
+        c[ShapeIndex.RADIUS],
+        0,
+        2 * Math.PI,
+        false
+    );
     $.closePath(ctx)
     ctx.fill();
   },
 
   drawPolygon: (ctx, p) => {
-    $.setColor(ctx, p.col)
+    $.setColor(ctx, p[ShapeIndex.COLOR])
   	$.beginPath(ctx)
-    let pts = p.pts
+    let pts = p[ShapeIndex.POINTS]
     for (let i = 0; i < pts.length; i+=2) {
       if (i === 0) {
         ctx.moveTo(pts[i], pts[i+1])

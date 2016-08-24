@@ -66,3 +66,10 @@ const BoundingBoxIndex = {
   WIDTH: 2,
   HEIGHT: 3
 };
+
+const ShapeIndex = {
+    COLOR: 0,
+    RADIUS: 1,
+    POINTS: 2,
+    BOUNDING_BOX: 3
+};

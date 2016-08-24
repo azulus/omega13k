@@ -55,7 +55,7 @@ $.assign($, {
 			shapes = $.getRandomShapes(r, gameObject[ObjectIndex.WIDTH], gameObject[ObjectIndex.HEIGHT], gameObject[ObjectIndex.SEED_SHAPE_STR])
 
 		gameObject[ObjectIndex.GENERATED_SHAPES] = shapes
-	    shapes.forEach(rs => (rs.r ? $.drawCircle : $.drawPolygon)(ctx, rs))
+	    shapes.forEach(rs => $.drawShape(ctx, rs))
 	},
 
 	drawLoop: () => {
@@ -109,13 +109,14 @@ $.assign($, {
 		let i,
 			// TODO: We can save space if we can just have $.checkCollision take these arguments
 			doCheck = (gameObject, projectile) => {
+				let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0];
 				return $.checkCollision(
 					gameObject[ObjectIndex.GENERATED_SHAPES],
 					[
-						projectile[ObjectIndex.POSITION_X] + projectile[ObjectIndex.GENERATED_SHAPES][0].x,
-						projectile[ObjectIndex.POSITION_Y] + projectile[ObjectIndex.GENERATED_SHAPES][0].y,
+						projectile[ObjectIndex.POSITION_X] + firstShape[ShapeIndex.POINTS][0],
+						projectile[ObjectIndex.POSITION_Y] + firstShape[ShapeIndex.POINTS][1],
 						// Projectiles currently only have a single shape, so get the radius from that shape.
-						projectile[ObjectIndex.GENERATED_SHAPES][0].r
+						firstShape[ShapeIndex.RADIUS]
 					],
 					gameObject[ObjectIndex.POSITION_X],
 					gameObject[ObjectIndex.POSITION_Y]
