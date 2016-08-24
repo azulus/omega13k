@@ -24,17 +24,13 @@ $.assign($, {
 			// Height
 			[ObjectIndex.HEIGHT]: 20,
 			// X Position
-			get [ObjectIndex.POSITION_X] () {
-				return x
-			},
+			[ObjectIndex.POSITION_X]: x,
 			// Y Position
-			get [ObjectIndex.POSITION_Y] () {
-				return y
-			},
+			[ObjectIndex.POSITION_Y]: y,
 
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
-				x += speed
+				obj[ObjectIndex.POSITION_X] += speed
 				$.destroyIfOutsideGameRect(obj)
 			}
 		}

@@ -18,13 +18,9 @@ $.assign($, {
 			// Height
 			[ObjectIndex.HEIGHT]: 100,
 			// X Position
-			get [ObjectIndex.POSITION_X] () {
-				return x
-			},
+			[ObjectIndex.POSITION_X]: x,
 			// Y Position
-			get [ObjectIndex.POSITION_Y] () {
-				return y
-			},
+			[ObjectIndex.POSITION_Y]: y,
 
 			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
 				console.log('player take damage')
@@ -32,7 +28,9 @@ $.assign($, {
 
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
-				let now = Date.now()
+				let now = Date.now(),
+					x = obj[ObjectIndex.POSITION_X],
+					y = obj[ObjectIndex.POSITION_Y]
 
 				// Update player based on arrows.
 				// Prevent the player from going out of bounds.
@@ -40,6 +38,9 @@ $.assign($, {
 				if ($.downKeys.ArrowUp && y > speed) y -= speed;
 				if ($.downKeys.ArrowRight && x < GameIndex.WIDTH - speed - spriteWidth) x += speed;
 				if ($.downKeys.ArrowLeft && x > speed) x -= speed;
+
+				obj[ObjectIndex.POSITION_Y] = y
+				obj[ObjectIndex.POSITION_X] = x
 
 				if ($.downKeys[' '] && now - lastShotTime > 300) {
 					lastShotTime = now

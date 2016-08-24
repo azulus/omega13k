@@ -14,13 +14,9 @@ $.assign($, {
 			// Height
 			[ObjectIndex.HEIGHT]: 100,
 			// X Position
-			get [ObjectIndex.POSITION_X] () {
-				return x
-			},
+			[ObjectIndex.POSITION_X]: x,
 			// Y Position
-			get [ObjectIndex.POSITION_Y] () {
-				return y
-			},
+			[ObjectIndex.POSITION_Y]: y,
 
 			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
 				obj[ObjectIndex.DESTROYED] = true
@@ -29,8 +25,8 @@ $.assign($, {
 			// Logic on enemy tick
 			[ObjectIndex.TICK]: () => {
 				// Simple movement for now
-				y += tickMovement
-				if (y > 450 || y < 50) tickMovement = 0 - tickMovement;
+				obj[ObjectIndex.POSITION_Y] += tickMovement
+				if (obj[ObjectIndex.POSITION_Y] > 450 || obj[ObjectIndex.POSITION_Y] < 50) tickMovement = 0 - tickMovement;
 			}
 		}
 		return obj
