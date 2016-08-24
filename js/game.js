@@ -112,8 +112,8 @@ $.assign($, {
 				return $.checkCollision(
 					gameObject[ObjectIndex.GENERATED_SHAPES],
 					[
-						projectile[ObjectIndex.POSITION_X],
-						projectile[ObjectIndex.POSITION_Y],
+						projectile[ObjectIndex.POSITION_X] + projectile[ObjectIndex.GENERATED_SHAPES][0].x,
+						projectile[ObjectIndex.POSITION_Y] + projectile[ObjectIndex.GENERATED_SHAPES][0].y,
 						// Projectiles currently only have a single shape, so get the radius from that shape.
 						projectile[ObjectIndex.GENERATED_SHAPES][0].r
 					],
@@ -134,7 +134,7 @@ $.assign($, {
 					$.playerProjectiles.splice(i, 1)
 				}
 			}
-			
+
 		} else if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.PLAYER) {
 			// Process enemy projectiles
 			i = $.enemyProjectiles.length
