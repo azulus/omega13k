@@ -7,7 +7,7 @@ $.assign($, {
 		// Adjust bullet position for player.
 		// TODO: This should probably be passed in from the player.
 		x += 46
-		y += 32
+		y += 36
 
 
 		// Play sound when constructed.

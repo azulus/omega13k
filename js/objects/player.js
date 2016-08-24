@@ -1,5 +1,5 @@
 $.assign($, {
-	PlayerGameObject: function (seed = 5745) {
+	PlayerGameObject: function (seed = 8713) {
 		let speed = 5,
 			x = 0,
 			y = 0,
@@ -10,6 +10,8 @@ $.assign($, {
 		let obj = {
 			// The seed
 			s: seed,
+			// Used seed objects
+			so: 'm',
 			// Width
 			w: 100,
 			// Height
