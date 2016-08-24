@@ -35,9 +35,12 @@ $.assign($, {
 		// TEMP: Store a reference to the canvas on each game object while things move with CSS.
 		gameObject[ObjectIndex.DOM] = cnv
 		$.appendChild($.gameBoard(), cnv);
-		let ctx = $.getContext(cnv)
-		let r = $.getRandomNumberGenerator(gameObject[ObjectIndex.SEED])
-		let shapes = $.getRandomShapes(r, gameObject[ObjectIndex.WIDTH], gameObject[ObjectIndex.HEIGHT], gameObject[ObjectIndex.SEED_SHAPE_STR]);
+
+		let ctx = $.getContext(cnv),
+			r = $.getRandomNumberGenerator(gameObject[ObjectIndex.SEED])
+			shapes = $.getRandomShapes(r, gameObject[ObjectIndex.WIDTH], gameObject[ObjectIndex.HEIGHT], gameObject[ObjectIndex.SEED_SHAPE_STR])
+
+		gameObject[ObjectIndex.GENERATED_SHAPES] = shapes
 	    shapes.forEach(rs => (rs.r ? $.drawCircle : $.drawPolygon)(ctx, rs))
 	},
 
