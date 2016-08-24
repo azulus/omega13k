@@ -51,7 +51,7 @@ $.assign($, {
 		$.appendChild($.gameBoard(), cnv);
 
 		let ctx = $.getContext(cnv),
-			r = $.getRandomNumberGenerator(gameObject[ObjectIndex.SEED])
+			r = $.getRandomNumberGenerator(gameObject[ObjectIndex.SEED]),
 			shapes = $.getRandomShapes(r, gameObject[ObjectIndex.WIDTH], gameObject[ObjectIndex.HEIGHT], gameObject[ObjectIndex.SEED_SHAPE_STR])
 
 		gameObject[ObjectIndex.GENERATED_SHAPES] = shapes
