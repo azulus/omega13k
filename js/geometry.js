@@ -105,11 +105,16 @@ $.assign($, {
     if (shape.r) {
       return [shape.x-shape.r, shape.y-shape.r, shape.r*2, shape.r*2];
     } else {
-
+      let pts = shape.pts;
+      var rect = [pts[0], pts[1], pts[0], pts[1]];
+      pts.forEach((val, idx) => {
+        let offset = idx % 2;
+        if (val < rect[offset]) rect[offset] = val;
+        if (val > rect[2 + offset]) rect[2 + offset] = val;
+      });
+      rect[2] -= rect[0];
+      rect[3] -= rect[1];
+      return rect;
     }
-  },
-
-  mergeBoundingBoxes: (boxes) => {
-
   }
 });
