@@ -14,6 +14,7 @@ $.assign($, {
 		$.playSound(sound);
 
 		let obj = {
+			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.PLAYER_PROJECTILE,
 			// The seed
 			[ObjectIndex.SEED]: seed,
 			// Used seed objects

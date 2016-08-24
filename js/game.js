@@ -11,6 +11,10 @@ $.assign($, {
 	// GameObjects are assigned when the game starts.
 	gameObjects: [],
 
+	enemyProjectiles: [],
+
+	playerProjectiles: [],
+
 	/**
 	 * Adds an instantiated game object to the list of objects
 	 * and renders the game object canvas.
@@ -18,6 +22,16 @@ $.assign($, {
 	createGameObject: (obj) => {
 		$.renderSeed(obj)
 		$.gameObjects.push(obj)
+	},
+
+	createEnemyProjectile: (obj) => {
+		$.createGameObject(obj)
+		$.enemyProjectiles.push(obj)
+	},
+
+	createPlayerProjectile: (obj) => {
+		$.createGameObject(obj)
+		$.playerProjectiles.push(obj)
 	},
 
 	/**
@@ -51,6 +65,8 @@ $.assign($, {
 			// Call .t (tick) on all objects
 			obj[ObjectIndex.TICK]()
 
+			$.processProjectile(obj)
+
 			// Check if the object is destroyed.
 			if (obj[ObjectIndex.DESTROYED]) {
 				// Remove the object and splice the array
@@ -83,6 +99,60 @@ $.assign($, {
 			$.document.body.className = 'g'
 			removeEventListener('keydown', $.splashKeyListener)
 			$.initKeyboard()
+		}
+	},
+
+	/**
+	 * Processes all collisions for game objects.
+	 */
+	processProjectile: (gameObject) => {
+		let i
+		// TODO: Some duplication below.
+		if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.ENEMY) {
+			// Process player projectiles
+			i = $.playerProjectiles.length
+			while (i--) {
+				let projectile = $.playerProjectiles[i],
+				collision = $.checkCollision(
+					gameObject[ObjectIndex.GENERATED_SHAPES],
+					// TODO: We can save space if we can just pass in a projectile and another game object
+					[
+						projectile[ObjectIndex.POSITION_X],
+						projectile[ObjectIndex.POSITION_Y],
+						2
+					],
+					gameObject[ObjectIndex.POSITION_X],
+					gameObject[ObjectIndex.POSITION_Y]
+				)
+				if (collision) {
+					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
+					projectile[ObjectIndex.DESTROYED] = true
+					$.playerProjectiles.splice(i, 1)
+				}
+			}
+			
+		} else if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.PLAYER) {
+			// Process enemy projectiles
+			i = $.enemyProjectiles.length
+			while (i--) {
+				let projectile = $.enemyProjectiles[i],
+				collision = $.checkCollision(
+					gameObject[ObjectIndex.GENERATED_SHAPES]
+					// TODO: We can save space if we can just pass in a projectile and another game object
+					[
+						projectile[ObjectIndex.POSITION_X],
+						projectile[ObjectIndex.POSITION_Y],
+						2
+					],
+					gameObject[ObjectIndex.POSITION_X],
+					gameObject[ObjectIndex.POSITION_Y]
+				)
+				if (collision) {
+					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
+					projectile[ObjectIndex.DESTROYED] = true
+					$.enemyProjectiles.splice(i, 1)
+				}
+			}
 		}
 	}
 })

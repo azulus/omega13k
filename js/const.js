@@ -40,7 +40,16 @@ const ObjectIndex = {
   POSITION_X: 6,
   POSITION_Y: 7,
   TICK: 8,
-  DESTROYED: 9
+  DESTROYED: 9,
+  OBJECT_TYPE: 10,
+  PROJECTILE_COLLISION: 11
+}
+
+const ObjectTypeIndex = {
+  PLAYER: 0,
+  PLAYER_PROJECTILE: 1,
+  ENEMY: 2,
+  ENEMY_PROJECTILE: 3
 }
 
 const ProjectileIndex = {

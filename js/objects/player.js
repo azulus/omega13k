@@ -8,6 +8,7 @@ $.assign($, {
 			spriteHeight = 90
 
 		let obj = {
+			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.PLAYER,
 			// The seed
 			[ObjectIndex.SEED]: seed,
 			// Used seed objects
@@ -25,6 +26,10 @@ $.assign($, {
 				return y
 			},
 
+			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
+				console.log('player take damage')
+			},
+
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
 				let now = Date.now()
@@ -38,7 +43,7 @@ $.assign($, {
 
 				if ($.downKeys[' '] && now - lastShotTime > 300) {
 					lastShotTime = now
-					$.createGameObject(new $.PlayerProjectileGameObject(null, x, y))
+					$.createPlayerProjectile(new $.PlayerProjectileGameObject(null, x, y))
 				}
 			}
 		}

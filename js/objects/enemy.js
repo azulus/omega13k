@@ -1,9 +1,10 @@
 $.assign($, {
 	EnemyGameObject: function (seed = 6480, x, y, seedObjects = 'm') {
 		let speed = 5,
-			tickMovement = speed
+			tickMovement = speed,
 
-		return {
+		obj= {
+			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
 			// The seed
 			[ObjectIndex.SEED]: seed,
 			// Used seed objects
@@ -21,6 +22,10 @@ $.assign($, {
 				return y
 			},
 
+			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
+				obj[ObjectIndex.DESTROYED] = true
+			},
+
 			// Logic on enemy tick
 			[ObjectIndex.TICK]: () => {
 				// Simple movement for now
@@ -28,5 +33,6 @@ $.assign($, {
 				if (y > 450 || y < 50) tickMovement = 0 - tickMovement;
 			}
 		}
+		return obj
 	}
 })
