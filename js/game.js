@@ -106,29 +106,14 @@ $.assign($, {
 	 * Processes all collisions for game objects.
 	 */
 	collisionsForObject: (gameObject) => {
-		let i,
-			// TODO: We can save space if we can just have $.checkCollision take these arguments
-			doCheck = (gameObject, projectile) => {
-				let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0];
-				return $.checkCollision(
-					gameObject[ObjectIndex.GENERATED_SHAPES],
-					[
-						projectile[ObjectIndex.POSITION_X] + firstShape[ShapeIndex.POINTS][0],
-						projectile[ObjectIndex.POSITION_Y] + firstShape[ShapeIndex.POINTS][1],
-						// Projectiles currently only have a single shape, so get the radius from that shape.
-						firstShape[ShapeIndex.RADIUS]
-					],
-					gameObject[ObjectIndex.POSITION_X],
-					gameObject[ObjectIndex.POSITION_Y]
-				)
-			}
+		let i
 
 		if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.ENEMY) {
 			// Process player projectiles
 			i = $.playerProjectiles.length
 			while (i--) {
 				let projectile = $.playerProjectiles[i],
-					collision = doCheck(gameObject, projectile)
+					collision = $.checkCollision(gameObject, projectile)
 				if (collision) {
 					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
 					projectile[ObjectIndex.DESTROYED] = true
@@ -141,7 +126,7 @@ $.assign($, {
 			i = $.enemyProjectiles.length
 			while (i--) {
 				let projectile = $.enemyProjectiles[i],
-					collision = doCheck(gameObject, projectile)
+					collision = $.checkCollision(gameObject, projectile)
 
 				if (collision) {
 					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)

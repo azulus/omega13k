@@ -105,7 +105,15 @@ $.assign($, {
 
   getTriangleSign: (x1, y1, x2, y2, x3, y3) => (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3),
 
-  checkCollision: (shapes, projectile, offsetX=0, offsetY=0) => {
+  checkCollision: (gameObject, projectile) => {
+    let shapes = gameObject[ObjectIndex.GENERATED_SHAPES],
+      firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0],
+      offsetX = gameObject[ObjectIndex.POSITION_X],
+      offsetY = gameObject[ObjectIndex.POSITION_Y],
+      projectilePositionX = projectile[ObjectIndex.POSITION_X] + firstShape[ShapeIndex.POINTS][0],
+      projectilePositionY = projectile[ObjectIndex.POSITION_Y] + firstShape[ShapeIndex.POINTS][1],
+      projectileRadius = firstShape[ShapeIndex.RADIUS]
+
     // check bounding boxes first
     for (let i = 0; i < shapes.length; i++) {
       let shape = shapes[i],
@@ -120,16 +128,16 @@ $.assign($, {
           // calculate distance from the center of the rectangle to the center of the circle
           // along each axis
           xDist = $.abs(
-            projectile[ProjectileIndex.POSITION_X] - (pts[0] + halfWidth)
+            projectilePositionX - (pts[0] + halfWidth)
           ),
           yDist = $.abs(
-            projectile[ProjectileIndex.POSITION_Y] - (pts[1] + halfHeight)
+            projectilePositionY - (pts[1] + halfHeight)
           )
 
         // verify that the circle is both within range of the x and y along their
         // respective axis
-        if (xDist > (halfWidth + projectile[ProjectileIndex.RADIUS])) continue;
-        if (yDist > (halfHeight + projectile[ProjectileIndex.RADIUS])) continue;
+        if (xDist > (halfWidth + projectileRadius)) continue;
+        if (yDist > (halfHeight + projectileRadius)) continue;
 
         // exit early if close enough to the center along either axis
         if (xDist <= w/2) return true;
@@ -137,32 +145,32 @@ $.assign($, {
 
         // calculate the distance from center to center and
         let cornerDist = $.distance([xDist, yDist], [halfWidth, halfHeight]);
-        if (cornerDist <= $.pow(projectile[ProjectileIndex.RADIUS],2)) return true
+        if (cornerDist <= $.pow(projectileRadius,2)) return true
 
       } else if ($.isTriangle(shape)) {
         // vertex is inside circle
-        let rSquared = $.pow(projectile[ProjectileIndex.RADIUS],2);
+        let rSquared = $.pow(projectileRadius,2);
         for (let i = 0; i < pts.length; i++) {
           if ($.distance(
               [pts[i], pts[i+1]],
-              [projectile[ProjectileIndex.POSITION_X], projectile[ProjectileIndex.POSITION_Y]]
+              [projectilePositionX, projectilePositionY]
             ) <= rSquared) {
             return true;
           }
         }
 
         // circle center is inside triangle
-        let b1 = $.getTriangleSign(projectile[ProjectileIndex.POSITION_X], projectile[ProjectileIndex.POSITION_Y], pts[0], pts[1], pts[2], pts[3]),
-          b2 = $.getTriangleSign(projectile[ProjectileIndex.POSITION_X], projectile[ProjectileIndex.POSITION_Y], pts[2], pts[3], pts[4], pts[5]),
-          b3 = $.getTriangleSign(projectile[ProjectileIndex.POSITION_X], projectile[ProjectileIndex.POSITION_Y], pts[4], pts[5], pts[0], pts[1]);
+        let b1 = $.getTriangleSign(projectilePositionX, projectilePositionY, pts[0], pts[1], pts[2], pts[3]),
+          b2 = $.getTriangleSign(projectilePositionX, projectilePositionY, pts[2], pts[3], pts[4], pts[5]),
+          b3 = $.getTriangleSign(projectilePositionX, projectilePositionY, pts[4], pts[5], pts[0], pts[1]);
         if ((b1 < 0 === b2 < 0) && (b2 < 0 === b3 < 0)) {
           return true;
         }
 
         // circle intersects line
         for (let idx = 0; idx < pts.length; idx+=2) {
-          let cx = projectile[ProjectileIndex.POSITION_X] - pts[idx + 0];
-          let cy = projectile[ProjectileIndex.POSITION_Y] - pts[idx + 1];
+          let cx = projectilePositionX - pts[idx + 0];
+          let cy = projectilePositionY - pts[idx + 1];
           let ex = pts[(idx + 2) % 6] - pts[idx + 0];
           let ey = pts[(idx + 3) % 6] - pts[idx + 1];
 
@@ -172,7 +180,7 @@ $.assign($, {
             k /= distSquared;
 
             if (k < distSquared) {
-              if (Math.sqrt($.pow(cx,2) + $.pow(cy,2) - $.pow(k,2)) <= projectile[ProjectileIndex.RADIUS]) {
+              if (Math.sqrt($.pow(cx,2) + $.pow(cy,2) - $.pow(k,2)) <= projectileRadius) {
                 return true;
               }
             }
@@ -183,9 +191,9 @@ $.assign($, {
         // circle to circle
         let dist = $.distance(
           [pts[0] + offsetX, pts[1] + offsetY],
-          [projectile[ProjectileIndex.POSITION_X], projectile[ProjectileIndex.POSITION_Y]]
+          [projectilePositionX, projectilePositionY]
         );
-        if (dist <= $.pow(shape[ShapeIndex.RADIUS]+ projectile[ProjectileIndex.RADIUS],2)) return true
+        if (dist <= $.pow(shape[ShapeIndex.RADIUS]+ projectileRadius,2)) return true
       }
     }
 

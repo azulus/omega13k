@@ -52,14 +52,6 @@ const ObjectTypeIndex = {
   ENEMY_PROJECTILE: 3
 }
 
-const ProjectileIndex = {
-  POSITION_X: 0,
-  POSITION_Y: 1,
-  RADIUS: 2,
-  COLOR: 3,
-  BOUNDING_BOX: 4
-};
-
 const BoundingBoxIndex = {
   POSITION_X: 0,
   POSITION_Y: 1,
