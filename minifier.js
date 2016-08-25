@@ -1,3 +1,4 @@
+var colors = require('colors');
 var babel = require('babel-core');
 var babylon = require('babylon');
 var fs = require('fs');
@@ -5,7 +6,6 @@ var oid = require('oid');
 var path = require('path');
 var types = require('babel-types');
 
-// to be implemented
 const SHOULD_RENAME_LOCALS = true;
 const SHOULD_REMOVE_COMMENTS = true;
 const SHOULD_INLINE_CONSTS = true;
@@ -183,6 +183,7 @@ module.exports = function(src) {
   }
 
   var globalProperties = null;
+  var refCount = {};
 
   /**
    * Phase 2
@@ -223,6 +224,7 @@ module.exports = function(src) {
       var oldKey = prop.key.name;
       var newKey = generateKey(keyCounter++);
       globalKeyMap[oldKey] = newKey;
+      refCount[oldKey] = 0;
       prop.key.name = newKey;
     });
 
@@ -243,10 +245,19 @@ module.exports = function(src) {
           if (typeof newKey !== 'string') {
             throw new Error('Unable to rename', node.property.name);
           }
+          refCount[node.property.name] = (refCount[node.property.name] || 0) + 1
           node.property.name = newKey;
         }
       }
     });
+
+    // for (var key in refCount) {
+    //     if (refCount[key] === 1) {
+    //         console.warn(('$.' + key + ' is only used once, consider inlining').yellow);
+    //     } else if (refCount[key] === 0) {
+    //         console.warn(('$.' + key + ' is never used, consider removing').red);
+    //     }
+    // }
   }
 
   if (SHOULD_RENAME_LOCALS) {
