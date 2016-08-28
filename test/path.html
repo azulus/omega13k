@@ -39,8 +39,6 @@
 
 		let pathData = $.generateRandomPath(r, 0);
 
-		// {isSymmetrical:true, path}
-		// console.log(JSON.stringify(pathData, null, 2));
 		for (var i = 0; i < pathData.length; i++) {
 			var path = pathData[i];
 
@@ -68,90 +66,6 @@
 				}
 			}
 		}
-
-		// ships = [];
-		// for (let sn = 0; sn < pathData.numShips; sn++) {
-		//
-		//     // let npts = $.offsetPoints(pts, 0, shh * sn)
-		//     // ships.push(npts);
-		//     // if (is_symmetrical) ships.push($.invertPoints(npts, h))
-		// }
-		//
-		// ships.forEach((spts, idx) => {
-		//     len = spts.length;
-		//     spts.forEach((pt, idx) => {
-		//         p = idx / len
-		//         shade = $.USABLE_COLORS[$.floor(p * $.USABLE_COLORS.length)]
-		//         if (shade === 'f') shade = 'e'
-		//         if (idx % 2 === 0) {
-		//             $.drawCircle(ctx, {x: pt, y: spts[idx+1], r: 2, col: `#${shade}${shade}${shade}`})
-		//             ctx.fill();
-		//         }
-		//     })
-		// })
-				//
-        // is_symmetrical = r() < 0.5
-        // num_ships = $.randBetween(r, 2, 7)
-        // if (is_symmetrical) {
-        //     num_ships = $.floor(num_ships / 2)
-        // }
-				//
-        // shh = 50
-        // shw = 50
-        // uh = w - (shh * num_ships) - 5
-        // uw = w - shw - 5
-        // num_points = $.randBetween(r, 3, 5)
-				//
-        // sx = w + 20
-        // sy = $.randBetween(r, 5, uh)
-        // let pts = [sx, sy]
-        // for (incr = 1; incr <= num_points; incr++) {
-        //     sa = r() < 0.5
-        //     cx = pts[pts.length - 2]
-        //     cy = pts[pts.length - 1]
-        //     nx = incr === num_points ? (-2 * shw) : $.randBetween(r, uw/2, uw)
-        //     ny = $.randBetween(r, 5, uh)
-        //     if (sa) {
-        //         ctrl = [
-        //             $.randBetween(r, cx, nx),
-        //             $.randBetween(r, cy, ny)
-        //         ]
-        //     }
-        //     dst = $.distance([cx, cy], [nx, ny])
-				//
-        //     time = (r() * 2 + (dst / 100)) * 100
-        //     // pause for between 0.5 and 3 seconds
-        //     pause = (r() * 2.5 + 0.5) * 100
-				//
-        //     for (i = 0; i <= time; i+= 4) {
-        //         if (i < time) {
-        //             np = sa ? $.arcPoint([cx,cy], ctrl, [nx,ny], i/time) : $.linePoint([cx,cy], [nx,ny], i/time)
-        //             pts = [...pts, ...np];
-        //         } else {
-        //             pts = [...pts, nx, ny]
-        //         }
-        //     }
-        // }
-				//
-        // ships = [];
-        // for (let sn = 0; sn < num_ships; sn++) {
-        //     let npts = $.offsetPoints(pts, 0, shh * sn)
-        //     ships.push(npts);
-        //     if (is_symmetrical) ships.push($.invertPoints(npts, h))
-        // }
-				//
-        // ships.forEach((spts, idx) => {
-        //     len = spts.length;
-        //     spts.forEach((pt, idx) => {
-        //         p = idx / len
-        //         shade = $.USABLE_COLORS[$.floor(p * $.USABLE_COLORS.length)]
-        //         if (shade === 'f') shade = 'e'
-        //         if (idx % 2 === 0) {
-        //             $.drawCircle(ctx, {x: pt, y: spts[idx+1], r: 2, col: `#${shade}${shade}${shade}`})
-        //             ctx.fill();
-        //         }
-        //     })
-        // })
 
 	</script>
 </body>
