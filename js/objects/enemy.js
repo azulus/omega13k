@@ -2,6 +2,7 @@ $.assign($, {
 	EnemyGameObject: function (config, x, y, seedObjects = 'm') {
 		let speed = 5,
 			tickMovement = speed,
+			explosionSound = $.createExplosionSound(Math.random),
 
 		obj= {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
@@ -20,6 +21,7 @@ $.assign($, {
 
 			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
 				obj[ObjectIndex.DESTROYED] = true
+				$.playSound(explosionSound)
 			},
 
 			// Logic on enemy tick
