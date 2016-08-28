@@ -84,6 +84,5 @@ const PathSegmentIndex = {
 
 const EnemyConfigIndex = {
   SEED: 0,
-  SEED_SHAPE_STR: 1,
-  SOUND_SEED: 2,
+  SEED_SHAPE_STR: 1
 };

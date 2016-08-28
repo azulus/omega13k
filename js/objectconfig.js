@@ -1,12 +1,12 @@
-/**
- * Enemy Definition
- * [SEED, SHAPES, SOUND]
- */
 // MIRROR
 let M = 'm'
 // MIRROR FLIP
 let MV = 'mv'
 
+/**
+ * Enemy Definition
+ * [EnemyConfigIndex.SEED, EnemyConfigIndex.SEED_SHAPE_STR]
+ */
 $.ENEMIES = [
 	[5,		M],
 	[15, 	M],
