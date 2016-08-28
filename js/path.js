@@ -12,10 +12,14 @@ $.assign($, {
     let usableWidth = screenWidth - (shipWidth * numShips) - 5
     let usableHeight = screenHeight - (shipHeight * numShips) - 5
 
+    if (isSymmetrical) {
+        numShips *= 2;
+    }
+
     let numPathPoints = $.randBetween(r, 2, 5);
     let currentX = screenWidth + 20;
     let currentY = $.randBetween(r, 5, usableHeight);
-    let paths = [];
+    let segments = [];
 
     for (let incr = 1; incr <= numPathPoints; incr++) {
       let shouldArc = r() < 0.5
@@ -26,37 +30,36 @@ $.assign($, {
       let dist = $.distance([currentX, currentY], [nextX, nextY]);
       let travelTime = $.floor((r() * 2 + (Math.sqrt(dist) / 100)) * 100);
 
-      let path = {
-        start: startTime,
-        end: startTime + travelTime,
-        from: [currentX, currentY],
-        to: [nextX, nextY]
-      };
+      let segment = [
+        startTime,
+        startTime + travelTime,
+        [currentX, currentY],
+        [nextX, nextY]
+      ];
 
       if (shouldArc) {
-        let control = [
+        segment[PathSegmentIndex.CONTROL_POINT] = [
           $.randBetween(r, currentX, nextX),
           $.randBetween(r, currentY, nextY)
         ];
-        path.ctrl = control;
       }
-      paths.push(path);
+      segments.push(segment);
 
       let pauseTime = $.randBetween(r, 500, 3000);
-      paths.push({
-        start: path.end,
-        end: path.end + pauseTime,
-        from: [nextX, nextY],
-        to: [nextX, nextY]
-      });
+      segments.push([
+        segment[PathSegmentIndex.END_TIME],
+        segment[PathSegmentIndex.END_TIME] + pauseTime,
+        segment[PathSegmentIndex.END_POINT],
+        segment[PathSegmentIndex.END_POINT]
+      ]);
 
       startTime += travelTime + pauseTime;
     }
 
-    return {
-      isSymmetrical: isSymmetrical,
-      paths: paths,
-      numShips: numShips
-    };
+    return [
+      isSymmetrical,
+      numShips,
+      segments
+    ];
   }
 });

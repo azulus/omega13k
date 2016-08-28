@@ -65,3 +65,17 @@ const ShapeIndex = {
     POINTS: 2,
     BOUNDING_BOX: 3
 };
+
+const PathIndex = {
+  IS_SYMMETRICAL: 0,
+  NUM_SHIPS: 1,
+  SEGMENTS: 2
+};
+
+const PathSegmentIndex = {
+  START_TIME: 0,
+  END_TIME: 1,
+  START_POINT: 2,
+  END_POINT: 3,
+  CONTROL_POINT: 4
+};
