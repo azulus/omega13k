@@ -1,14 +1,14 @@
 $.assign($, {
-	EnemyGameObject: function (seed = 6480, x, y, seedObjects = 'm') {
+	EnemyGameObject: function (config, x, y, seedObjects = 'm') {
 		let speed = 5,
 			tickMovement = speed,
 
 		obj= {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
 			// The seed
-			[ObjectIndex.SEED]: seed,
+			[ObjectIndex.SEED]: config[EnemyConfigIndex.SEED],
 			// Used seed objects
-			[ObjectIndex.SEED_SHAPE_STR]: seedObjects,
+			[ObjectIndex.SEED_SHAPE_STR]: config[EnemyConfigIndex.SEED_SHAPE_STR],
 			// Width
 			[ObjectIndex.WIDTH]: 100,
 			// Height

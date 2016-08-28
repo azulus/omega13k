@@ -81,3 +81,9 @@ const PathSegmentIndex = {
   END_POINT: 3,
   CONTROL_POINT: 4
 };
+
+const EnemyConfigIndex = {
+  SEED: 0,
+  SEED_SHAPE_STR: 1,
+  SOUND_SEED: 2,
+};
