@@ -27,7 +27,9 @@ const AudioIndex = {
 
 const GameIndex = {
   WIDTH: 800,
-  HEIGHT: 600
+  HEIGHT: 600,
+  SHIP_WIDTH: 100,
+  SHIP_HEIGHT: 100
 };
 
 const ObjectIndex = {

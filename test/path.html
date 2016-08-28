@@ -8,7 +8,7 @@
     <span id='curr'></span>
     <a id='next'></a>
 
-	<div id='results'><canvas style='border:1px #f00 solid' id='testCanvas' width=500 height=500 /></div>
+	<div id='results'><canvas style='border:1px #f00 solid' id='testCanvas' width=800 height=600 /></div>
 	<script src='../js/lib/jsfxr.js'></script>
 	<script src="../js/init.js"></script>
 	<script src="../js/const.js"></script>
@@ -30,21 +30,52 @@
         $.write($.getElementById('next'), seed+1);
         $.getElementById('next').href = 'path.html?' + (seed+1)
 
-        w = 500, h = 500
-
 		// generate a path
 		ctx = $.getContext($.getElementById('testCanvas'));
 		r = $.getRandomNumberGenerator(seed)
 
-		let pathData = $.generateRandomPath(r, 0);
-		console.log(pathData);
+		var CIRCLES_PER_SECOND = 50;
+		var MILLISECONDS_PER_CIRCLE = 1000 / CIRCLES_PER_SECOND;
 
-		ships = [];
-		for (let sn = 0; sn < pathData.numShips; sn++) {
-		    // let npts = $.offsetPoints(pts, 0, shh * sn)
-		    // ships.push(npts);
-		    // if (is_symmetrical) ships.push($.invertPoints(npts, h))
+		let pathData = $.generateRandomPath(r, 0);
+
+		// {isSymmetrical:true, path}
+		// console.log(JSON.stringify(pathData, null, 2));
+		for (var i = 0; i < pathData.length; i++) {
+			var path = pathData[i];
+
+			var minTime = path[0][PathSegmentIndex.START_TIME];
+			var maxTime = path[path.length - 1][PathSegmentIndex.END_TIME];
+			var totalTime = maxTime - minTime;
+
+			for (var j = 0; j < path.length; j++) {
+				var segment = path[j];
+				var [startTime, endTime, startPoint, endPoint, controlPoint] = segment;
+				var deltaT = endTime - startTime;
+				for (var k = startTime; k < endTime; k += MILLISECONDS_PER_CIRCLE) {
+					var percentage = (k - startTime) / deltaT;
+					let pt;
+					if (controlPoint) {
+						pt = $.arcPoint(startPoint, controlPoint, endPoint, percentage)
+					} else {
+						pt = $.linePoint(startPoint, endPoint, percentage)
+					}
+
+
+					let idx = $.floor((k - minTime) / totalTime * $.USABLE_COLORS.length);
+					let shade = $.USABLE_COLORS[idx];
+					$.drawCircle(ctx, [`#${shade}${shade}${shade}`, 2, pt])
+				}
+			}
 		}
+
+		// ships = [];
+		// for (let sn = 0; sn < pathData.numShips; sn++) {
+		//
+		//     // let npts = $.offsetPoints(pts, 0, shh * sn)
+		//     // ships.push(npts);
+		//     // if (is_symmetrical) ships.push($.invertPoints(npts, h))
+		// }
 		//
 		// ships.forEach((spts, idx) => {
 		//     len = spts.length;

@@ -1,6 +1,5 @@
 $.assign($, {
-  generateRandomPath: (r, startTime = 0) => {
-    let screenWidth = 500, screenHeight = 500
+  generateRandomPath: (r,startTime = 0) => {
 
     let isSymmetrical = r() < 0.5
     let numShips = $.randBetween(r, 2, 7)
@@ -8,39 +7,38 @@ $.assign($, {
         numShips = $.floor(numShips / 2)
     }
 
-    let shipHeight = 50, shipWidth = 50;
-    let usableWidth = screenWidth - (shipWidth * numShips) - 5
-    let usableHeight = screenHeight - (shipHeight * numShips) - 5
-
-    if (isSymmetrical) {
-        numShips *= 2;
-    }
+    let usableWidth = GameIndex.WIDTH - (GameIndex.SHIP_WIDTH * numShips) - 5
+    let usableHeight = GameIndex.HEIGHT - (GameIndex.SHIP_HEIGHT * numShips) - 5
 
     let numPathPoints = $.randBetween(r, 2, 5);
-    let currentX = screenWidth + 20;
-    let currentY = $.randBetween(r, 5, usableHeight);
+    let currentPoint = [
+      GameIndex.WIDTH + 20,
+      $.randBetween(r, 5, usableHeight)
+    ];
     let segments = [];
 
     for (let incr = 1; incr <= numPathPoints; incr++) {
       let shouldArc = r() < 0.5
 
-      let nextX = incr === numPathPoints ? (-2 * shipWidth) : $.randBetween(r, usableWidth / 2, usableWidth)
-      let nextY = $.randBetween(r, 5, usableHeight);
+      let nextPoint = [
+        incr === numPathPoints ? (-2 * GameIndex.SHIP_WIDTH) : $.randBetween(r, usableWidth / 2, usableWidth),
+        $.randBetween(r, 5, usableHeight)
+      ];
 
-      let dist = $.distance([currentX, currentY], [nextX, nextY]);
+      let dist = $.distance(currentPoint, nextPoint);
       let travelTime = $.floor((r() * 2 + (Math.sqrt(dist) / 100)) * 100);
 
       let segment = [
         startTime,
         startTime + travelTime,
-        [currentX, currentY],
-        [nextX, nextY]
+        currentPoint,
+        nextPoint
       ];
 
       if (shouldArc) {
         segment[PathSegmentIndex.CONTROL_POINT] = [
-          $.randBetween(r, currentX, nextX),
-          $.randBetween(r, currentY, nextY)
+          $.randBetween(r, currentPoint[0], nextPoint[0]),
+          $.randBetween(r, currentPoint[1], nextPoint[1])
         ];
       }
       segments.push(segment);
@@ -54,12 +52,31 @@ $.assign($, {
       ]);
 
       startTime += travelTime + pauseTime;
+      currentPoint = nextPoint;
     }
 
-    return [
-      isSymmetrical,
-      numShips,
-      segments
-    ];
+    let paths = [];
+    for (incr = 0; incr < numShips; incr++) {
+      let offsetY = incr * GameIndex.SHIP_HEIGHT;
+      let nextPath = segments.map(segment => [
+        segment[0],
+        segment[1],
+        $.offsetPoints(segment[2], 0, offsetY),
+        $.offsetPoints(segment[3], 0, offsetY),
+        segment[4] ? $.offsetPoints(segment[4], 0, offsetY) : null
+      ]);
+      paths.push(nextPath);
+      if (isSymmetrical) {
+        paths.push(nextPath.map(segment => [
+          segment[0],
+          segment[1],
+          $.invertPoints(segment[2], GameIndex.HEIGHT),
+          $.invertPoints(segment[3], GameIndex.HEIGHT),
+          segment[4] ? $.invertPoints(segment[4], GameIndex.HEIGHT) : null
+        ]))
+      }
+    }
+
+    return paths;
   }
 });
