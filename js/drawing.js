@@ -43,4 +43,9 @@ $.assign($, {
     $.closePath(ctx);
     ctx.fill();
   },
+
+  drawShapesToCanvas: (canvas, shapes) => {
+    let ctx = $.getContext(canvas);
+    shapes.forEach(rs => $.drawShape(ctx, rs))
+  }
 });

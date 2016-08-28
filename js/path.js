@@ -26,7 +26,7 @@ $.assign($, {
       ];
 
       let dist = $.distance(currentPoint, nextPoint);
-      let travelTime = $.floor((r() * 2 + (Math.sqrt(dist) / 100)) * 100);
+      let travelTime = $.floor((r() * 2 + (Math.sqrt(dist) / 20)) * 100);
 
       let segment = [
         startTime,

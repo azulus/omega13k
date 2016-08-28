@@ -2,13 +2,12 @@
 <html>
 <head>
 	<title>Test Path Generation</title>
+	<link rel="stylesheet" type="text/css" href="../game.css">
 </head>
 <body>
-    <a id='prev'></a>
-    <span id='curr'></span>
-    <a id='next'></a>
-
-	<div id='results'><canvas style='border:1px #f00 solid' id='testCanvas' width=800 height=600 /></div>
+	<div id='w' class='g'>
+		<div id='g'></div>
+	</div>
 	<script src='../js/lib/jsfxr.js'></script>
 	<script src="../js/init.js"></script>
 	<script src="../js/const.js"></script>
@@ -24,48 +23,91 @@
         if (document.location.search.length) {
             seed = parseInt(document.location.search.substr(1), 10);
         }
-        $.write($.getElementById('prev'), seed-1);
-        $.getElementById('prev').href = 'path.html?' + (seed-1)
-        $.write($.getElementById('curr'), seed);
-        $.write($.getElementById('next'), seed+1);
-        $.getElementById('next').href = 'path.html?' + (seed+1)
 
 		// generate a path
-		ctx = $.getContext($.getElementById('testCanvas'));
+		var results = $.getElementById('g');
 		r = $.getRandomNumberGenerator(seed)
 
-		var CIRCLES_PER_SECOND = 50;
+		var CIRCLES_PER_SECOND = 100;
 		var MILLISECONDS_PER_CIRCLE = 1000 / CIRCLES_PER_SECOND;
 
 		let pathData = $.generateRandomPath(r, 0);
+		let ships = {};
+
+		let moveTo = (shipId, x, y) => {
+			let [canvas] = ships[shipId];
+			canvas.style.transform = `translate(${x}px, ${y}px)`
+		}
 
 		for (var i = 0; i < pathData.length; i++) {
 			var path = pathData[i];
+			var canvas = $.createElement('canvas');
+
+			canvas.height = GameIndex.SHIP_HEIGHT;
+			canvas.width = GameIndex.SHIP_WIDTH;
+			shapes = $.getRandomShapes($.getRandomNumberGenerator(15), GameIndex.SHIP_WIDTH, GameIndex.SHIP_HEIGHT, 'm');
+			$.drawShapesToCanvas(canvas, shapes);
+			$.appendChild(results, canvas);
 
 			var minTime = path[0][PathSegmentIndex.START_TIME];
 			var maxTime = path[path.length - 1][PathSegmentIndex.END_TIME];
 			var totalTime = maxTime - minTime;
 
-			for (var j = 0; j < path.length; j++) {
-				var segment = path[j];
-				var [startTime, endTime, startPoint, endPoint, controlPoint] = segment;
-				var deltaT = endTime - startTime;
-				for (var k = startTime; k < endTime; k += MILLISECONDS_PER_CIRCLE) {
-					var percentage = (k - startTime) / deltaT;
-					let pt;
-					if (controlPoint) {
-						pt = $.arcPoint(startPoint, controlPoint, endPoint, percentage)
-					} else {
-						pt = $.linePoint(startPoint, endPoint, percentage)
-					}
-
-
-					let idx = $.floor((k - minTime) / totalTime * $.USABLE_COLORS.length);
-					let shade = $.USABLE_COLORS[idx];
-					$.drawCircle(ctx, [`#${shade}${shade}${shade}`, 2, pt])
-				}
-			}
+			ships[i] = [canvas];
 		}
+
+		var startTime = Date.now();
+		setInterval(() => {
+			let currentTime = (Date.now() - startTime) % totalTime;
+
+			for (var i = 0; i < pathData.length; i++) {
+				let path = pathData[i], segment;
+				for (var j = 0; j < path.length; j++) {
+					segment = path[j];
+					if (segment[PathSegmentIndex.END_TIME] > currentTime) {
+						break;
+					}
+				}
+
+				let [startTime, endTime, startPoint, endPoint, controlPoint] = segment;
+				let deltaT = endTime - startTime;
+				let percentage = (currentTime - startTime) / deltaT;
+				let pt;
+				if (controlPoint) {
+					pt = $.arcPoint(startPoint, controlPoint, endPoint, percentage)
+				} else {
+					pt = $.linePoint(startPoint, endPoint, percentage)
+				}
+				moveTo(i, ...pt);
+				// console.log(j);
+			}
+
+		}, 16);
+
+			// moveTo(i, ...[0, 0]);
+			//
+			// var path = pathData[i];
+			//
+			//
+			//
+			// for (var j = 0; j < path.length; j++) {
+			// 	var segment = path[j];
+			// 	var [startTime, endTime, startPoint, endPoint, controlPoint] = segment;
+			// 	var deltaT = endTime - startTime;
+			// 	for (var k = startTime; k <= endTime; k += MILLISECONDS_PER_CIRCLE) {
+			// 		var percentage = (k - startTime) / deltaT;
+			// 		let pt;
+			// 		if (controlPoint) {
+			// 			pt = $.arcPoint(startPoint, controlPoint, endPoint, percentage)
+			// 		} else {
+			// 			pt = $.linePoint(startPoint, endPoint, percentage)
+			// 		}
+			//
+			// 		let idx = $.floor((k - minTime) / totalTime * $.USABLE_COLORS.length);
+			// 		let shade = $.USABLE_COLORS[idx];
+			// 		$.drawCircle(ctx, [`#${shade}${shade}${shade}`, 2, pt])
+			// 	}
+			// }
 
 	</script>
 </body>
