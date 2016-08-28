@@ -5,7 +5,10 @@ $.assign($, {
 			y = 0,
 			lastShotTime = 0,
 			spriteWidth = 55,
-			spriteHeight = 90
+			spriteHeight = 90,
+
+			soundSeed = 102,
+			sound = $.createLaserSound($.getRandomNumberGenerator(soundSeed))
 
 		let obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.PLAYER,
@@ -44,6 +47,7 @@ $.assign($, {
 
 				if ($.downKeys[' '] && now - lastShotTime > 300) {
 					lastShotTime = now
+					$.playSound(sound)
 					$.createPlayerProjectile(new $.PlayerProjectileGameObject(null, x, y))
 				}
 			}
