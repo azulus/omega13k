@@ -76,9 +76,10 @@ const PathIndex = {
 const PathSegmentIndex = {
   START_TIME: 0,
   END_TIME: 1,
-  START_POINT: 2,
-  END_POINT: 3,
-  CONTROL_POINT: 4
+  DURATION: 2,
+  START_POINT: 3,
+  END_POINT: 4,
+  CONTROL_POINT: 5
 };
 
 const EnemyConfigIndex = {
