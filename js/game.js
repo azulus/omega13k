@@ -109,18 +109,27 @@ $.assign($, {
 		$.drawLoop()
 
 		// Create initial enemies /w path
-		$.generateEnemyPath()
+		$.createEnemyWave()
 
 		// TODO: Levels should manage this instead.
-		setInterval(() => $.generateEnemyPath(), 7000)
+		setInterval(() => $.createEnemyWave(), 7000)
 	},
 
-	generateEnemyPath: () => {
+	createEnemyWave: () => {
 		let path = $.generateRandomPath(Math.random, 0),
-			enemySpec = $.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)]
+			enemySpec = $.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)],
+
+			// Each wave has the same ship graphics, explosion sounds and projectile sounds.
+			projectileSound = $.createLaserSound(Math.random),
+			explosionSound = $.createExplosionSound(Math.random)
 
 		for (var i = 0; i < path.length; i++) {
-			$.createGameObject(new $.EnemyGameObject(enemySpec, path[i]))
+			$.createGameObject(new $.EnemyGameObject(
+				enemySpec,
+				path[i],
+				projectileSound,
+				explosionSound
+			))
 		}
 	},
 

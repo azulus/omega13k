@@ -1,10 +1,8 @@
 $.assign($, {
-	EnemyGameObject: function (config, path) {
+	EnemyGameObject: function (config, path, projectileSound, explosionSound) {
 		let speed = 5,
 			lastShotTime = 0,
 			tickMovement = speed,
-			explosionSound = $.createExplosionSound(Math.random),
-			projectileSound = $.createLaserSound(Math.random),
 			pathStartTime = Date.now(),
 			totalPathTime = $.getTotalPathTime(path),
 
