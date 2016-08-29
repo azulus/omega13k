@@ -8,9 +8,10 @@ $.assign($, {
 			spriteHeight = 90,
 
 			soundSeed = 102,
-			sound = $.createLaserSound($.getRandomNumberGenerator(soundSeed))
+			projectileSound = $.createLaserSound($.getRandomNumberGenerator(soundSeed)),
+			explosionSound = $.createExplosionSound($.getRandomNumberGenerator(4)),
 
-		let obj = {
+		obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.PLAYER,
 			// The seed
 			[ObjectIndex.SEED]: seed,
@@ -26,7 +27,7 @@ $.assign($, {
 			[ObjectIndex.POSITION_Y]: y,
 
 			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
-				console.log('player take damage')
+				$.playSound(explosionSound)
 			},
 
 			// Logic on player tick
@@ -47,7 +48,7 @@ $.assign($, {
 
 				if ($.downKeys[' '] && now - lastShotTime > 300) {
 					lastShotTime = now
-					$.playSound(sound)
+					$.playSound(projectileSound)
 					$.createPlayerProjectile(new $.PlayerProjectileGameObject(null, x, y))
 				}
 			}
