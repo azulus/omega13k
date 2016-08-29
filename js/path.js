@@ -59,6 +59,8 @@ $.assign($, {
       currentPoint = nextPoint;
     }
 
+    let {a,b,c} = {a:1,b:2,c:3};
+
     let paths = [];
     for (incr = 0; incr < numShips; incr++) {
       let offsetY = incr * GameIndex.SHIP_HEIGHT;

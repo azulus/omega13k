@@ -129,6 +129,15 @@ module.exports = function(src) {
     }
   };
 
+  var nodeTypes = [];
+  visit(ast, {
+    'Node': (node, key, idx) => {
+      if (nodeTypes.indexOf(node.type) === -1) {
+        nodeTypes.push(node.type);
+      }
+    }
+  });
+
   var currentIndexNode = null;
   var currentIndex = null;
   var indexMap = {};
@@ -267,9 +276,10 @@ module.exports = function(src) {
       LOCAL: 3
     };
 
-    var nodeTypes = [];
     var functionStack = [{
       variables: {
+        'alert': 'alert',
+        'location': 'location',
         'Math': 'Math',
         'Object': 'Object',
         'Array': 'Array',
@@ -278,6 +288,7 @@ module.exports = function(src) {
         'Audio': 'Audio',
         'jsfxr': 'jsfxr',
         'setTimeout': 'setTimeout',
+        'setInterval': 'setInterval',
         'addEventListener': 'addEventListener',
         'removeEventListener': 'removeEventListener',
         'undefined': 'undefined',
@@ -353,12 +364,6 @@ module.exports = function(src) {
     };
 
     visit(ast, {
-      'Node': (node, key, idx) => {
-        if (nodeTypes.indexOf(node.type) === -1) {
-          nodeTypes.push(node.type);
-        }
-      },
-
       'Identifier': (node, key, idx) => {
         if (key === 'key') return;
         if (key === 'property' && parentOf(node).computed !== true) return;
@@ -376,6 +381,16 @@ module.exports = function(src) {
       'VariableDeclarator': (node, key, idx) => {
         if (node.id.type === 'Identifier') {
           addMapping(node.id.name);
+        } else if (node.id.type === 'ArrayPattern') {
+          node.id.elements.forEach(el => {
+            addMapping(el.name);
+          });
+        } else if (node.id.type === 'ObjectPattern') {
+          node.id.properties.forEach(prop => {
+            addMapping(prop.key.name);
+          });
+        } else {
+          throw new Error('Unable to handle declaration of type: ' + node.id.type);
         }
       },
 
