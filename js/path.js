@@ -32,6 +32,7 @@ $.assign($, {
         startTime,
         startTime + travelTime,
         travelTime,
+        1/travelTime,
         currentPoint,
         nextPoint
       ];
@@ -49,6 +50,7 @@ $.assign($, {
         segment[PathSegmentIndex.END_TIME],
         segment[PathSegmentIndex.END_TIME] + pauseTime,
         pauseTime,
+        1/pauseTime,
         segment[PathSegmentIndex.END_POINT],
         segment[PathSegmentIndex.END_POINT]
       ]);
@@ -64,9 +66,10 @@ $.assign($, {
         segment[0],
         segment[1],
         segment[2],
-        $.offsetPoints(segment[3], 0, offsetY),
+        segment[3],
         $.offsetPoints(segment[4], 0, offsetY),
-        segment[5] ? $.offsetPoints(segment[5], 0, offsetY) : null
+        $.offsetPoints(segment[5], 0, offsetY),
+        segment[6] ? $.offsetPoints(segment[6], 0, offsetY) : null
       ]);
       paths.push([nextPath]);
       if (isSymmetrical) {
@@ -74,9 +77,10 @@ $.assign($, {
           segment[0],
           segment[1],
           segment[2],
-          $.invertPoints(segment[3], GameIndex.HEIGHT),
+          segment[3],
           $.invertPoints(segment[4], GameIndex.HEIGHT),
-          segment[5] ? $.invertPoints(segment[5], GameIndex.HEIGHT) : null
+          $.invertPoints(segment[5], GameIndex.HEIGHT),
+          segment[6] ? $.invertPoints(segment[6], GameIndex.HEIGHT) : null
         ])])
       }
     }
@@ -107,8 +111,8 @@ $.assign($, {
     }
 
     path[PathIndex.LAST_KNOWN_SEGMENT] = idx;
-    let [start, endTime, duration, startPoint, endPoint, controlPoint] = segment;
-    let percentage = (time - start) / duration;
+    let [start, endTime, duration, percentPerMs, startPoint, endPoint, controlPoint] = segment;
+    let percentage = (time - start) * percentPerMs;
     let pt;
 
     if (controlPoint) {
