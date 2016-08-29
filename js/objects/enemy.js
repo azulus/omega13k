@@ -38,7 +38,40 @@ $.assign($, {
 				if (now - lastShotTime > 500) {
 					lastShotTime = now
 					$.playSound(projectileSound)
-					$.createEnemyProjectile(new $.EnemyProjectileGameObject(null, x, y))
+
+					// Get projectile points from shapes.
+					let leftMostPoints = []
+
+					// Get all leftmost points.
+					obj[ObjectIndex.GENERATED_SHAPES].forEach(shape => {
+						let pts = shape[ShapeIndex.POINTS]
+
+						if (shape[ShapeIndex.RADIUS]) {
+							leftMostPoints.push(pts)
+						} else if (pts.length === 6) {
+							let leftTIndex = pts.reduce((l, n, idx) => (n < pts[l] && idx % 2 === 0 ? idx : l), 1);
+							leftMostPoints.push([pts[leftTIndex], pts[leftTIndex + 1]])
+						} else if (pts.length === 8) {
+							leftMostPoints.push([pts[0], pts[1] + (pts[5] - pts[1]) / 2])
+						}
+					})
+
+					// sort, slice, and fire
+					leftMostPoints
+						.sort((a, b) => {
+							return a[0] - b[0]
+						})
+						// Just fire two projectiles for now.
+						.slice(0, 2)
+						.forEach(pts => {
+							$.createEnemyProjectile(
+								new $.EnemyProjectileGameObject(
+									null, 
+									pts[0] + obj[ObjectIndex.POSITION_X],
+									pts[1] + obj[ObjectIndex.POSITION_Y]
+								)
+							)
+						})
 				}
 			}
 		}
