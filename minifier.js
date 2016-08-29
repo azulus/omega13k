@@ -243,7 +243,7 @@ module.exports = function(src) {
           }
           var newKey = globalKeyMap[node.property.name];
           if (typeof newKey !== 'string') {
-            throw new Error('Unable to rename', node.property.name);
+            throw new Error('Unable to rename: ' + node.property.name);
           }
           refCount[node.property.name] = (refCount[node.property.name] || 0) + 1
           node.property.name = newKey;
