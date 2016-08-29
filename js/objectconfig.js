@@ -7,7 +7,8 @@ let MV = 'mv'
  * Enemy Definition
  * [EnemyConfigIndex.SEED, EnemyConfigIndex.SEED_SHAPE_STR]
  */
-$.ENEMIES = [
+$.assign($, {
+ENEMIES: [
 	[5,		M],
 	[15, 	M],
 	[122,	M],
@@ -40,3 +41,4 @@ $.ENEMIES = [
 	[810, 	MV],
 	[818, 	MV],
 ]
+})
