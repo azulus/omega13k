@@ -1,10 +1,12 @@
 $.assign($, {
-	EnemyGameObject: function (config, x, y, seedObjects = 'm') {
+	EnemyGameObject: function (config, path) {
 		let speed = 5,
 			lastShotTime = 0,
 			tickMovement = speed,
 			explosionSound = $.createExplosionSound(Math.random),
 			projectileSound = $.createLaserSound(Math.random),
+			pathStartTime = Date.now(),
+			totalPathTime = $.getTotalPathTime(path),
 
 		obj= {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
@@ -17,9 +19,9 @@ $.assign($, {
 			// Height
 			[ObjectIndex.HEIGHT]: 100,
 			// X Position
-			[ObjectIndex.POSITION_X]: x,
+			[ObjectIndex.POSITION_X]: 0,
 			// Y Position
-			[ObjectIndex.POSITION_Y]: y,
+			[ObjectIndex.POSITION_Y]: 0,
 
 			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
 				obj[ObjectIndex.DESTROYED] = true
@@ -28,11 +30,15 @@ $.assign($, {
 
 			// Logic on enemy tick
 			[ObjectIndex.TICK]: () => {
-				let now = Date.now()
+				let now = Date.now(),
 
-				// Simple movement for now
-				obj[ObjectIndex.POSITION_Y] += tickMovement
-				if (obj[ObjectIndex.POSITION_Y] > 450 || obj[ObjectIndex.POSITION_Y] < 50) tickMovement = 0 - tickMovement;
+				// Update position based on path
+				currentTime = (now - pathStartTime) % totalPathTime,
+				pos = $.getPositionAtTime(path, currentTime);
+
+				obj[ObjectIndex.POSITION_X] = $.floor(pos[0])
+				obj[ObjectIndex.POSITION_Y] = $.floor(pos[1])
+
 
 				// Simple single projectile
 				if (now - lastShotTime > 500) {

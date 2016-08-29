@@ -17,11 +17,13 @@ $.assign($, {
 		return $._gameBoard;
 	},
 
-	// GameObjects are assigned when the game starts.
+	// Tracks all game objects.
 	gameObjects: [],
 
+	// Maintains just the enemy projectiles for fast collision detection.
 	enemyProjectiles: [],
 
+	// Maintains just the player projectiles for fast collision detection.
 	playerProjectiles: [],
 
 	/**
@@ -68,7 +70,9 @@ $.assign($, {
 	},
 
 	drawLoop: () => {
-		let i = $.gameObjects.length
+		let now = Date.now(),
+			i = $.gameObjects.length
+
 		while (i--) {
 			let obj = $.gameObjects[i]
 			// Call .t (tick) on all objects
@@ -92,9 +96,7 @@ $.assign($, {
 	startGame: () => {
 		// Initialize gameObjects
 		$.gameObjects = [
-			new $.PlayerGameObject(),
-			new $.EnemyGameObject($.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)], 600, 50),
-			new $.EnemyGameObject($.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)], 600, 250)
+			new $.PlayerGameObject()
 		]
 
 		// Animate the lifebar to full health
@@ -105,6 +107,18 @@ $.assign($, {
 		// Begin draw loop
 		$.gameObjects.forEach($.renderSeed)
 		$.drawLoop()
+
+		// Create initial enemies /w path
+		$.generateEnemyPath()
+	},
+
+	generateEnemyPath: () => {
+		let path = $.generateRandomPath(Math.random, 0),
+			enemySpec = $.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)]
+
+		for (var i = 0; i < path.length; i++) {
+			$.createGameObject(new $.EnemyGameObject(enemySpec, path[i]))
+		}
 	},
 
 	splashKeyListener: (e) => {
