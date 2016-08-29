@@ -1,6 +1,15 @@
 $.assign($, {
 	_gameBoard: null,
 
+	_lifeBar: null,
+
+	lifeBar: () => {
+		if (!$._lifeBar) {
+			$._lifeBar = $.getElementById('l')
+		}
+		return $._lifeBar;
+	},
+
 	gameBoard: () => {
 		if (!$._gameBoard) {
 			$._gameBoard = $.getElementById('g')
@@ -87,6 +96,11 @@ $.assign($, {
 			new $.EnemyGameObject($.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)], 600, 50),
 			new $.EnemyGameObject($.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)], 600, 250)
 		]
+
+		// Animate the lifebar to full health
+		setTimeout(() => {
+			$.lifeBar().style.transform = `scaleX(1600)`
+		})
 
 		// Begin draw loop
 		$.gameObjects.forEach($.renderSeed)

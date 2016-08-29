@@ -11,6 +11,8 @@ $.assign($, {
 			projectileSound = $.createLaserSound($.getRandomNumberGenerator(soundSeed)),
 			explosionSound = $.createExplosionSound($.getRandomNumberGenerator(4)),
 
+			life = 100,
+
 		obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.PLAYER,
 			// The seed
@@ -27,7 +29,13 @@ $.assign($, {
 			[ObjectIndex.POSITION_Y]: y,
 
 			[ObjectIndex.PROJECTILE_COLLISION]: (projectile) => {
+				life--
 				$.playSound(explosionSound)
+				$.lifeBar().style.transform = `scaleX(${1600 * life / 100})`
+				if (life < 1) {
+					alert('Game over!')
+					location.reload()
+				}
 			},
 
 			// Logic on player tick

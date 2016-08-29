@@ -17,7 +17,8 @@ body {
  */
 #w {
 	position: relative;
-	height: 600px;
+	/* 600 for canvas + 12 for life bar */
+	height: 612px;
 	width: 800px;
 	overflow: hidden;
 }
@@ -46,13 +47,13 @@ body {
 #g {
 	height: 600px;
 	width: 800px;
-	border: 1px solid #000;
 	display: none;
 	position: absolute;
 	z-index: 2;
 }
 
-.g #g {
+.g #g,
+.g #l {
 	display: block;
 }
 
@@ -63,4 +64,13 @@ body {
 #g canvas {
 	position: absolute;
 	transform: translate(-1000px, -1000px);
+}
+
+#l {
+	display: none;
+	background: green;
+	width: 1px;
+	height: 12px;
+	margin-top: 600px;
+	transition: transform 400ms linear;
 }
