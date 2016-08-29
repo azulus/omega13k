@@ -9,13 +9,13 @@
 	<script type="text/javascript">
 		window.SHAPES = {}
 
-		function renderSeed(type, seed) {
+		function renderSeed(seed, shapeStr) {
 			let r = $.getRandomNumberGenerator(seed)
-			shapes = $.getRandomShapes(r, 100, 100, SHAPES[type].shapes);
+			shapes = $.getRandomShapes(r, 100, 100, shapeStr);
 
 			con = $.createElement('div')
 	    $.appendChild(results, con)
-	    cnt = $.write($.createElement('div'), type + ':' + seed)
+	    cnt = $.write($.createElement('div'), shapeStr + ':' + seed)
 	    $.appendChild(con, cnt)
 	    cnv = $.createElement('canvas');
 	    $.appendChild(con, cnv);
@@ -24,17 +24,7 @@
 		}
 
 		window.addEventListener('load', () => {
-			[
-				5, 15, 122, 165,
-				207, 226, 540, 541, 621,
-				672, 752,
-			].forEach(idx => renderSeed('random', idx));
-			[
-				68, 152, 205, 220,
-				224, 272, 366, 394, 417,
-				420, 421, 521, 522, 589,
-				604, 768, 798, 810, 818
-			].forEach(idx => renderSeed('mirror', idx));
+			$.enemySpec.forEach(spec => renderSeed(spec[0], spec[1]));
 		})
 	</script>
 	<script src='../js/lib/jsfxr.js'></script>
@@ -43,6 +33,7 @@
 
 	<script src="../js/dom.js"></script>
 	<script src="../js/drawing.js"></script>
+	<script src="../js/enemySpec.js"></script>
 	<script src="../js/geometry.js"></script>
 	<script src="../js/math.js"></script>
 	<script src="../js/rand.js"></script>
