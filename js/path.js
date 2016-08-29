@@ -65,18 +65,55 @@ $.assign($, {
         $.offsetPoints(segment[3], 0, offsetY),
         segment[4] ? $.offsetPoints(segment[4], 0, offsetY) : null
       ]);
-      paths.push(nextPath);
+      paths.push([nextPath]);
       if (isSymmetrical) {
-        paths.push(nextPath.map(segment => [
+        paths.push([nextPath.map(segment => [
           segment[0],
           segment[1],
           $.invertPoints(segment[2], GameIndex.HEIGHT),
           $.invertPoints(segment[3], GameIndex.HEIGHT),
           segment[4] ? $.invertPoints(segment[4], GameIndex.HEIGHT) : null
-        ]))
+        ])])
       }
     }
 
     return paths;
+  },
+
+  getTotalPathTime: (path) => {
+    let segments = path[PathIndex.SEGMENTS],
+      minTime = segments[0][PathSegmentIndex.START_TIME],
+      maxTime = segments[segments.length - 1][PathSegmentIndex.END_TIME];
+    return maxTime - minTime;
+  },
+
+  getPositionAtTime: (path, time) => {
+    let startIdx = path[PathIndex.LAST_KNOWN_SEGMENT] || 0,
+      segment,
+      len = path[PathIndex.SEGMENTS].length,
+      idx;
+
+    for (let i = 0; i < len; i++) {
+      idx = (startIdx + i) % len;
+      segment = path[PathIndex.SEGMENTS][idx];
+      // console.log(segment, idx, startIdx, len);
+      if (segment[PathSegmentIndex.END_TIME] > time) {
+        break;
+      }
+    }
+
+    path[PathIndex.LAST_KNOWN_SEGMENT] = idx;
+    let [start, endTime, startPoint, endPoint, controlPoint] = segment;
+    let deltaT = endTime - start;
+    let percentage = (time - start) / deltaT;
+    let pt;
+
+    if (controlPoint) {
+      pt = $.arcPoint(startPoint, controlPoint, endPoint, percentage)
+    } else {
+      pt = $.linePoint(startPoint, endPoint, percentage)
+    }
+
+    return pt;
   }
 });

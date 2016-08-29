@@ -69,9 +69,8 @@ const ShapeIndex = {
 };
 
 const PathIndex = {
-  IS_SYMMETRICAL: 0,
-  NUM_SHIPS: 1,
-  SEGMENTS: 2
+  SEGMENTS: 0,
+  LAST_KNOWN_SEGMENT: 1
 };
 
 const PathSegmentIndex = {
