@@ -96,8 +96,8 @@ $.assign($, {
     for (let i = 0; i < len; i++) {
       idx = (startIdx + i) % len;
       segment = path[PathIndex.SEGMENTS][idx];
-      // console.log(segment, idx, startIdx, len);
-      if (segment[PathSegmentIndex.END_TIME] > time) {
+      if (segment[PathSegmentIndex.END_TIME] >= time &&
+        segment[PathSegmentIndex.START_TIME] <= time) {
         break;
       }
     }
