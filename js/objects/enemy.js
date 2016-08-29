@@ -49,8 +49,8 @@ $.assign($, {
 						if (shape[ShapeIndex.RADIUS]) {
 							leftMostPoints.push(pts)
 						} else if (pts.length === 6) {
-							let leftTIndex = pts.reduce((l, n, idx) => (n < pts[l] && idx % 2 === 0 ? idx : l), 1);
-							leftMostPoints.push([pts[leftTIndex], pts[leftTIndex + 1]])
+							let leftIdx = pts.reduce((l, n, idx) => (n < pts[l] && idx % 2 === 0 ? idx : l), 1);
+							leftMostPoints.push([pts[leftIdx], pts[leftIdx + 1]])
 						} else if (pts.length === 8) {
 							leftMostPoints.push([pts[0], pts[1] + (pts[5] - pts[1]) / 2])
 						}
