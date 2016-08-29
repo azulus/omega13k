@@ -117,7 +117,7 @@ $.assign($, {
 
 	createEnemyWave: () => {
 		let path = $.generateRandomPath(Math.random, 0),
-			enemySpec = $.ENEMIES[$.floor(Math.random()*$.ENEMIES.length)],
+			enemySpec = $.enemySpec[$.floor(Math.random()*$.enemySpec.length)],
 
 			// Each wave has the same ship graphics, explosion sounds and projectile sounds.
 			projectileSound = $.createLaserSound(Math.random),
