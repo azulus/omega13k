@@ -110,6 +110,9 @@ $.assign($, {
 
 		// Create initial enemies /w path
 		$.generateEnemyPath()
+
+		// TODO: Levels should manage this instead.
+		setInterval(() => $.generateEnemyPath(), 7000)
 	},
 
 	generateEnemyPath: () => {
