@@ -29,6 +29,14 @@ $.assign($, {
 				console.log('player take damage')
 			},
 
+			// Collisions that we care about
+			[ObjectIndex.COLLIDES_WITH]: [$.EnemyProjectileGameObject],
+
+			// Called when a collision occurs.
+			[ObjectIndex.ON_COLLISION]: (collidingObject) => {
+				console.log('player hit.')
+			},
+
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
 				let now = Date.now(),

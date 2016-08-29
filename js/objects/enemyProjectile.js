@@ -1,11 +1,6 @@
 $.assign($, {
 	EnemyProjectileGameObject: function (seed = 1465, x, y) {
-		let speed = 10,
-			soundSeed = 102,
-			sound = $.createLaserSound($.getRandomNumberGenerator(102));
-
-		// Play sound when constructed.
-		$.playSound(sound);
+		let speed = 10
 
 		let obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY_PROJECTILE,
@@ -24,7 +19,7 @@ $.assign($, {
 
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
-				x -= speed
+				obj[ObjectIndex.POSITION_X] -= speed
 				$.destroyIfOutsideGameRect(obj)
 			}
 		}

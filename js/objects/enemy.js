@@ -1,8 +1,10 @@
 $.assign($, {
 	EnemyGameObject: function (config, x, y, seedObjects = 'm') {
 		let speed = 5,
+			lastShotTime = 0,
 			tickMovement = speed,
 			explosionSound = $.createExplosionSound(Math.random),
+			projectileSound = $.createLaserSound(Math.random),
 
 		obj= {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
@@ -26,9 +28,18 @@ $.assign($, {
 
 			// Logic on enemy tick
 			[ObjectIndex.TICK]: () => {
+				let now = Date.now()
+
 				// Simple movement for now
 				obj[ObjectIndex.POSITION_Y] += tickMovement
 				if (obj[ObjectIndex.POSITION_Y] > 450 || obj[ObjectIndex.POSITION_Y] < 50) tickMovement = 0 - tickMovement;
+
+				// Simple single projectile
+				if (now - lastShotTime > 500) {
+					lastShotTime = now
+					$.playSound(projectileSound)
+					$.createEnemyProjectile(new $.EnemyProjectileGameObject(null, x, y))
+				}
 			}
 		}
 		return obj
