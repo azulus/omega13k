@@ -157,6 +157,10 @@ $.assign($, {
 				if (collision) {
 					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
 					projectile[ObjectIndex.DESTROYED] = true
+				}
+
+				// The projectile may have also been destroyed by going out of bounds.
+				if (projectile[ObjectIndex.DESTROYED]) {
 					$.playerProjectiles.splice(i, 1)
 				}
 			}
@@ -171,6 +175,10 @@ $.assign($, {
 				if (collision) {
 					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
 					projectile[ObjectIndex.DESTROYED] = true
+				}
+
+				// The projectile may have also been destroyed by going out of bounds.
+				if (projectile[ObjectIndex.DESTROYED]) {
 					$.enemyProjectiles.splice(i, 1)
 				}
 			}
