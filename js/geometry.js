@@ -145,7 +145,10 @@ $.assign($, {
 
         // calculate the distance from center to center and
         let cornerDist = $.distance([xDist, yDist], [halfWidth, halfHeight]);
-        if (cornerDist <= $.pow(projectileRadius,2)) return true
+        if (cornerDist <= $.pow(projectileRadius,2)) {
+          // console.log('Collision. Rectangle corner within circle radius.')
+          return true
+        }
 
       } else if ($.isTriangle(shape)) {
         // vertex is inside circle
@@ -155,6 +158,7 @@ $.assign($, {
               [pts[i], pts[i+1]],
               [projectilePositionX, projectilePositionY]
             ) <= rSquared) {
+            // console.log('Collision. Triangle vertex is inside circle.')
             return true;
           }
         }
@@ -164,6 +168,7 @@ $.assign($, {
           b2 = $.getTriangleSign(projectilePositionX, projectilePositionY, pts[2], pts[3], pts[4], pts[5]),
           b3 = $.getTriangleSign(projectilePositionX, projectilePositionY, pts[4], pts[5], pts[0], pts[1]);
         if ((b1 < 0 === b2 < 0) && (b2 < 0 === b3 < 0)) {
+          // console.log('Collision. Circle center is inside triangle.')
           return true;
         }
 
@@ -181,6 +186,7 @@ $.assign($, {
 
             if (k < distSquared) {
               if (Math.sqrt($.pow(cx,2) + $.pow(cy,2) - $.pow(k,2)) <= projectileRadius) {
+                // console.log('Collision. Circle intersects line.')
                 return true;
               }
             }
@@ -190,10 +196,13 @@ $.assign($, {
       } else if ($.isCircle(shape)) {
         // circle to circle
         let dist = $.distance(
-          [pts[0] + offsetX, pts[1] + offsetY],
+          [pts[0], pts[1]],
           [projectilePositionX, projectilePositionY]
         );
-        if (dist <= $.pow(shape[ShapeIndex.RADIUS]+ projectileRadius,2)) return true
+        if (dist <= $.pow(shape[ShapeIndex.RADIUS]+ projectileRadius,2)) {
+          // console.log('Collision. Circles collide.', JSON.stringify(shape), JSON.stringify(firstShape))
+          return true
+        }
       }
     }
 
