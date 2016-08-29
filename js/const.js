@@ -1,3 +1,8 @@
+const ShapeGeneratorIndex = {
+  MIRRORED_SHIP: 'm',
+  INVERTED_MIRRORED_SHIP: 'mv'
+};
+
 const AudioIndex = {
   WAVE_TYPE: 0,
   ATTACK_TIME: 1,

@@ -143,6 +143,15 @@ module.exports = function(src) {
   var indexMap = {};
   var toDeleteMap = {};
 
+  var createNodeForConst = (objName, propName) => {
+    var val = indexMap[objName][propName];
+    if (typeof val === 'string') {
+      return types.stringLiteral(val);
+    } else {
+      return types.numericLiteral(val);
+    }
+  }
+
   /**
    * Phase 1
    *   inline constants
@@ -165,11 +174,9 @@ module.exports = function(src) {
         if (node.object.type === 'Identifier' && indexMap[node.object.name]) {
           var parent = parentOf(node);
           if (idx) {
-            parent[key][idx] = types.numericLiteral(indexMap[node.object
-              .name][node.property.name]);
+            parent[key][idx] = createNodeForConst(node.object.name, node.property.name)
           } else {
-            parent[key] = types.numericLiteral(indexMap[node.object.name]
-              [node.property.name]);
+            parent[key] = createNodeForConst(node.object.name, node.property.name)
           }
         }
       },
