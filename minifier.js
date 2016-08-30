@@ -124,7 +124,13 @@ module.exports = function(src) {
       if (idx) {
         parent[key] = parent[key].filter(n => n !== node);
       } else {
-        throw new Error('Unable to delete type ' + node.type + ' as ' + key);
+        var moreInfo = '';
+        node.declarations.forEach(decl => {
+            if (decl.id.name.indexOf('Index') !== -1 || decl.id.name.indexOf('Const') !== -1) {
+              moreInfo += '. The variable, ' + decl.id.name + ', ends with either Const or Index. Please rename it.'
+            }
+        })
+        throw new Error('Unable to delete type ' + node.type + ' as ' + key + moreInfo);
       }
     }
   };

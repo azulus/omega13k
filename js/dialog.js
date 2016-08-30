@@ -8,16 +8,16 @@ $.assign($, {
   ],
 
   dialogSendMessage: (messageIndex) => {
-    let currIndex = 0,
+    let letterIdx = 0,
       container = $.getElementById('m'),
       word = $.dialogStrings[messageIndex],
       drawLetter = () => {
         let sound = $.createBlipSound(Math.random);
             $.playSound(sound);
 
-        container.textContent += word.substr(currIndex, 3);
-        if (currIndex < word.length) {
-          currIndex += 3;
+        container.textContent += word.substr(letterIdx, 3);
+        if (letterIdx < word.length) {
+          letterIdx += 3;
           setTimeout(drawLetter, Math.random() * 150)
         }
       };
