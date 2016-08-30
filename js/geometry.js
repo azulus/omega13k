@@ -60,19 +60,19 @@ $.assign($, {
     let shapeString = s.length ? s : $.getRandomShapeString(r);
     let shapes = [];
     $.splitString(shapeString).forEach(is => {
-      let shape;
+      let shape, min=Math.min(mx, my), m5=0.05*min, m30=0.3*min;
       switch(is) {
         case 'c':
-          shape = $.getRandomCircle(r, mx, my, 0.05*mx, 0.3*mx);
+          shape = $.getRandomCircle(r, mx, my, m5, m30);
           break;
         case 'r':
-          shape = $.getRandomRectangle(r, mx, my, 0.05*mx, 0.3*mx);
+          shape = $.getRandomRectangle(r, mx, my, m5, m30);
           break;
         case 'i':
-          shape = $.getRandomIsocelesTriangle(r, mx, my, 0.05*mx, 0.3*mx);
+          shape = $.getRandomIsocelesTriangle(r, mx, my, m5, m30);
           break;
         case 't':
-          shape = $.getRandomTriangle(r, mx, my, 0.05*mx, 0.3*mx);
+          shape = $.getRandomTriangle(r, mx, my, m5, m30);
           break;
       }
       if (shouldInvert) {
