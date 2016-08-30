@@ -94,6 +94,9 @@ $.assign($, {
 	},
 
 	startGame: () => {
+		$.dialogSendMessage(0);
+		setTimeout(() => $.dialogSendMessage(1), 2500)
+
 		// Initialize gameObjects
 		$.gameObjects = [
 			new $.PlayerGameObject()
@@ -109,7 +112,7 @@ $.assign($, {
 		$.drawLoop()
 
 		// Create initial enemies /w path
-		$.createEnemyWave()
+		// $.createEnemyWave()
 
 		// TODO: Levels should manage this instead.
 		setInterval(() => $.createEnemyWave(), 7000)

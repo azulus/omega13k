@@ -42,6 +42,13 @@ body {
 }
 
 /**
+ * Messages from HQ/Dialog
+ */
+#m {
+	color: #fff;
+}
+
+/**
  * Game Board
  */
 #g {
