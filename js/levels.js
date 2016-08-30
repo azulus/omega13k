@@ -14,13 +14,14 @@ $.assign($, {
 				[$.DialogLevel, 0],
 				[$.DialogLevel, 1],
 				[$.WaveLevel, 3],
-				[$.DialogLevel, 2]
+				[$.DialogLevel, 2],
+				[$.WaveLevel, 10000]
 			],
 			/*
 			[
-				[LevelSpecConst.DIALOG, 3],
-				[LevelSpecConst.WAVES, 12],
-				[LevelSpecConst.BOSS, 1]
+				[$.DialogLevel, 3],
+				[$.WaveLevel, 12],
+				[$.BossLevel, 1]
 			]
 			*/
 		];
