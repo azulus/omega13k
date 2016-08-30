@@ -97,3 +97,8 @@ const EnemyConfigIndex = {
   SEED: 0,
   SEED_SHAPE_STR: 1
 };
+
+const LevelSpecConst = {
+  ON_ENTER: '0',
+  ON_EXIT: '1'
+};

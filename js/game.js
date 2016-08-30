@@ -94,9 +94,6 @@ $.assign($, {
 	},
 
 	startGame: () => {
-		$.dialogSendMessage(0);
-		setTimeout(() => $.dialogSendMessage(1), 2500)
-
 		// Initialize gameObjects
 		$.gameObjects = [
 			new $.PlayerGameObject()
@@ -133,15 +130,6 @@ $.assign($, {
 				projectileSound,
 				explosionSound
 			))
-		}
-	},
-
-	splashKeyListener: (e) => {
-		if (e.key == ' ') {
-			$.startGame()
-			$.document.body.className = 'g'
-			removeEventListener('keydown', $.splashKeyListener)
-			$.initKeyboard()
 		}
 	},
 
@@ -189,4 +177,3 @@ $.assign($, {
 	}
 })
 
-addEventListener('keydown', $.splashKeyListener)
