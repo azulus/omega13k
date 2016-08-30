@@ -71,13 +71,17 @@ $.assign($, {
 						// Just fire two projectiles for now.
 						.slice(0, 2)
 						.forEach(pts => {
-							$.createEnemyProjectile(
-								new $.EnemyProjectileGameObject(
-									null,
-									pts[0] + obj[ObjectIndex.POSITION_X],
-									pts[1] + obj[ObjectIndex.POSITION_Y]
-								)
+							let projectile = new $.EnemyProjectileGameObject(
+								null,
+								pts[0] + obj[ObjectIndex.POSITION_X],
+								pts[1] + obj[ObjectIndex.POSITION_Y]
 							)
+							$.createEnemyProjectile(projectile)
+
+							// Update projectile for Shape X/Y start position
+							let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0]
+							projectile[ObjectIndex.POSITION_X] -= firstShape[ShapeIndex.POINTS][0]
+							projectile[ObjectIndex.POSITION_Y] -= firstShape[ShapeIndex.POINTS][1]
 						})
 				}
 			}

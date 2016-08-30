@@ -1,6 +1,6 @@
 $.assign($, {
 	EnemyProjectileGameObject: function (seed = 1465, x, y) {
-		let speed = 10
+		let speed = 6
 
 		let obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY_PROJECTILE,
@@ -9,9 +9,9 @@ $.assign($, {
 			// Used seed objects
 			[ObjectIndex.SEED_SHAPE_STR]: 'c',
 			// Width
-			[ObjectIndex.WIDTH]: 20,
+			[ObjectIndex.WIDTH]: 120,
 			// Height
-			[ObjectIndex.HEIGHT]: 20,
+			[ObjectIndex.HEIGHT]: 120,
 			// X Position
 			[ObjectIndex.POSITION_X]: x,
 			// Y Position
