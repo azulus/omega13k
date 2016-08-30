@@ -13,17 +13,16 @@ $.assign($, {
 			[
 				[$.DialogLevel, 0],
 				[$.DialogLevel, 1],
-				/*
-				[LevelSpecConst.WAVES, 8],
-				[LevelSpecConst.	, 1],
-				[LevelSpecConst.DIALOG, 2]
+				[$.WaveLevel, 3],
+				[$.DialogLevel, 2]
 			],
+			/*
 			[
 				[LevelSpecConst.DIALOG, 3],
 				[LevelSpecConst.WAVES, 12],
 				[LevelSpecConst.BOSS, 1]
-				*/
 			]
+			*/
 		];
 	},
 
