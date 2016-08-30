@@ -20,6 +20,31 @@ $.assign($, {
     AudioIndex.LP_FILTER_CUTOFF, 1.0
   ),
 
+  createRewindSound: (r) => {
+    return $.formatSound($.setArrayVals(
+      $.getBaseSound(),
+      AudioIndex.WAVE_TYPE, 3,
+      AudioIndex.ATTACK_TIME, $.randBetween(r, 10, 20) / 100,
+      AudioIndex.SUSTAIN_TIME, $.randBetween(r, 2, 14) / 100,
+      AudioIndex.DECAY_TIME, 0,
+      AudioIndex.SLIDE, $.randBetween(r, 74, 94) / 100,
+      AudioIndex.LP_FILTER_CUTOFF, $.randBetween(r, 0, 100) / 100,
+      AudioIndex.MASTER_VOLUME, 0.79
+    ))
+
+
+// 3,0.19,0.1199,,,0.87,,0.74,,,,-1,,,-1,,-1,-1,0.6,0.08,,,-1,0.79
+    // [0,1,0.5,0,0.4,0.3,0,0.79,0,0,0,0,0,0,0,0,0,0,0.88,0,0,0,0,0.5]
+    // attack time 0.1334 -> 0.2
+    //
+    // 3,0.2,0.14,,,0.87,,0.74,-1,,,-1,,,-1,,-1,-1,0.91,0.74,,,-1,0.79
+    // 3,0.2,0.14,,,0.87,,0.94,-1,,,-1,,,-1,,-1,-1,0.91,0.74,,,-1,0.79
+    // 0, 1.52, 1.3, 0, 0, 0.3, 0, 0.92, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.49, 0, 0, 0, 0, 0.5
+    //
+    // 3,0.0599,0.1199,,,0.87,,0.94,-1,,,-1,,,-1,,-1,-1,0.6,0.08,,,-1,0.79
+    // 3,0.19,0.1199,,,0.87,,0.94,,,,-1,,,-1,,-1,-1,0.6,0.08,,,-1,0.79
+  },
+
   createBlipSound: (r) => {
     let waveType = $.floor(r() * 2);
 
