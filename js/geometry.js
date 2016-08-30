@@ -66,13 +66,13 @@ $.assign($, {
           shape = $.getRandomCircle(r, mx, my, 0.05*mx, 0.3*mx);
           break;
         case 'r':
-          shape = $.getRandomRectangle(r, mx, my, 5, 30);
+          shape = $.getRandomRectangle(r, mx, my, 0.05*mx, 0.3*mx);
           break;
         case 'i':
-          shape = $.getRandomIsocelesTriangle(r, mx, my, 5, 30);
+          shape = $.getRandomIsocelesTriangle(r, mx, my, 0.05*mx, 0.3*mx);
           break;
         case 't':
-          shape = $.getRandomTriangle(r, mx, my, 5, 30);
+          shape = $.getRandomTriangle(r, mx, my, 0.05*mx, 0.3*mx);
           break;
       }
       if (shouldInvert) {
