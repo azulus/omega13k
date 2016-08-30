@@ -4,8 +4,8 @@ $.assign($, {
 
 		// Adjust bullet position for player.
 		// TODO: This should probably be passed in from the player.
-		x += 46
-		y += 36
+		x += -40
+		y += -85
 
 		let obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.PLAYER_PROJECTILE,
