@@ -46,9 +46,9 @@ $.assign($, {
 
 				// Update player based on arrows.
 				// Prevent the player from going out of bounds.
-				if ($.downKeys.ArrowDown && y < GameIndex.HEIGHT - speed - spriteHeight) y += speed;
+				if ($.downKeys.ArrowDown && y < GameConst.HEIGHT - speed - spriteHeight) y += speed;
 				if ($.downKeys.ArrowUp && y > speed) y -= speed;
-				if ($.downKeys.ArrowRight && x < GameIndex.WIDTH - speed - spriteWidth) x += speed;
+				if ($.downKeys.ArrowRight && x < GameConst.WIDTH - speed - spriteWidth) x += speed;
 				if ($.downKeys.ArrowLeft && x > speed) x -= speed;
 
 				obj[ObjectIndex.POSITION_Y] = y

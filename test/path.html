@@ -45,9 +45,9 @@
 			var path = pathData[i];
 			var canvas = $.createElement('canvas');
 
-			canvas.height = GameIndex.SHIP_HEIGHT;
-			canvas.width = GameIndex.SHIP_WIDTH;
-			shapes = $.getRandomShapes($.getRandomNumberGenerator(15), GameIndex.SHIP_WIDTH, GameIndex.SHIP_HEIGHT, 'm');
+			canvas.height = GameConst.SHIP_HEIGHT;
+			canvas.width = GameConst.SHIP_WIDTH;
+			shapes = $.getRandomShapes($.getRandomNumberGenerator(15), GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
 			$.drawShapesToCanvas(canvas, shapes);
 			$.appendChild(results, canvas);
 

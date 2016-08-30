@@ -1,4 +1,4 @@
-const ShapeGeneratorIndex = {
+const ShapeGeneratorConst = {
   MIRRORED_SHIP: 'm',
   INVERTED_MIRRORED_SHIP: 'mv'
 };
@@ -30,7 +30,12 @@ const AudioIndex = {
   MASTER_VOLUME: 23
 };
 
-const GameIndex = {
+const PathConst = {
+  MIN_SHIPS: 2,
+  MAX_SHIPS: 7
+};
+
+const GameConst = {
   WIDTH: 800,
   HEIGHT: 600,
   SHIP_WIDTH: 100,

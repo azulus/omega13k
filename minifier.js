@@ -161,7 +161,8 @@ module.exports = function(src) {
       'VariableDeclarator': (node) => {
         if (node.id &&
           node.id.type === 'Identifier' &&
-          node.id.name.indexOf('Index') !== -1) {
+          (node.id.name.indexOf('Index') !== -1 || node.id.name.indexOf('Const') !== -1)
+        ) {
           currentIndexNode = node;
           currentIndex = {};
           indexMap[node.id.name] = currentIndex;

@@ -2,17 +2,17 @@ $.assign($, {
   generateRandomPath: (r,startTime = 0) => {
 
     let isSymmetrical = r() < 0.5
-    let numShips = $.randBetween(r, 2, 7)
+    let numShips = $.randBetween(r, PathConst.MIN_SHIPS, PathConst.MAX_SHIPS)
     if (isSymmetrical) {
         numShips = $.floor(numShips / 2)
     }
 
-    let usableWidth = GameIndex.WIDTH - (GameIndex.SHIP_WIDTH * numShips) - 5
-    let usableHeight = GameIndex.HEIGHT - (GameIndex.SHIP_HEIGHT * numShips) - 5
+    let usableWidth = GameConst.WIDTH - (GameConst.SHIP_WIDTH * numShips) - 5
+    let usableHeight = GameConst.HEIGHT - (GameConst.SHIP_HEIGHT * numShips) - 5
 
     let numPathPoints = $.randBetween(r, 2, 5);
     let currentPoint = [
-      GameIndex.WIDTH + 20,
+      GameConst.WIDTH + 20,
       $.randBetween(r, 5, usableHeight)
     ];
     let segments = [];
@@ -21,7 +21,7 @@ $.assign($, {
       let shouldArc = r() < 0.5
 
       let nextPoint = [
-        incr === numPathPoints ? (-2 * GameIndex.SHIP_WIDTH) : $.randBetween(r, usableWidth / 2, usableWidth),
+        incr === numPathPoints ? (-2 * GameConst.SHIP_WIDTH) : $.randBetween(r, usableWidth / 2, usableWidth),
         $.randBetween(r, 5, usableHeight)
       ];
 
@@ -63,7 +63,7 @@ $.assign($, {
 
     let paths = [];
     for (incr = 0; incr < numShips; incr++) {
-      let offsetY = incr * GameIndex.SHIP_HEIGHT;
+      let offsetY = incr * GameConst.SHIP_HEIGHT;
       let nextPath = segments.map(segment => [
         segment[0],
         segment[1],
@@ -80,9 +80,9 @@ $.assign($, {
           segment[1],
           segment[2],
           segment[3],
-          $.invertPoints(segment[4], GameIndex.HEIGHT),
-          $.invertPoints(segment[5], GameIndex.HEIGHT),
-          segment[6] ? $.invertPoints(segment[6], GameIndex.HEIGHT) : null
+          $.invertPoints(segment[4], GameConst.HEIGHT),
+          $.invertPoints(segment[5], GameConst.HEIGHT),
+          segment[6] ? $.invertPoints(segment[6], GameConst.HEIGHT) : null
         ])])
       }
     }

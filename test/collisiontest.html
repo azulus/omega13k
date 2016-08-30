@@ -86,7 +86,7 @@ $.assign($, {
 	 * To destroy an object we set the destroy flag and remove all destroyed objects after rendering.
 	 */
 	destroyIfOutsideGameRect: (obj) => {
-		if (obj[ObjectIndex.POSITION_X] < 0 || obj[ObjectIndex.POSITION_X] > GameIndex.WIDTH || obj[ObjectIndex.POSITION_Y] < 0 || obj[ObjectIndex.POSITION_Y] > GameIndex.HEIGHT) {
+		if (obj[ObjectIndex.POSITION_X] < 0 || obj[ObjectIndex.POSITION_X] > GameConst.WIDTH || obj[ObjectIndex.POSITION_Y] < 0 || obj[ObjectIndex.POSITION_Y] > GameConst.HEIGHT) {
 			obj[ObjectIndex.DESTROYED] = true
 		}
 	},
