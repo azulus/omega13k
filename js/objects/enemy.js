@@ -13,9 +13,9 @@ $.assign($, {
 			// Used seed objects
 			[ObjectIndex.SEED_SHAPE_STR]: config[EnemyConfigIndex.SEED_SHAPE_STR],
 			// Width
-			[ObjectIndex.WIDTH]: 100,
+			[ObjectIndex.WIDTH]: GameConst.SHIP_WIDTH,
 			// Height
-			[ObjectIndex.HEIGHT]: 100,
+			[ObjectIndex.HEIGHT]: GameConst.SHIP_HEIGHT,
 			// X Position
 			[ObjectIndex.POSITION_X]: 0,
 			// Y Position
@@ -73,7 +73,7 @@ $.assign($, {
 						.forEach(pts => {
 							$.createEnemyProjectile(
 								new $.EnemyProjectileGameObject(
-									null, 
+									null,
 									pts[0] + obj[ObjectIndex.POSITION_X],
 									pts[1] + obj[ObjectIndex.POSITION_Y]
 								)

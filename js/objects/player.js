@@ -20,9 +20,9 @@ $.assign($, {
 			// Used seed objects
 			[ObjectIndex.SEED_SHAPE_STR]: 'm',
 			// Width
-			[ObjectIndex.WIDTH]: 100,
+			[ObjectIndex.WIDTH]: GameConst.SHIP_WIDTH,
 			// Height
-			[ObjectIndex.HEIGHT]: 100,
+			[ObjectIndex.HEIGHT]: GameConst.SHIP_HEIGHT,
 			// X Position
 			[ObjectIndex.POSITION_X]: x,
 			// Y Position

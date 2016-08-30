@@ -63,7 +63,7 @@ $.assign($, {
       let shape;
       switch(is) {
         case 'c':
-          shape = $.getRandomCircle(r, mx, my, 5, 30);
+          shape = $.getRandomCircle(r, mx, my, 0.05*mx, 0.3*mx);
           break;
         case 'r':
           shape = $.getRandomRectangle(r, mx, my, 5, 30);

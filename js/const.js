@@ -38,8 +38,8 @@ const PathConst = {
 const GameConst = {
   WIDTH: 800,
   HEIGHT: 600,
-  SHIP_WIDTH: 100,
-  SHIP_HEIGHT: 100
+  SHIP_WIDTH: 50,
+  SHIP_HEIGHT: 50
 };
 
 const ObjectIndex = {
