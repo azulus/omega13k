@@ -15,15 +15,15 @@ $.assign($, {
 				[$.DialogLevel, 1],
 				[$.WaveLevel, 3],
 				[$.DialogLevel, 2],
-				[$.WaveLevel, 10000]
+				[$.WaveLevel, 2],
+				[$.BossLevel, 1],
 			],
-			/*
 			[
 				[$.DialogLevel, 3],
-				[$.WaveLevel, 12],
-				[$.BossLevel, 1]
+				[$.WaveLevel, 10],
+				[$.BossLevel, 1],
+				[$.WaveLevel, 1000],
 			]
-			*/
 		];
 	},
 
