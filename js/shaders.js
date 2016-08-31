@@ -11,7 +11,6 @@ $.assign($, {
             throw new Error(`Could not compile ${type} shader:\n\n ${gl.getShaderInfoLog(s)}`)
           }
 
-          console.log('attaching shader');
           gl.attachShader(prog, s)
       }
       addShader(ShaderConst.VERTEX_SHADER, vs)
@@ -115,42 +114,5 @@ $.assign($, {
   applyStarfield: (canvas) => {
     let anim = $.getStarfieldAnimator(canvas)
     anim();
-    console.log('done');
   }
-  /**
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-	vec2 uv=fragCoord.xy/iResolution.xy-.5;
-	uv.y*=iResolution.y/iResolution.x;
-
-	vec3 dir=vec3(uv*0.8,1.);
-	float time=iGlobalTime*0.0025+.25;
-
-	vec3 from=vec3(1.,-1.,0.);
-	from+=vec3(time*2.,0.,0.);
-
-	float s=0.1,fade=1.;
-	vec3 v=vec3(0.);
-	for (int r=0; r<20; r++) {
-		vec3 p=from+s*dir*.5;
-		p = abs(vec3(0.85)-mod(p,vec3(0.85*2.)));
-		float pa,a=pa=0.;
-		for (int i=0; i<18; i++) {
-			p=abs(p)/dot(p,p)-0.53;
-			a+=abs(length(p)-pa);
-			pa=length(p);
-		}
-		float dm=max(0.,0.3-a*a*.001);
-		a*=a*a;
-		if (r>6) fade*=1.-dm;
-		v+=fade;
-		v+=vec3(s,s*s,s*s*s*s)*a*0.0015*fade;
-		fade*=0.78;
-		s+=0.1;
-	}
-	v=mix(vec3(length(v)),v,0.85);
-	fragColor = vec4(v*.01,1.);
-
-}
-   */
 });
