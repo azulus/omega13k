@@ -3,6 +3,11 @@ const ShapeGeneratorConst = {
   INVERTED_MIRRORED_SHIP: 'mv'
 };
 
+const ShaderConst = {
+  VERTEX_SHADER: 'v',
+  FRAGMENT_SHADER: 'f'
+};
+
 const AudioIndex = {
   WAVE_TYPE: 0,
   ATTACK_TIME: 1,
