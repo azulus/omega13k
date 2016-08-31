@@ -57,7 +57,7 @@ $.assign($, {
       	uv.y*=resolution.y/resolution.x;
 
       	vec3 dir=vec3(uv*0.8,1.);
-      	float time=globalTime*0.0025+.25;
+      	float time=globalTime*0.0005+.25;
 
       	vec3 from=vec3(1.,-1.,0.);
       	from+=vec3(time*2.,0.,0.);
@@ -78,7 +78,7 @@ $.assign($, {
       		if (r>6) fade*=1.-dm;
       		v+=fade;
       		v+=vec3(s,s*s,s*s*s*s)*a*0.0015*fade;
-      		fade*=0.78;
+      		fade*=0.68;
       		s+=0.1;
       	}
       	v=mix(vec3(length(v)),v,0.85);
