@@ -49,6 +49,7 @@ $.assign($, {
       precision mediump float;
       uniform vec3 resolution;
       uniform float globalTime;
+      //uniform sampler2D sampler;
 
       void main()
       {
@@ -83,6 +84,10 @@ $.assign($, {
       	v=mix(vec3(length(v)),v,0.85);
       	gl_FragColor = vec4(v*.01,1.);
 
+        //vec2 vcoord = vec2(gl_FragCoord.x/resolution.x, gl_FragCoord.y/resolution.y);
+        //vec3 oldVal = texture2D(sampler, vcoord).rgb;
+        //gl_FragColor.rgb = mix(oldVal, gl_FragColor.rgb, 0.2);
+        //gl_FragColor.a = 1.0;
       }`)
     return prog
   },
@@ -90,7 +95,16 @@ $.assign($, {
   getStarfieldAnimator: (canvas) => {
     let gl = $.get3DContext(canvas),
       prog = $.getStarfieldProgram(gl),
-      start = Date.now();
+      start = Date.now(),
+      texture = gl.createTexture()
+
+    // gl.bindTexture(gl.TEXTURE_2D, texture)
+    //
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
     $.attributeSetFloats(gl, prog, 'pos', 2, [
       -1.0, -1.0,
       1.0, -1.0,
@@ -99,12 +113,11 @@ $.assign($, {
       1.0, -1.0,
       1.0, 1.0
     ]);
+    gl.useProgram(prog)
+    gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), canvas.width, canvas.height, 1)
 
     let anim = () => {
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-      gl.useProgram(prog)
       gl.uniform1f(gl.getUniformLocation(prog, 'globalTime'), (Date.now() - start) / 1000)
-      gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), canvas.width, canvas.height, 1)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
       requestAnimationFrame(anim)
     }
