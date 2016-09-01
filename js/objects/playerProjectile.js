@@ -25,7 +25,7 @@ $.assign($, {
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
 				obj[ObjectIndex.POSITION_X] += speed
-				$.destroyIfOutsideGameRect(obj)
+				$.destroyProjectileIfOutsideGameRect(obj)
 			}
 		}
 		return obj;

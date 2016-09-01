@@ -38,7 +38,7 @@ $.assign($, {
 				obj[ObjectIndex.POSITION_Y] = $.floor(pos[1])
 
 				if ((now - pathStartTime) >= totalPathTime) {
-					$.destroyIfOutsideGameRect(obj)
+					obj[ObjectIndex.DESTROYED] = true
 				}
 
 				// Simple single projectile
