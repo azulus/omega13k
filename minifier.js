@@ -51,6 +51,9 @@ module.exports = function(src) {
   var ast = babylon.parse(String(src), {
     sourceType: 'module',
     plugins: [
+      'float32Array',
+      'Error',
+      'requestAnimationFrame',
       'jsx',
       'flow',
       'asyncFunctions',

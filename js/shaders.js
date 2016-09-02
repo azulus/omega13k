@@ -49,7 +49,6 @@ $.assign($, {
       precision mediump float;
       uniform vec3 resolution;
       uniform float globalTime;
-      //uniform sampler2D sampler;
 
       void main()
       {
@@ -83,11 +82,6 @@ $.assign($, {
       	}
       	v=mix(vec3(length(v)),v,0.85);
       	gl_FragColor = vec4(v*.01,1.);
-
-        //vec2 vcoord = vec2(gl_FragCoord.x/resolution.x, gl_FragCoord.y/resolution.y);
-        //vec3 oldVal = texture2D(sampler, vcoord).rgb;
-        //gl_FragColor.rgb = mix(oldVal, gl_FragColor.rgb, 0.2);
-        //gl_FragColor.a = 1.0;
       }`)
     return prog
   },
@@ -97,13 +91,6 @@ $.assign($, {
       prog = $.getStarfieldProgram(gl),
       start = Date.now(),
       texture = gl.createTexture()
-
-    // gl.bindTexture(gl.TEXTURE_2D, texture)
-    //
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
     $.attributeSetFloats(gl, prog, 'pos', 2, [
       -1.0, -1.0,
