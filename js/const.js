@@ -178,5 +178,3 @@ const FragmentShaderConst = {
   }
 `
 };
-
-const TWICE_PI = Math.PI * 2;

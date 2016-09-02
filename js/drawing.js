@@ -1,4 +1,6 @@
 $.assign($, {
+  TWICE_PI: Math.PI * 2,
+
   /**
    * Get a 2d canvas context
    */
@@ -47,10 +49,9 @@ $.assign($, {
     let triangleAmount = 24;
     let [x,y] = c[ShapeIndex.POINTS];
     let vertices = [x,y];
-  	// triangle fan
     for (let i = 0; i <= triangleAmount; i++){
-    	vertices.push(x + (c[ShapeIndex.RADIUS] * Math.cos(i * TWICE_PI / triangleAmount))),
-      vertices.push(y + (c[ShapeIndex.RADIUS] * Math.sin(i * TWICE_PI / triangleAmount)))
+    	vertices.push(x + (c[ShapeIndex.RADIUS] * Math.cos(i * $.TWICE_PI / triangleAmount))),
+      vertices.push(y + (c[ShapeIndex.RADIUS] * Math.sin(i * $.TWICE_PI / triangleAmount)))
     }
     gl.uniform4f(colorLocation, ...$.getShaderColor(c[ShapeIndex.COLOR]), 1);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);

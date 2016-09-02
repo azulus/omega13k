@@ -51,9 +51,6 @@ module.exports = function(src) {
   var ast = babylon.parse(String(src), {
     sourceType: 'module',
     plugins: [
-      'float32Array',
-      'Error',
-      'requestAnimationFrame',
       'jsx',
       'flow',
       'asyncFunctions',
@@ -156,8 +153,10 @@ module.exports = function(src) {
     var val = indexMap[objName][propName];
     if (typeof val === 'string') {
       return types.stringLiteral(val);
-    } else {
+    } else if (typeof val === 'number'){
       return types.numericLiteral(val);
+    } else {
+      return null;
     }
   }
 
@@ -183,10 +182,15 @@ module.exports = function(src) {
       'MemberExpression': (node, key, idx) => {
         if (node.object.type === 'Identifier' && indexMap[node.object.name]) {
           var parent = parentOf(node);
+          var val = createNodeForConst(node.object.name, node.property.name);
+          if (!val) {
+            console.warn('Unable to inline ' + node.object.name + '.' + node.property.name);
+            return;
+          }
           if (idx) {
-            parent[key][idx] = createNodeForConst(node.object.name, node.property.name)
+            parent[key][idx] = val;
           } else {
-            parent[key] = createNodeForConst(node.object.name, node.property.name)
+            parent[key] = val;
           }
         }
       },
@@ -295,6 +299,10 @@ module.exports = function(src) {
 
     var functionStack = [{
       variables: {
+        'Float32Array': 'Float32Array',
+        'parseInt': 'parseInt',
+        'Error': 'Error',
+        'requestAnimationFrame': 'requestAnimationFrame',
         'alert': 'alert',
         'location': 'location',
         'Math': 'Math',
