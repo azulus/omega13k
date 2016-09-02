@@ -39,8 +39,38 @@ $.assign($, {
     return canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
   },
 
-  getStarfieldProgram: (gl) => $.shaderProgram(gl, VectorShaderConst.STARFIELD, FragmentShaderConst.STARFIELD),
-  get2DProgram: (gl) => $.shaderProgram(gl, VectorShaderConst.TWO_DIMENSION, FragmentShaderConst.TWO_DIMENSION),
+  _cachedPrograms: [],
+  getCachedProgram: (key, gl, vs, fs) => {
+    let prog = $._cachedPrograms[key];
+    if (!prog) {
+      prog = $._cachedPrograms[key] = $.shaderProgram(gl, vs, fs);
+    }
+    return prog;
+  },
+
+  getStarfieldProgram: (gl) => $.getCachedProgram(CachedProgramIndex.STARFIELD, gl, VectorShaderConst.STARFIELD, FragmentShaderConst.STARFIELD),
+  get2DProgram: (gl) => $.getCachedProgram(CachedProgramIndex.TWO_DIMENSION, gl, VectorShaderConst.TWO_DIMENSION, FragmentShaderConst.TWO_DIMENSION),
+
+  STARFIELD_FLOAT_ARRAY: new Float32Array([
+    -1.0, -1.0,
+    1.0, -1.0,
+    -1.0, 1.0,
+    -1.0, 1.0,
+    1.0, -1.0,
+    1.0, 1.0
+  ]),
+  renderStarfield: (gl, elapsedTime, width, height) => {
+    let prog = $.getStarfieldProgram(gl);
+
+    $.attributeSetFloats(gl, prog, 'pos', 2, $.STARFIELD_FLOAT_ARRAY);
+
+    gl.useProgram(prog)
+
+    gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), width, height, 1)
+    gl.uniform1f(gl.getUniformLocation(prog, 'globalTime'), elapsedTime / 1000)
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
+  },
 
   getStarfieldAnimator: (canvas) => {
     let gl = $.get3DContext(canvas),
@@ -48,14 +78,7 @@ $.assign($, {
       start = Date.now(),
       texture = gl.createTexture()
 
-    $.attributeSetFloats(gl, prog, 'pos', 2, [
-      -1.0, -1.0,
-      1.0, -1.0,
-      -1.0, 1.0,
-      -1.0, 1.0,
-      1.0, -1.0,
-      1.0, 1.0
-    ]);
+    $.attributeSetFloats(gl, prog, 'pos', 2, $.STARFIELD_FLOAT_ARRAY);
     gl.useProgram(prog)
     gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), canvas.width, canvas.height, 1)
 

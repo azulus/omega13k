@@ -9,6 +9,16 @@ $.assign($, {
    */
   getRandomCoordinate: (r, mx, my) => [$.floor(r() * mx), $.floor(r() * my)],
 
+  makeWebGLReady: (shape) => {
+    if (shape[ShapeIndex.RADIUS]) {
+      shape[ShapeIndex.WEBGL_REPRESENTATION] = $.getCircleTriangles(shape);
+    } else {
+      shape[ShapeIndex.WEBGL_REPRESENTATION] = new Float32Array(shape[ShapeIndex.POINTS]);
+    }
+    shape[ShapeIndex.WEBGL_REPRESENTATION_LENGTH] = shape[ShapeIndex.WEBGL_REPRESENTATION].length / 2;
+    return shape;
+  },
+
   /**
    * Get a random circle
    */
@@ -17,7 +27,7 @@ $.assign($, {
       x = $.randBetween(r, rad, mx-rad),
       y = $.randBetween(r, rad, my-rad),
       col = $.getRandomUsableColor(r)
-    return [col,rad,[x,y]];
+    return $.makeWebGLReady([col,rad,[x,y]]);
   },
 
   getRandomRectangle: (r, mx, my, mins, maxs) => {
@@ -26,7 +36,7 @@ $.assign($, {
       x = $.randBetween(r, 0, mx-w),
       y = $.randBetween(r, 0, my-h),
       col=$.getRandomUsableColor(r)
-    return [col,,[x,y,x+w,y,x+w,y+h,x,y+h]]
+    return $.makeWebGLReady([col,,[x,y,x+w,y,x+w,y+h,x,y+h]])
   },
 
   getRandomIsocelesTriangle: (r, mx, my) => {
@@ -36,10 +46,10 @@ $.assign($, {
       cv = r(),
       x3 = cv < 0.5 ? (x1 + x2) / 2 : x1,
       y2 = cv >= 0.5 ? (y1 + y3) / 2 : y1;
-     return [$.getRandomUsableColor(r),,[x1, y1, x2, y2, x3, y3]]
+     return $.makeWebGLReady([$.getRandomUsableColor(r),,[x1, y1, x2, y2, x3, y3]])
   },
 
-  getRandomTriangle: (r, mx, my) => [
+  getRandomTriangle: (r, mx, my) => $.makeWebGLReady([
     $.getRandomUsableColor(r),,[
        $.randBetween(r, 0, mx),
        $.randBetween(r, 0, my),
@@ -48,7 +58,7 @@ $.assign($, {
        $.randBetween(r, 0, mx),
        $.randBetween(r, 0, my)
     ]
-  ],
+  ]),
 
   getRandomShapeString: (r) => {
     let s = ''
@@ -91,6 +101,7 @@ $.assign($, {
       }
       if (shouldInvert) {
           shape[ShapeIndex.POINTS] = $.invertPoints(shape[ShapeIndex.POINTS], mx, 1);
+          $.makeWebGLReady(shape);
       }
       shapes.push(shape);
       if (shouldMirror) {
@@ -99,16 +110,7 @@ $.assign($, {
             ShapeIndex.POINTS,
             $.invertPoints(shape[ShapeIndex.POINTS], my)
         );
-        shapes.push(newShape);
-
-        if (shape[ShapeIndex.RADIUS]) {
-          shape[ShapeIndex.WEBGL_REPRESENTATION] = $.getCircleTriangles(shape);
-          newShape[ShapeIndex.WEBGL_REPRESENTATION] = $.getCircleTriangles(newShape);
-        } else {
-          shape[ShapeIndex.WEBGL_REPRESENTATION] = new Float32Array(shape[ShapeIndex.POINTS]);
-          newShape[ShapeIndex.WEBGL_REPRESENTATION] = new Float32Array(newShape[ShapeIndex.POINTS]);
-        }
-        newShape[ShapeIndex.WEBGL_REPRESENTATION_LENGTH] = shape[ShapeIndex.WEBGL_REPRESENTATION_LENGTH] = shape[ShapeIndex.WEBGL_REPRESENTATION].length / 2;
+        shapes.push($.makeWebGLReady(newShape));
       }
     });
     return shapes;

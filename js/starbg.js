@@ -1,5 +1,6 @@
 $.assign($, {
 	drawStars: (r) => {
+		return;
 		$.applyStarfield($.getElementById('f'));
 		return;
 		let num = 100,

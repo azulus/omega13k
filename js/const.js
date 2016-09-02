@@ -114,6 +114,11 @@ const LevelSpecConst = {
   ON_EXIT: '1'
 };
 
+const CachedProgramIndex = {
+  STARFIELD: 0,
+  TWO_DIMENSION: 1
+};
+
 const VectorShaderConst = {
   STARFIELD: `
     attribute vec2 pos;

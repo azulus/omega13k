@@ -54,9 +54,12 @@ $.assign($, {
     shapes.forEach(shape => $.drawShape(ctx, shape));
   },
 
-  prepareCanvasForShapes: (canvas) => {
-    let gl = $.get3DContext(canvas),
-      prog = $.get2DProgram(gl)
+  clear3DCanvas: (gl) => {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  },
+
+  prepareCanvasForShapes: (gl, width, height) => {
+    let prog = $.get2DProgram(gl)
 
     var posLocation = gl.getAttribLocation(prog, 'a_position');
   	gl.useProgram(prog);
@@ -79,9 +82,9 @@ $.assign($, {
     gl.vertexAttribPointer(posLocation, 2, gl.FLOAT, false, 0, 0);
 
     gl.useProgram(prog)
-    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), canvas.width, canvas.height)
+    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
 
-    return [gl, prog];
+    return prog;
   },
 
   drawShapesToCanvasGL: (gl, prog, shapes, ox=0, oy=0) => {

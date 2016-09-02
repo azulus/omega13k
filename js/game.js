@@ -66,20 +66,45 @@ $.assign($, {
 	renderSeed: (gameObject) => {
 		let cnv = $.createElement('canvas');
 		// TEMP: Store a reference to the canvas on each game object while things move with CSS.
-		gameObject[ObjectIndex.DOM] = cnv
-		$.appendChild($.gameBoard(), cnv);
+		//gameObject[ObjectIndex.DOM] = cnv
+		// $.appendChild($.gameBoard(), cnv);
 
-		let ctx = $.getContext(cnv),
+		let
+			// ctx = $.getContext(cnv),
 			r = $.getRandomNumberGenerator(gameObject[ObjectIndex.SEED]),
 			shapes = $.getRandomShapes(r, gameObject[ObjectIndex.WIDTH], gameObject[ObjectIndex.HEIGHT], gameObject[ObjectIndex.SEED_SHAPE_STR])
 
 		gameObject[ObjectIndex.GENERATED_SHAPES] = shapes
-	    shapes.forEach(rs => $.drawShape(ctx, rs))
+	  // shapes.forEach(rs => $.drawShape(ctx, rs))
+	},
+
+	_startTime: null,
+	_canvas: null,
+	getCanvas: () => {
+		let val = $._canvas;
+		if (!val) {
+			$._canvas = val = $.getElementById('f');
+		}
+		return val;
 	},
 
 	drawLoop: () => {
-		let now = Date.now(),
-			i = $.gameObjects.length
+		if (!$._startTime) {
+			$._startTime = Date.now();
+		}
+		let elapsedTime = Date.now() - $._startTime,
+			i = $.gameObjects.length,
+			canvas = $.getCanvas(),
+			gl = $.get3DContext(canvas);
+
+		// clear the canvas
+		$.clear3DCanvas(gl);
+
+		// draw the starfield
+		$.renderStarfield(gl, elapsedTime, canvas.width, canvas.height);
+
+		// prepare to draw shapes
+		let prog = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
 
 		while (i--) {
 			let obj = $.gameObjects[i]
@@ -91,14 +116,15 @@ $.assign($, {
 			// Check if the object is destroyed.
 			if (obj[ObjectIndex.DESTROYED]) {
 				// Remove the object and splice the array
-				$.removeChild($.gameBoard(), obj[ObjectIndex.DOM])
+				//$.removeChild($.gameBoard(), obj[ObjectIndex.DOM])
 				$.gameObjects.splice(i, 1)
 			} else {
+				$.drawShapesToCanvasGL(gl, prog, obj[ObjectIndex.GENERATED_SHAPES], obj[ObjectIndex.POSITION_X], obj[ObjectIndex.POSITION_Y]);
 				// Render the game object
-				obj[ObjectIndex.DOM].style.transform = `translate(${obj[ObjectIndex.POSITION_X]}px, ${obj[ObjectIndex.POSITION_Y]}px)`
+				// obj[ObjectIndex.DOM].style.transform = `translate(${obj[ObjectIndex.POSITION_X]}px, ${obj[ObjectIndex.POSITION_Y]}px)`
 			}
 		}
-		setTimeout($.drawLoop, 16)
+		requestAnimationFrame($.drawLoop)
 	},
 
 	startGame: () => {
@@ -146,4 +172,3 @@ $.assign($, {
 		}
 	}
 })
-
