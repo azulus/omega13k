@@ -19,7 +19,8 @@
 	    $.appendChild(con, cnt)
 	    cnv = $.createElement('canvas');
 	    $.appendChild(con, cnv);
-	    $.drawShapesToCanvasGL(cnv, shapes, 0, 0);
+			let [gl, prog] = $.prepareCanvasForShapes(cnv);
+	    $.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
 		}
 
 		window.addEventListener('load', () => {

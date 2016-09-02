@@ -54,10 +54,9 @@ $.assign($, {
     shapes.forEach(shape => $.drawShape(ctx, shape));
   },
 
-  drawShapesToCanvasGL: (canvas, shapes, ox=0, oy=0) => {
+  prepareCanvasForShapes: (canvas) => {
     let gl = $.get3DContext(canvas),
       prog = $.get2DProgram(gl)
-
 
     var posLocation = gl.getAttribLocation(prog, 'a_position');
   	gl.useProgram(prog);
@@ -81,8 +80,12 @@ $.assign($, {
 
     gl.useProgram(prog)
     gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), canvas.width, canvas.height)
-    gl.uniform2f(gl.getUniformLocation(prog, 'u_offset'), ox, oy);
 
+    return [gl, prog];
+  },
+
+  drawShapesToCanvasGL: (gl, prog, shapes, ox=0, oy=0) => {
+    gl.uniform2f(gl.getUniformLocation(prog, 'u_offset'), ox, oy);
     shapes.forEach(rs => $.drawShapeGL(gl, prog, rs, ox, oy))
   }
 });
