@@ -48,10 +48,7 @@ $.assign($, {
   },
 
   drawCircleGL: (gl, prog, c, ox, oy) => {
-    let x = c[ShapeIndex.POINTS][0] + ox,
-      y = c[ShapeIndex.POINTS][1] + oy;
-
-    let vertices = [x,y];
+    let [x,y] = c[ShapeIndex.POINTS], vertices = [x,y];
     for (let i = 0; i <= CircleConst.COMPONENT_TRIANGLES; i++){
     	vertices.push(x + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_X_OFFSETS[i])),
       vertices.push(y + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_Y_OFFSETS[i]))
@@ -62,9 +59,8 @@ $.assign($, {
   },
 
   drawPolygonGL: (gl, prog, p, ox, oy) => {
-    var colorLocation = gl.getUniformLocation(prog, "u_color");
-    gl.uniform4f(colorLocation, ...$.getShaderColor(p[ShapeIndex.COLOR]), 1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p[ShapeIndex.POINTS].map((pt, idx) => pt + (idx % 2 === 0 ? ox : oy))), gl.STATIC_DRAW);
+    gl.uniform4f(gl.getUniformLocation(prog, 'u_color'), ...$.getShaderColor(p[ShapeIndex.COLOR]), 1);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p[ShapeIndex.POINTS]), gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, p[ShapeIndex.POINTS].length / 2);
   },
 
@@ -103,6 +99,7 @@ $.assign($, {
 
     gl.useProgram(prog)
     gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), canvas.width, canvas.height)
+    gl.uniform2f(gl.getUniformLocation(prog, 'u_offset'), ox, oy);
 
     shapes.forEach(rs => $.drawShapeGL(gl, prog, rs, ox, oy))
   }

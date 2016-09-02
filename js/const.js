@@ -80,7 +80,8 @@ const ShapeIndex = {
     COLOR: 0,
     RADIUS: 1,
     POINTS: 2,
-    BOUNDING_BOX: 3
+    BOUNDING_BOX: 3,
+    WEBGL_REPRESENTATION: 4
 };
 
 const CircleConst = {
@@ -122,9 +123,10 @@ const VectorShaderConst = {
   TWO_DIMENSION: `
   attribute vec2 a_position;
   uniform vec2 u_resolution;
+  uniform vec2 u_offset;
 
   void main() {
-     vec2 zeroToOne = a_position / u_resolution;
+     vec2 zeroToOne = (a_position + u_offset) / u_resolution;
      vec2 zeroToTwo = zeroToOne * 2.0;
      vec2 clipSpace = zeroToTwo - 1.0;
      gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
