@@ -121,41 +121,27 @@ $.assign($, {
 	 * Processes all collisions for game objects.
 	 */
 	collisionsForObject: (gameObject) => {
-		let i
+		const collisionChecks = {
+			[ObjectTypeIndex.ENEMY]: $.playerProjectiles,
+			[ObjectTypeIndex.PLAYER]: $.enemyProjectiles
+		},
+		check = collisionChecks[gameObject[ObjectIndex.OBJECT_TYPE]];
 
-		if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.ENEMY) {
-			// Process player projectiles
-			i = $.playerProjectiles.length
-			while (i--) {
-				let projectile = $.playerProjectiles[i],
-					collision = $.checkCollision(gameObject, projectile)
-				if (collision) {
-					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
-					projectile[ObjectIndex.DESTROYED] = true
-				}
+		if (!check) return;
 
-				// The projectile may have also been destroyed by going out of bounds.
-				if (projectile[ObjectIndex.DESTROYED]) {
-					$.playerProjectiles.splice(i, 1)
-				}
+		let i = check.length;
+
+		while (i--) {
+			let projectile = check[i],
+				collision = $.checkCollision(gameObject, projectile)
+			if (collision) {
+				gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
+				projectile[ObjectIndex.DESTROYED] = true
 			}
 
-		} else if (gameObject[ObjectIndex.OBJECT_TYPE] === ObjectTypeIndex.PLAYER) {
-			// Process enemy projectiles
-			i = $.enemyProjectiles.length
-			while (i--) {
-				let projectile = $.enemyProjectiles[i],
-					collision = $.checkCollision(gameObject, projectile)
-
-				if (collision) {
-					gameObject[ObjectIndex.PROJECTILE_COLLISION](projectile)
-					projectile[ObjectIndex.DESTROYED] = true
-				}
-
-				// The projectile may have also been destroyed by going out of bounds.
-				if (projectile[ObjectIndex.DESTROYED]) {
-					$.enemyProjectiles.splice(i, 1)
-				}
+			// The projectile may have also been destroyed by going out of bounds.
+			if (projectile[ObjectIndex.DESTROYED]) {
+				check.splice(i, 1)
 			}
 		}
 	}
