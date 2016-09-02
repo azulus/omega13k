@@ -83,6 +83,10 @@ const ShapeIndex = {
     BOUNDING_BOX: 3
 };
 
+const CircleConst = {
+  COMPONENT_TRIANGLES: 24
+};
+
 const PathIndex = {
   SEGMENTS: 0,
   LAST_KNOWN_SEGMENT: 1

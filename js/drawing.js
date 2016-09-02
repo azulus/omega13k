@@ -1,5 +1,8 @@
 $.assign($, {
-  TWICE_PI: Math.PI * 2,
+  CIRCLE_TRIANGLE_X_OFFSETS: Array(CircleConst.COMPONENT_TRIANGLES + 1).fill(0)
+    .map((v,i) => Math.cos(i * Math.PI * 2 / CircleConst.COMPONENT_TRIANGLES)),
+  CIRCLE_TRIANGLE_Y_OFFSETS: Array(CircleConst.COMPONENT_TRIANGLES + 1).fill(0)
+    .map((v,i) => Math.sin(i * Math.PI * 2 / CircleConst.COMPONENT_TRIANGLES)),
 
   /**
    * Get a 2d canvas context
@@ -45,23 +48,20 @@ $.assign($, {
   },
 
   drawCircleGL: (gl, prog, c, ox, oy) => {
-    console.log('circle', ox, oy)
-    var colorLocation = gl.getUniformLocation(prog, "u_color");
-    let triangleAmount = 24;
     let x = c[ShapeIndex.POINTS][0] + ox,
       y = c[ShapeIndex.POINTS][1] + oy;
+
     let vertices = [x,y];
-    for (let i = 0; i <= triangleAmount; i++){
-    	vertices.push(x + (c[ShapeIndex.RADIUS] * Math.cos(i * $.TWICE_PI / triangleAmount))),
-      vertices.push(y + (c[ShapeIndex.RADIUS] * Math.sin(i * $.TWICE_PI / triangleAmount)))
+    for (let i = 0; i <= CircleConst.COMPONENT_TRIANGLES; i++){
+    	vertices.push(x + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_X_OFFSETS[i])),
+      vertices.push(y + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_Y_OFFSETS[i]))
     }
-    gl.uniform4f(colorLocation, ...$.getShaderColor(c[ShapeIndex.COLOR]), 1);
+    gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(c[ShapeIndex.COLOR]), 1);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length / 2);
   },
 
   drawPolygonGL: (gl, prog, p, ox, oy) => {
-    console.log('polygon', ox, oy);
     var colorLocation = gl.getUniformLocation(prog, "u_color");
     gl.uniform4f(colorLocation, ...$.getShaderColor(p[ShapeIndex.COLOR]), 1);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p[ShapeIndex.POINTS].map((pt, idx) => pt + (idx % 2 === 0 ? ox : oy))), gl.STATIC_DRAW);

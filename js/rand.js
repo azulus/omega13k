@@ -1,4 +1,6 @@
 $.assign($, {
+  _colorMap: {},
+
   /**
    * Get a random number generator for a seed
    */
@@ -27,5 +29,12 @@ $.assign($, {
     return `#${c}${c}${c}`
   },
 
-  getShaderColor: (rgb) => rgb.substr(1).split('').map(val => parseInt(val,16) / 16)
+  getShaderColor: (rgb) => {
+    let val = $._colorMap[rgb];
+    if (!val) {
+      val = rgb.substr(1).split('').map(val => parseInt(val,16) / 16)
+      $._colorMap[rgb] = val;
+    }
+    return val;
+  }
 });
