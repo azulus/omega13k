@@ -81,7 +81,8 @@ const ShapeIndex = {
     RADIUS: 1,
     POINTS: 2,
     BOUNDING_BOX: 3,
-    WEBGL_REPRESENTATION: 4
+    WEBGL_REPRESENTATION: 4,
+    WEBGL_REPRESENTATION_LENGTH: 5
 };
 
 const CircleConst = {

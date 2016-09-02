@@ -1,4 +1,9 @@
 $.assign($, {
+  CIRCLE_TRIANGLE_X_OFFSETS: Array(CircleConst.COMPONENT_TRIANGLES + 1).fill(0)
+    .map((v,i) => Math.cos(i * Math.PI * 2 / CircleConst.COMPONENT_TRIANGLES)),
+  CIRCLE_TRIANGLE_Y_OFFSETS: Array(CircleConst.COMPONENT_TRIANGLES + 1).fill(0)
+    .map((v,i) => Math.sin(i * Math.PI * 2 / CircleConst.COMPONENT_TRIANGLES)),
+
   /**
    * Get a random coordinate in a range
    */
@@ -53,6 +58,15 @@ $.assign($, {
     }
   },
 
+  getCircleTriangles: (c) => {
+    let [x,y] = c[ShapeIndex.POINTS], vertices = [x,y];
+    for (let i = 0; i <= CircleConst.COMPONENT_TRIANGLES; i++){
+    	vertices.push(x + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_X_OFFSETS[i])),
+      vertices.push(y + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_Y_OFFSETS[i]))
+    }
+    return new Float32Array(vertices);
+  },
+
   getRandomShapes: (r, mx, my, s = '') => {
     let shouldMirror = s.indexOf('m') !== -1;
     let shouldInvert = s.indexOf('v') !== -1;
@@ -86,6 +100,15 @@ $.assign($, {
             $.invertPoints(shape[ShapeIndex.POINTS], my)
         );
         shapes.push(newShape);
+
+        if (shape[ShapeIndex.RADIUS]) {
+          shape[ShapeIndex.WEBGL_REPRESENTATION] = $.getCircleTriangles(shape);
+          newShape[ShapeIndex.WEBGL_REPRESENTATION] = $.getCircleTriangles(newShape);
+        } else {
+          shape[ShapeIndex.WEBGL_REPRESENTATION] = new Float32Array(shape[ShapeIndex.POINTS]);
+          newShape[ShapeIndex.WEBGL_REPRESENTATION] = new Float32Array(newShape[ShapeIndex.POINTS]);
+        }
+        newShape[ShapeIndex.WEBGL_REPRESENTATION_LENGTH] = shape[ShapeIndex.WEBGL_REPRESENTATION_LENGTH] = shape[ShapeIndex.WEBGL_REPRESENTATION].length / 2;
       }
     });
     return shapes;

@@ -1,9 +1,4 @@
 $.assign($, {
-  CIRCLE_TRIANGLE_X_OFFSETS: Array(CircleConst.COMPONENT_TRIANGLES + 1).fill(0)
-    .map((v,i) => Math.cos(i * Math.PI * 2 / CircleConst.COMPONENT_TRIANGLES)),
-  CIRCLE_TRIANGLE_Y_OFFSETS: Array(CircleConst.COMPONENT_TRIANGLES + 1).fill(0)
-    .map((v,i) => Math.sin(i * Math.PI * 2 / CircleConst.COMPONENT_TRIANGLES)),
-
   /**
    * Get a 2d canvas context
    */
@@ -47,24 +42,11 @@ $.assign($, {
     ctx.fill();
   },
 
-  drawCircleGL: (gl, prog, c, ox, oy) => {
-    let [x,y] = c[ShapeIndex.POINTS], vertices = [x,y];
-    for (let i = 0; i <= CircleConst.COMPONENT_TRIANGLES; i++){
-    	vertices.push(x + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_X_OFFSETS[i])),
-      vertices.push(y + (c[ShapeIndex.RADIUS] * $.CIRCLE_TRIANGLE_Y_OFFSETS[i]))
-    }
-    gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(c[ShapeIndex.COLOR]), 1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length / 2);
+  drawShapeGL: (gl, prog, s, ox, oy) => {
+    gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(s[ShapeIndex.COLOR]), 1);
+    gl.bufferData(gl.ARRAY_BUFFER, s[ShapeIndex.WEBGL_REPRESENTATION], gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, s[ShapeIndex.WEBGL_REPRESENTATION_LENGTH]);
   },
-
-  drawPolygonGL: (gl, prog, p, ox, oy) => {
-    gl.uniform4f(gl.getUniformLocation(prog, 'u_color'), ...$.getShaderColor(p[ShapeIndex.COLOR]), 1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p[ShapeIndex.POINTS]), gl.STATIC_DRAW);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, p[ShapeIndex.POINTS].length / 2);
-  },
-
-  drawShapeGL: (gl, prog, s, ox, oy) => s[ShapeIndex.RADIUS] ? $.drawCircleGL(gl, prog, s, ox, oy) : $.drawPolygonGL(gl, prog, s, ox, oy),
   drawShape: (ctx, s) => s[ShapeIndex.RADIUS] ? $.drawCircle(ctx, s) : $.drawPolygon(ctx, s),
 
   drawShapesToCanvas: (canvas, shapes, offsetX=0, offsetY=0) => {
