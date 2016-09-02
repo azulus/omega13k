@@ -44,10 +44,12 @@ $.assign($, {
     ctx.fill();
   },
 
-  drawCircleGL: (gl, prog, c) => {
+  drawCircleGL: (gl, prog, c, ox, oy) => {
+    console.log('circle', ox, oy)
     var colorLocation = gl.getUniformLocation(prog, "u_color");
     let triangleAmount = 24;
-    let [x,y] = c[ShapeIndex.POINTS];
+    let x = c[ShapeIndex.POINTS][0] + ox,
+      y = c[ShapeIndex.POINTS][1] + oy;
     let vertices = [x,y];
     for (let i = 0; i <= triangleAmount; i++){
     	vertices.push(x + (c[ShapeIndex.RADIUS] * Math.cos(i * $.TWICE_PI / triangleAmount))),
@@ -58,14 +60,15 @@ $.assign($, {
     gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length / 2);
   },
 
-  drawPolygonGL: (gl, prog, p) => {
+  drawPolygonGL: (gl, prog, p, ox, oy) => {
+    console.log('polygon', ox, oy);
     var colorLocation = gl.getUniformLocation(prog, "u_color");
     gl.uniform4f(colorLocation, ...$.getShaderColor(p[ShapeIndex.COLOR]), 1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p[ShapeIndex.POINTS]), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p[ShapeIndex.POINTS].map((pt, idx) => pt + (idx % 2 === 0 ? ox : oy))), gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, p[ShapeIndex.POINTS].length / 2);
   },
 
-  drawShapeGL: (gl, prog, s) => s[ShapeIndex.RADIUS] ? $.drawCircleGL(gl, prog, s) : $.drawPolygonGL(gl, prog, s),
+  drawShapeGL: (gl, prog, s, ox, oy) => s[ShapeIndex.RADIUS] ? $.drawCircleGL(gl, prog, s, ox, oy) : $.drawPolygonGL(gl, prog, s, ox, oy),
   drawShape: (ctx, s) => s[ShapeIndex.RADIUS] ? $.drawCircle(ctx, s) : $.drawPolygon(ctx, s),
 
   drawShapesToCanvas: (canvas, shapes, offsetX=0, offsetY=0) => {
@@ -73,7 +76,7 @@ $.assign($, {
     shapes.forEach(shape => $.drawShape(ctx, shape));
   },
 
-  drawShapesToCanvasGL: (canvas, shapes, offsetX=0, offsetY=0) => {
+  drawShapesToCanvasGL: (canvas, shapes, ox=0, oy=0) => {
     let gl = $.get3DContext(canvas),
       prog = $.get2DProgram(gl)
 
@@ -101,6 +104,6 @@ $.assign($, {
     gl.useProgram(prog)
     gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), canvas.width, canvas.height)
 
-    shapes.forEach(rs => $.drawShapeGL(gl, prog, rs))
+    shapes.forEach(rs => $.drawShapeGL(gl, prog, rs, ox, oy))
   }
 });

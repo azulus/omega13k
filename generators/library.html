@@ -19,11 +19,11 @@
 	    $.appendChild(con, cnt)
 	    cnv = $.createElement('canvas');
 	    $.appendChild(con, cnv);
-	    $.drawShapesToCanvas(cnv, shapes, 0, 0);
+	    $.drawShapesToCanvasGL(cnv, shapes, 0, 0);
 		}
 
 		window.addEventListener('load', () => {
-			$.enemySpec.forEach((spec, idx) => renderSeed(spec[0], spec[1]));
+			$.enemySpec.forEach((spec, idx) => idx < 10 && renderSeed(spec[0], spec[1]));
 		})
 	</script>
 	<script src='../js/lib/jsfxr.js'></script>
