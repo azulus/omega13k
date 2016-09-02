@@ -39,52 +39,8 @@ $.assign($, {
     return canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
   },
 
-  getStarfieldProgram: (gl) => {
-    let prog = $.shaderProgram(gl, `
-        attribute vec2 pos;
-        void main() {
-          gl_Position = vec4(pos, 0, 1);
-        }
-      `, `
-      precision mediump float;
-      uniform vec3 resolution;
-      uniform float globalTime;
-
-      void main()
-      {
-      	vec2 uv=gl_FragCoord.xy/resolution.xy-.5;
-      	uv.y*=resolution.y/resolution.x;
-
-      	vec3 dir=vec3(uv*0.8,1.);
-      	float time=globalTime*0.0005+.25;
-
-      	vec3 from=vec3(1.,-1.,0.);
-      	from+=vec3(time*2.,0.,0.);
-
-      	float s=0.1,fade=1.;
-      	vec3 v=vec3(0.);
-      	for (int r=0; r<20; r++) {
-      		vec3 p=from+s*dir*.5;
-      		p = abs(vec3(0.85)-mod(p,vec3(0.85*2.)));
-      		float pa,a=pa=0.;
-      		for (int i=0; i<18; i++) {
-      			p=abs(p)/dot(p,p)-0.53;
-      			a+=abs(length(p)-pa);
-      			pa=length(p);
-      		}
-      		float dm=max(0.,0.3-a*a*.001);
-      		a*=a*a;
-      		if (r>6) fade*=1.-dm;
-      		v+=fade;
-      		v+=vec3(s,s*s,s*s*s*s)*a*0.0015*fade;
-      		fade*=0.68;
-      		s+=0.1;
-      	}
-      	v=mix(vec3(length(v)),v,0.85);
-      	gl_FragColor = vec4(v*.01,1.);
-      }`)
-    return prog
-  },
+  getStarfieldProgram: (gl) => $.shaderProgram(gl, VectorShaderConst.STARFIELD, FragmentShaderConst.STARFIELD),
+  get2DProgram: (gl) => $.shaderProgram(gl, VectorShaderConst.TWO_DIMENSION, FragmentShaderConst.TWO_DIMENSION),
 
   getStarfieldAnimator: (canvas) => {
     let gl = $.get3DContext(canvas),

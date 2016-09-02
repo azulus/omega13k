@@ -19,12 +19,11 @@
 	    $.appendChild(con, cnt)
 	    cnv = $.createElement('canvas');
 	    $.appendChild(con, cnv);
-	    ctx = $.getContext(cnv)
-	    shapes.forEach(rs => $.drawShape(ctx, rs))
+	    $.drawShapesToCanvas(cnv, shapes, 0, 0);
 		}
 
 		window.addEventListener('load', () => {
-			$.enemySpec.forEach(spec => renderSeed(spec[0], spec[1]));
+			$.enemySpec.forEach((spec, idx) => renderSeed(spec[0], spec[1]));
 		})
 	</script>
 	<script src='../js/lib/jsfxr.js'></script>
@@ -32,6 +31,7 @@
 	<script src="../js/const.js"></script>
 
 	<script src="../js/dom.js"></script>
+	<script src="../js/shaders.js"></script>
 	<script src="../js/drawing.js"></script>
 	<script src="../js/enemySpec.js"></script>
 	<script src="../js/geometry.js"></script>

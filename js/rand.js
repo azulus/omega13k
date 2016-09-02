@@ -25,5 +25,7 @@ $.assign($, {
   getRandomUsableColor: (r) => {
     let c = $.getRandomFromArray(r, $.USABLE_COLORS);
     return `#${c}${c}${c}`
-  }
+  },
+
+  getShaderColor: (rgb) => rgb.substr(1).split('').map(val => parseInt(val,16) / 16)
 });

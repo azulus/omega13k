@@ -40,8 +40,7 @@
 				    $.appendChild(con, cnt)
 				    cnv = $.createElement('canvas');
 				    $.appendChild(con, cnv);
-				    ctx = $.getContext(cnv)
-				    shapes.forEach(rs => $.drawShape(ctx, rs))
+						$.drawShapesToCanvas(cnv, shapes);
 				  }
 				}
 				setTimeout(chunk, 0)
@@ -60,6 +59,7 @@
 	<script src="../js/const.js"></script>
 
 	<script src="../js/dom.js"></script>
+	<script src="../js/shaders.js"></script>
 	<script src="../js/drawing.js"></script>
 	<script src="../js/geometry.js"></script>
 	<script src="../js/math.js"></script>
