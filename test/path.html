@@ -6,14 +6,15 @@
 </head>
 <body>
 	<div id='w' class='g'>
-		<div id='g'></div>
+		<canvas id='f' width=800 height=600></canvas>
 	</div>
 	<script src='../js/lib/jsfxr.js'></script>
 	<script src="../js/init.js"></script>
 	<script src="../js/const.js"></script>
 
 	<script src="../js/dom.js"></script>
-	<script src="../js/drawing.js"></script>
+	<script src="../js/shaders.js"></script>
+  <script src="../js/drawing.js"></script>
 	<script src="../js/geometry.js"></script>
 	<script src="../js/math.js"></script>
 	<script src="../js/rand.js"></script>
@@ -25,8 +26,10 @@
         }
 
 		// generate a path
-		var results = $.getElementById('g');
+		var canvas = $.getElementById('f');
 		r = $.getRandomNumberGenerator(seed)
+
+    let {width, height} = canvas;
 
 		var CIRCLES_PER_SECOND = 100;
 		var MILLISECONDS_PER_CIRCLE = 1000 / CIRCLES_PER_SECOND;
@@ -34,35 +37,25 @@
 		let pathData = $.generateRandomPath(r, 0);
 		let ships = {};
 
-		let moveTo = (shipId, x, y) => {
-			let [canvas] = ships[shipId];
-			canvas.style.transform = `translate(${x}px, ${y}px)`
-		}
-
 		var totalTime;
 
 		for (var i = 0; i < pathData.length; i++) {
 			var path = pathData[i];
-			var canvas = $.createElement('canvas');
-
-			canvas.height = GameConst.SHIP_HEIGHT;
-			canvas.width = GameConst.SHIP_WIDTH;
 			shapes = $.getRandomShapes($.getRandomNumberGenerator(15), GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
-			$.drawShapesToCanvas(canvas, shapes);
-			$.appendChild(results, canvas);
-
 			totalTime = $.getTotalPathTime(path);
-
-			ships[i] = [canvas];
+			ships[i] = shapes;
 		}
 
 		var startTime = Date.now();
 		setInterval(() => {
+      let gl = $.get3DContext(canvas);
 			let currentTime = (Date.now() - startTime) % totalTime;
+      let prog = $.prepareCanvasForShapes(gl, width, height);
 
+      $.clear3DCanvas(gl);
 			for (var i = 0; i < pathData.length; i++) {
 				let pos = $.getPositionAtTime(pathData[i], currentTime);
-				moveTo(i, ...pos);
+				$.drawShapesToCanvasGL(gl, prog, ships[i], ...pos);
 			}
 
 		}, 16);
