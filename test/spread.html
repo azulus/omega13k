@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Path Generation</title>
+	<link rel="stylesheet" type="text/css" href="../game.css">
+</head>
+<body>
+	<div id='w' class='g'>
+		<canvas id='f' width=800 height=600></canvas>
+	</div>
+	<script src='../js/lib/jsfxr.js'></script>
+	<script src="../js/init.js"></script>
+	<script src="../js/const.js"></script>
+
+	<script src="../js/dom.js"></script>
+	<script src="../js/shaders.js"></script>
+  <script src="../js/drawing.js"></script>
+	<script src="../js/geometry.js"></script>
+	<script src="../js/math.js"></script>
+	<script src="../js/rand.js"></script>
+	<script src="../js/path.js"></script>
+    <script type="text/javascript">
+        seed = 101
+        if (document.location.search.length) {
+            seed = parseInt(document.location.search.substr(1), 10);
+        }
+
+		// generate a path
+		var canvas = $.getElementById('f');
+		r = $.getRandomNumberGenerator(seed)
+
+    let {width, height} = canvas;
+
+		var CIRCLES_PER_SECOND = 100;
+		var MILLISECONDS_PER_CIRCLE = 1000 / CIRCLES_PER_SECOND;
+
+		let pathData = $.generateRandomPath(r, 0);
+		let ships = {};
+
+		var totalTime;
+
+		// point from which projectiles will emit
+		let centerPoint = [width -30, height / 2];
+
+		// how many angles of fire there will be
+		let numAngles = $.randBetween(r, 1, 6)
+
+		// total angle arc must be less than 90 degrees
+		let minAngle = 10
+		let maxAngle = 90 / (numAngles - 1)
+		let angleBetween = $.randBetween(r, minAngle, maxAngle)
+
+		// multiplier to boost projectile count when there are few arcs
+		let projectileMultiplier = Math.floor(numAngles / 2) + 1
+
+		// how many total projectiles will there be
+		let projectilesPerAngle = $.randBetween(r, projectileMultiplier * 1, projectileMultiplier * 3)
+
+		// whether to fire in waves of angles or each angle individually
+		let shouldWave = r() < 0.5
+
+		// amount of time to leave between each projectile, they should fire in under a second total
+		// but have at least 1 frame between each projectile
+		let timeBetweenProjectiles = $.randBetween(r, 16, 1000 / numAngles * projectilesPerAngle)
+		let midPoint = numAngles / 2 - 0.5;
+		let projectilePaths = Array(numAngles).fill(0).map((v,i) => {
+			let offset = i - midPoint;
+			let angle = offset * angleBetween;
+			console.log(angle);
+		})
+		console.log(shouldWave, numAngles, projectilesPerAngle, angleBetween)
+
+
+		for (var i = 0; i < pathData.length; i++) {
+			var path = pathData[i];
+			shapes = $.getRandomShapes($.getRandomNumberGenerator(15), GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
+			totalTime = $.getTotalPathTime(path);
+			ships[i] = shapes;
+		}
+
+		var startTime = Date.now();
+		setInterval(() => {
+      let gl = $.get3DContext(canvas);
+			let currentTime = (Date.now() - startTime) % totalTime;
+      let prog = $.prepareCanvasForShapes(gl, width, height);
+
+      $.clear3DCanvas(gl);
+			for (var i = 0; i < pathData.length; i++) {
+				let pos = $.getPositionAtTime(pathData[i], currentTime);
+				$.drawShapesToCanvasGL(gl, prog, ships[i], ...pos);
+			}
+
+		}, 16);
+
+	</script>
+</body>
+</html>
