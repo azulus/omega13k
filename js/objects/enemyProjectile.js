@@ -1,8 +1,9 @@
 $.assign($, {
-	EnemyProjectileGameObject: function (seed = 1465, x, y) {
-		let speed = 6
+	EnemyProjectileGameObject: function (seed = 1465, x, y, angle) {
+		let speed = 3,
+		radians = $.radians(angle),
 
-		let obj = {
+		obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY_PROJECTILE,
 			// The seed
 			[ObjectIndex.SEED]: seed,
@@ -19,7 +20,9 @@ $.assign($, {
 
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
-				obj[ObjectIndex.POSITION_X] -= speed
+				// obj[ObjectIndex.POSITION_X] -= speed
+				obj[ObjectIndex.POSITION_X] += speed * Math.cos(radians)
+				obj[ObjectIndex.POSITION_Y] += speed * Math.sin(radians)
 				$.destroyProjectileIfOutsideGameRect(obj)
 			}
 		}

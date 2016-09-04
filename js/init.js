@@ -11,6 +11,8 @@ const $ = {
   document: document,
   parseFloat: parseFloat,
 
+  radians: degrees => degrees * Math.PI / 180,
+
   splitString: (s) => s.split(''),
 
   setArrayVals: (arr, ...vals) => {

@@ -5,8 +5,16 @@ $.assign($, {
 			tickMovement = speed,
 			pathStartTime = Date.now(),
 			totalPathTime = $.getTotalPathTime(path),
-			numProjectilesPerPoint = 10,
-			eachProjectileAngle = 22.5,
+
+			// Fire patterns to use when firing from two points on the ship.
+			twoGunFirePatterns = [
+				// Simple pattern, one bullets per point in a straight line.
+				[[-180], [-180]],
+				// One bullets per point, at an angle.
+				[[-140], [-220]],
+				// Two bullets per point.
+				[[-180, -140], [-180, -220]]
+			],
 
 		obj= {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
@@ -44,7 +52,7 @@ $.assign($, {
 				}
 
 				// Simple single projectile
-				if (now - lastShotTime > 500) {
+				if (now - lastShotTime > 800) {
 					lastShotTime = now
 					$.playSound(projectileSound)
 
@@ -72,28 +80,33 @@ $.assign($, {
 						})
 						// Just fire two projectiles for now.
 						.slice(0, 2)
-						.forEach(pts => {
+						.forEach((pts, idx) => {
+							let firePattern = twoGunFirePatterns[$.floor(Math.random() * twoGunFirePatterns.length)]
 							$.spawnEnemyProjectilesAtPoint(
 								pts[0] + obj[ObjectIndex.POSITION_X],
-								pts[1] + obj[ObjectIndex.POSITION_Y]
+								pts[1] + obj[ObjectIndex.POSITION_Y],
+								firePattern[idx]
 							);
-						})
+						});
 				}
 			}
 		}
-		return obj
+		return obj;
 	},
-	spawnEnemyProjectilesAtPoint: (x, y) => {
-		let projectile = new $.EnemyProjectileGameObject(
-			null,
-			x,
-			y
-		)
-		$.createEnemyProjectile(projectile)
+	spawnEnemyProjectilesAtPoint: (x, y, firePattern) => {
+		for (var i = 0; i < firePattern.length; i++) {
+			let projectile = new $.EnemyProjectileGameObject(
+				null,
+				x,
+				y,
+				firePattern[i]
+			);
+			$.createEnemyProjectile(projectile);
 
-		// Update projectile for Shape X/Y start position
-		let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0]
-		projectile[ObjectIndex.POSITION_X] -= firstShape[ShapeIndex.POINTS][0]
-		projectile[ObjectIndex.POSITION_Y] -= firstShape[ShapeIndex.POINTS][1]
+			// Update projectile for Shape X/Y start position
+			let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0];
+			projectile[ObjectIndex.POSITION_X] -= firstShape[ShapeIndex.POINTS][0];
+			projectile[ObjectIndex.POSITION_Y] -= firstShape[ShapeIndex.POINTS][1];
+		}
 	}
 })
