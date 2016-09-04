@@ -13,11 +13,14 @@ $.assign($, {
 						explosionSound = $.createExplosionSound(Math.random)
 
 					for (var i = 0; i < path.length; i++) {
+						let projectileDelay = i * 200;
+
 						$.createGameObject(new $.EnemyGameObject(
 							enemySpec,
 							path[i],
 							projectileSound,
-							explosionSound
+							explosionSound,
+							projectileDelay
 						))
 					}
 

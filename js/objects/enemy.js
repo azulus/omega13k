@@ -1,7 +1,7 @@
 $.assign($, {
-	EnemyGameObject: function (config, path, projectileSound, explosionSound) {
+	EnemyGameObject: function (config, path, projectileSound, explosionSound, projectileDelay = 0) {
 		let speed = 5,
-			lastShotTime = 0,
+			lastShotTime = Date.now() + projectileDelay,
 			tickMovement = speed,
 			pathStartTime = Date.now(),
 			totalPathTime = $.getTotalPathTime(path),
