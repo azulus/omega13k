@@ -43,10 +43,13 @@ $.assign($, {
 
 				if (now - lastShotTime > 50) {
 					lastShotTime = now;
+
+					let shapeCenter = $.getCenterOfShapes(obj[ObjectIndex.GENERATED_SHAPES]);
+
 					let projectile = new $.EnemyProjectileGameObject(
 						null,
-						obj[ObjectIndex.POSITION_X],
-						obj[ObjectIndex.POSITION_Y],
+						obj[ObjectIndex.POSITION_X] + shapeCenter[0],
+						obj[ObjectIndex.POSITION_Y] + shapeCenter[1],
 						lastShotAngle % 360
 					);
 					$.createEnemyProjectile(projectile);

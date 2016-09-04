@@ -274,5 +274,48 @@ $.assign($, {
         x2 > x1 + w1 ||
         y1 > y2 + h2 ||
         y2 > y1 + h1);
+  },
+
+  // Get all leftmost points.
+  leftOrderedShapes: (shapes) => {
+    const leftOrdered = [];
+    shapes.forEach(shape => {
+      let pts = shape[ShapeIndex.POINTS]
+
+      if (shape[ShapeIndex.RADIUS]) {
+        leftOrdered.push(pts)
+      } else if (pts.length === 6) {
+        let leftIdx = pts.reduce((l, n, idx) => (n < pts[l] && idx % 2 === 0 ? idx : l), 1);
+        leftOrdered.push([pts[leftIdx], pts[leftIdx + 1]])
+      } else if (pts.length === 8) {
+        leftOrdered.push([pts[0], pts[1] + (pts[5] - pts[1]) / 2])
+      }
+    });
+    return leftOrdered.sort((a, b) => {
+      return a[0] - b[0]
+    });
+  },
+
+  getCenterOfShapes: (shapes) => {
+    let x = 0, y = 0;
+
+    shapes.forEach(shape => {
+      let pts = shape[ShapeIndex.POINTS]
+      if (shape[ShapeIndex.RADIUS]) {
+        x += pts[0]
+        y += pts[1]
+      } else if (pts.length === 6) {
+        x += (pts[0] + pts[2] + pts[4]) / 3
+        y += (pts[1] + pts[3] + pts[5]) / 3
+      } else if (pts.length === 8) {
+        x += pts[0] + (pts[2] - pts[0]) / 2
+        y += pts[1] + (pts[5] - pts[1]) / 2
+      }
+    });
+
+    return [
+      x / shapes.length,
+      y / shapes.length
+    ];
   }
 });

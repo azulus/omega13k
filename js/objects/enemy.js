@@ -56,28 +56,10 @@ $.assign($, {
 					lastShotTime = now
 					$.playSound(projectileSound)
 
-					// Get projectile points from shapes.
-					let leftMostPoints = []
-
-					// Get all leftmost points.
-					obj[ObjectIndex.GENERATED_SHAPES].forEach(shape => {
-						let pts = shape[ShapeIndex.POINTS]
-
-						if (shape[ShapeIndex.RADIUS]) {
-							leftMostPoints.push(pts)
-						} else if (pts.length === 6) {
-							let leftIdx = pts.reduce((l, n, idx) => (n < pts[l] && idx % 2 === 0 ? idx : l), 1);
-							leftMostPoints.push([pts[leftIdx], pts[leftIdx + 1]])
-						} else if (pts.length === 8) {
-							leftMostPoints.push([pts[0], pts[1] + (pts[5] - pts[1]) / 2])
-						}
-					})
+					let leftOrderedShapes = $.leftOrderedShapes(obj[ObjectIndex.GENERATED_SHAPES]);
 
 					// sort, slice, and fire
-					leftMostPoints
-						.sort((a, b) => {
-							return a[0] - b[0]
-						})
+					leftOrderedShapes
 						// Just fire two projectiles for now.
 						.slice(0, 2)
 						.forEach((pts, idx) => {
