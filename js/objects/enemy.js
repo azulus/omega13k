@@ -5,6 +5,8 @@ $.assign($, {
 			tickMovement = speed,
 			pathStartTime = Date.now(),
 			totalPathTime = $.getTotalPathTime(path),
+			numProjectilesPerPoint = 10,
+			eachProjectileAngle = 22.5,
 
 		obj= {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
@@ -71,21 +73,27 @@ $.assign($, {
 						// Just fire two projectiles for now.
 						.slice(0, 2)
 						.forEach(pts => {
-							let projectile = new $.EnemyProjectileGameObject(
-								null,
+							$.spawnEnemyProjectilesAtPoint(
 								pts[0] + obj[ObjectIndex.POSITION_X],
 								pts[1] + obj[ObjectIndex.POSITION_Y]
-							)
-							$.createEnemyProjectile(projectile)
-
-							// Update projectile for Shape X/Y start position
-							let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0]
-							projectile[ObjectIndex.POSITION_X] -= firstShape[ShapeIndex.POINTS][0]
-							projectile[ObjectIndex.POSITION_Y] -= firstShape[ShapeIndex.POINTS][1]
+							);
 						})
 				}
 			}
 		}
 		return obj
+	},
+	spawnEnemyProjectilesAtPoint: (x, y) => {
+		let projectile = new $.EnemyProjectileGameObject(
+			null,
+			x,
+			y
+		)
+		$.createEnemyProjectile(projectile)
+
+		// Update projectile for Shape X/Y start position
+		let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0]
+		projectile[ObjectIndex.POSITION_X] -= firstShape[ShapeIndex.POINTS][0]
+		projectile[ObjectIndex.POSITION_Y] -= firstShape[ShapeIndex.POINTS][1]
 	}
 })
