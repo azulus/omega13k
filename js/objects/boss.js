@@ -8,6 +8,8 @@ $.assign($, {
 			life = 50,
 			speed = 5,
 			lastShotTime = 0,
+			lastShotAngle = -180,
+			eachShotAngle = 22.5,
 			tickMovement = speed,
 
 		obj= {
@@ -37,7 +39,19 @@ $.assign($, {
 
 			// Logic on enemy tick
 			[ObjectIndex.TICK]: () => {
-				let now = Date.now()
+				let now = Date.now();
+
+				if (now - lastShotTime > 50) {
+					lastShotTime = now;
+					let projectile = new $.EnemyProjectileGameObject(
+						null,
+						obj[ObjectIndex.POSITION_X],
+						obj[ObjectIndex.POSITION_Y],
+						lastShotAngle % 360
+					);
+					$.createEnemyProjectile(projectile);
+					lastShotAngle += eachShotAngle;
+				}
 			}
 		}
 		return obj

@@ -102,11 +102,6 @@ $.assign($, {
 				firePattern[i]
 			);
 			$.createEnemyProjectile(projectile);
-
-			// Update projectile for Shape X/Y start position
-			let firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0];
-			projectile[ObjectIndex.POSITION_X] -= firstShape[ShapeIndex.POINTS][0];
-			projectile[ObjectIndex.POSITION_Y] -= firstShape[ShapeIndex.POINTS][1];
 		}
 	}
 })

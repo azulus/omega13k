@@ -73,6 +73,12 @@ $.assign($, {
 
 	createEnemyProjectile: (obj) => {
 		$.createGameObject(obj)
+
+		// Update projectile for Shape X/Y start position
+		let firstShape = obj[ObjectIndex.GENERATED_SHAPES][0];
+		obj[ObjectIndex.POSITION_X] -= firstShape[ShapeIndex.POINTS][0];
+		obj[ObjectIndex.POSITION_Y] -= firstShape[ShapeIndex.POINTS][1];
+
 		$.enemyProjectiles.push(obj)
 	},
 
