@@ -178,7 +178,7 @@ $.assign($, {
       } else if ($.isTriangle(shape)) {
         // vertex is inside circle
         let rSquared = $.pow(projectileRadius,2);
-        for (let i = 0; i < pts.length; i++) {
+        for (let i = 0; i < pts.length; i+=2) {
           if ($.distance(
               [pts[i], pts[i+1]],
               [projectilePositionX, projectilePositionY]
