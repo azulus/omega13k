@@ -29,17 +29,18 @@
 		}
 		r = $.getRandomNumberGenerator(seed)
 		$.write($.getElementById('prev'), seed-1);
-		$.getElementById('prev').href = 'spread.html?' + (seed-1)
+		$.getElementById('prev').href = 'bosSpread.html?' + (seed-1)
 		$.write($.getElementById('curr'), seed);
 		$.write($.getElementById('next'), seed+1);
-		$.getElementById('next').href = 'spread.html?' + (seed+1)
+		$.getElementById('next').href = 'bossSpread.html?' + (seed+1)
 
 		// generate a path
 		var canvas = $.getElementById('f');
 		r = $.getRandomNumberGenerator(seed)
 
     let {width, height} = canvas;
-		let projectilePaths = $.generateProjectilePaths(r, canvas.width - 50, canvas.height / 2);
+		let projectilePaths = $.generateProjectilePaths(r, canvas.width - 50, canvas.height / 2, 0,
+      5, 10, 5, 10, 10, 20, 500);
 		let projectile = $.makeWebGLReady(['#ddd', 5, [5, 5]])
 
 		var startTime = Date.now();

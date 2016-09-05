@@ -105,7 +105,7 @@ $.assign($, {
        numWaves = $.randBetween(r, minWaves, maxWaves),
        projectilesPerWave = $.randBetween(r, minProjectilesPerWave, maxProjectilesPerWave),
        totalProjectiles = numWaves * numAngles * projectilesPerWave,
-       timeBetweenProjectiles = $.randBetween(r, 16, maxFireTime / totalProjectiles),
+       timeBetweenProjectiles = $.randBetween(r, 5, maxFireTime / totalProjectiles),
        midPoint = numAngles / 2 - 0.5,
        paths = [],
        i, j, k, offset, angle, xPerMs, yPerMs;
