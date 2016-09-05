@@ -33,6 +33,7 @@
 
 		var CIRCLES_PER_SECOND = 100;
 		var MILLISECONDS_PER_CIRCLE = 1000 / CIRCLES_PER_SECOND;
+		var DEGREES_TO_RADIANS = Math.PI / 180;
 
 		let pathData = $.generateRandomPath(r, 0);
 		let ships = {};
@@ -47,7 +48,7 @@
 
 		// total angle arc must be less than 90 degrees
 		let minAngle = 10
-		let maxAngle = 90 / (numAngles - 1)
+		let maxAngle = numAngles === 1 ? 90 : 90 / (numAngles - 1)
 		let angleBetween = $.randBetween(r, minAngle, maxAngle)
 
 		// multiplier to boost projectile count when there are few arcs
@@ -55,39 +56,60 @@
 
 		// how many total projectiles will there be
 		let projectilesPerAngle = $.randBetween(r, projectileMultiplier * 1, projectileMultiplier * 3)
+		let totalProjectiles = projectilesPerAngle * numAngles;
 
 		// whether to fire in waves of angles or each angle individually
 		let shouldWave = r() < 0.5
 
 		// amount of time to leave between each projectile, they should fire in under a second total
 		// but have at least 1 frame between each projectile
-		let timeBetweenProjectiles = $.randBetween(r, 16, 1000 / numAngles * projectilesPerAngle)
+		let timeBetweenProjectiles = $.randBetween(r, 16, 1000 / Math.floor(numAngles * projectilesPerAngle))
 		let midPoint = numAngles / 2 - 0.5;
-		let projectilePaths = Array(numAngles).fill(0).map((v,i) => {
-			let offset = i - midPoint;
-			let angle = offset * angleBetween;
-			console.log(angle);
-		})
-		console.log(shouldWave, numAngles, projectilesPerAngle, angleBetween)
+		let projectilePaths = Array(totalProjectiles).fill(0).map((v,i) => {
+			let startTime = i * timeBetweenProjectiles;
+			let angleIdx;
+
+			if (shouldWave) {
+				angleIdx = i % numAngles;
+			} else {
+				angleIdx = Math.floor(i / projectilesPerAngle);
+			}
+			let offset = angleIdx - midPoint;
+			let angle =( (180 + (offset * angleBetween) + 360) % 360) * DEGREES_TO_RADIANS;
+			let xPerMs = Math.cos(angle) * 200 / 1000;
+			let yPerMs = Math.sin(angle) * 200 / 1000;
+
+			return [...centerPoint, xPerMs, yPerMs, startTime]
+		});
+		// console.log(projectilePaths);
+		let projectile = $.makeWebGLReady(['#ddd', 5, [5, 5]])
 
 
-		for (var i = 0; i < pathData.length; i++) {
-			var path = pathData[i];
-			shapes = $.getRandomShapes($.getRandomNumberGenerator(15), GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
-			totalTime = $.getTotalPathTime(path);
-			ships[i] = shapes;
-		}
+		// for (var i = 0; i < pathData.length; i++) {
+		// 	var path = pathData[i];
+		// 	shapes = $.getRandomShapes($.getRandomNumberGenerator(15), GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
+		// 	totalTime = $.getTotalPathTime(path);
+		// 	ships[i] = shapes;
+		// }
 
 		var startTime = Date.now();
 		setInterval(() => {
       let gl = $.get3DContext(canvas);
-			let currentTime = (Date.now() - startTime) % totalTime;
+			let currentTime = (Date.now() - startTime);
       let prog = $.prepareCanvasForShapes(gl, width, height);
 
       $.clear3DCanvas(gl);
-			for (var i = 0; i < pathData.length; i++) {
-				let pos = $.getPositionAtTime(pathData[i], currentTime);
-				$.drawShapesToCanvasGL(gl, prog, ships[i], ...pos);
+			for (var i = 0; i < projectilePaths.length; i++) {
+				let path = projectilePaths[i];
+				let [x, y, xPerMs, yPerMs, startTime] = path;
+				if (currentTime >= startTime) {
+					let elapsedTime = currentTime - startTime;
+
+					// draw the projectile
+					$.drawShapesToCanvasGL(gl, prog, [projectile], x + (elapsedTime * xPerMs), y + (elapsedTime * yPerMs))
+				}
+				// let pos = $.getPositionAtTime(pathData[i], currentTime);
+				// $.drawShapesToCanvasGL(gl, prog, ships[i], ...pos);
 			}
 
 		}, 16);
