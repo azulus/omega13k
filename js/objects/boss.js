@@ -1,5 +1,5 @@
 $.assign($, {
-	BossGameObject: function () {
+	BossGameObject: function (projectileSeed) {
 
 		let bossSpec = $.enemySpec[$.floor(Math.random()*$.enemySpec.length)],
 			projectileSound = $.createLaserSound(Math.random),
@@ -7,10 +7,11 @@ $.assign($, {
 
 			life = 50,
 			speed = 5,
-			lastShotTime = 0,
-			lastShotAngle = -180,
-			eachShotAngle = 22.5,
 			tickMovement = speed,
+
+			projectileStartTime = Date.now(),
+			projectilePaths = [],
+			projectilePathsFired = [],
 
 		obj= {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY,
@@ -39,21 +40,37 @@ $.assign($, {
 
 			// Logic on enemy tick
 			[ObjectIndex.TICK]: () => {
-				let now = Date.now();
+				let now = Date.now(),
+					projectileIdx = projectilePaths.length;
 
-				if (now - lastShotTime > 50) {
-					lastShotTime = now;
+				// Fire all projectiles that have started.
+				while (projectileIdx--) {
+					let [x, y, xPerMs, yPerMs, startTime] = projectilePaths[projectileIdx];
+					if (now - projectileStartTime >= startTime) {
+						let projectile = new $.EnemyProjectileGameObject(
+							null,
+							projectilePaths[projectileIdx]
+						);
+						$.createEnemyProjectile(projectile);
+						projectilePathsFired.push(projectilePaths.splice(projectileIdx, 1));
+					}
+				}
 
+				if (now - projectileStartTime > 3000) {
 					let shapeCenter = $.getCenterOfShapes(obj[ObjectIndex.GENERATED_SHAPES]);
 
-					let projectile = new $.EnemyProjectileGameObject(
-						null,
-						obj[ObjectIndex.POSITION_X] + shapeCenter[0],
-						obj[ObjectIndex.POSITION_Y] + shapeCenter[1],
-						lastShotAngle % 360
-					);
-					$.createEnemyProjectile(projectile);
-					lastShotAngle += eachShotAngle;
+					if (projectilePathsFired.length) {
+						projectilePaths = $.offsetProjectilePaths(projectilePathsFired, now - projectileStartTime);
+						projectilePathsFired = [];
+					} else {
+						projectilePaths = $.generateProjectilePaths(
+							projectileSeed,
+							obj[ObjectIndex.POSITION_X] + shapeCenter[0],
+							obj[ObjectIndex.POSITION_Y] + shapeCenter[1],
+							0, 5, 10, 5, 10, 10, 20, 500
+						)
+					}
+					projectileStartTime = now;
 				}
 			}
 		}
