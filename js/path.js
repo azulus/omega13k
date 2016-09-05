@@ -1,4 +1,6 @@
 $.assign($, {
+  DEGREES_TO_RADIANS: Math.PI / 180,
+
   generateRandomPath: (r,startTime = 0) => {
 
     let isSymmetrical = r() < 0.5
@@ -89,6 +91,40 @@ $.assign($, {
 
     return paths;
   },
+
+  offsetProjectilePaths: (paths, time) => paths.map(path => $.setArrayVals(
+    [].concat(path), 4, time)),
+
+  generateProjectilePaths: (r, x, y, offsetTime=0, minWaves=1, maxWaves=5,
+   minProjectilesPerWave=1, maxProjectilesPerWave=5,
+   minPaths=1, maxPaths=6, maxFireTime=2000) => {
+     let numAngles = $.randBetween(r, minPaths, maxPaths),
+       minAngle = 10,
+       maxAngle = numAngles <= 2 ? 90 : 90 / (numAngles - 1),
+       angleBetween = $.randBetween(r, minAngle, maxAngle),
+       numWaves = $.randBetween(r, minWaves, maxWaves),
+       projectilesPerWave = $.randBetween(r, minProjectilesPerWave, maxProjectilesPerWave),
+       totalProjectiles = numWaves * numAngles * projectilesPerWave,
+       timeBetweenProjectiles = $.randBetween(r, 16, maxFireTime / totalProjectiles),
+       midPoint = numAngles / 2 - 0.5,
+       paths = [],
+       i, j, k, offset, angle, xPerMs, yPerMs;
+       for (i = 0; i < numWaves; i++) {
+         for (j = 0; j < numAngles; j++) {
+           offset = j - midPoint;
+           angle =( (180 + (offset * angleBetween) + 360) % 360) * $.DEGREES_TO_RADIANS;
+           xPerMs = Math.cos(angle) * 200 / 1000;
+           yPerMs = Math.sin(angle) * 200 / 1000;
+
+           for (k = 0; k < projectilesPerWave; k++) {
+             paths.push([x, y, xPerMs, yPerMs, offsetTime]);
+             offsetTime += timeBetweenProjectiles;
+           }
+         }
+       }
+       return paths;
+ },
+
 
   getTotalPathTime: (path) => {
     let segments = path[PathIndex.SEGMENTS],
