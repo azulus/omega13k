@@ -1,8 +1,8 @@
 $.assign($, {
 	PlayerGameObject: function (seed = 1037) {
 		let speed = 5,
-			x = 0,
-			y = 0,
+			x = 290,
+			y = 235,
 			lastShotTime = 0,
 			spriteWidth = 55,
 			spriteHeight = 90,
