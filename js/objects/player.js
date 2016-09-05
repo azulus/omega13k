@@ -4,8 +4,6 @@ $.assign($, {
 			x = 290,
 			y = 235,
 			lastShotTime = 0,
-			spriteWidth = 55,
-			spriteHeight = 90,
 
 			soundSeed = 102,
 			projectileSound = $.createLaserSound($.getRandomNumberGenerator(soundSeed)),
@@ -46,9 +44,9 @@ $.assign($, {
 
 				// Update player based on arrows.
 				// Prevent the player from going out of bounds.
-				if ($.downKeys.ArrowDown && y < GameConst.HEIGHT - speed - spriteHeight) y += speed;
+				if ($.downKeys.ArrowDown && y < GameConst.HEIGHT - speed - GameConst.SHIP_HEIGHT) y += speed;
 				if ($.downKeys.ArrowUp && y > speed) y -= speed;
-				if ($.downKeys.ArrowRight && x < GameConst.WIDTH - speed - spriteWidth) x += speed;
+				if ($.downKeys.ArrowRight && x < GameConst.WIDTH - speed - GameConst.SHIP_WIDTH) x += speed;
 				if ($.downKeys.ArrowLeft && x > speed) x -= speed;
 
 				obj[ObjectIndex.POSITION_Y] = y

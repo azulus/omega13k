@@ -183,7 +183,7 @@ $.assign($, {
               [pts[i], pts[i+1]],
               [projectilePositionX, projectilePositionY]
             ) <= rSquared) {
-            console.log('Collision. Triangle vertex is inside circle.')
+            // console.log('Collision. Triangle vertex is inside circle.')
             return true;
           }
         }
