@@ -93,7 +93,7 @@ $.assign($, {
   },
 
   offsetProjectilePaths: (paths, time) => paths.map(path => $.setArrayVals(
-    [].concat(path), 4, time)),
+    [].concat(path), 4, time + path[4])),
 
   generateProjectilePaths: (r, x, y, offsetTime=0, minWaves=1, maxWaves=5,
    minProjectilesPerWave=1, maxProjectilesPerWave=5,
