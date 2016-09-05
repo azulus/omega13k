@@ -107,12 +107,14 @@ $.assign($, {
        totalProjectiles = numWaves * numAngles * projectilesPerWave,
        timeBetweenProjectiles = $.randBetween(r, 5, maxFireTime / totalProjectiles),
        midPoint = numAngles / 2 - 0.5,
+       shouldInterleave = r() < 0.5,
+       halfAngleBetween = angleBetween / 2,
        paths = [],
        i, j, k, offset, angle, xPerMs, yPerMs;
        for (i = 0; i < numWaves; i++) {
          for (j = 0; j < numAngles; j++) {
            offset = j - midPoint;
-           angle =( (180 + (offset * angleBetween) + 360) % 360) * $.DEGREES_TO_RADIANS;
+           angle =( (180 + (offset * angleBetween) + 360 + (shouldInterleave && i % 2 === 0 ? 0 : halfAngleBetween)) % 360) * $.DEGREES_TO_RADIANS;
            xPerMs = Math.cos(angle) * 200 / 1000;
            yPerMs = Math.sin(angle) * 200 / 1000;
 
