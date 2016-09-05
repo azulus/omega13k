@@ -1,6 +1,10 @@
 $.assign($, {
 	PlayerGameObject: function (seed = 1037) {
-		let speed = 5,
+		let maxSpeed = 5,
+
+			acceleration = maxSpeed / 20,
+			velocity = [0, 0],
+
 			x = 290,
 			y = 235,
 			lastShotTime = 0,
@@ -43,14 +47,22 @@ $.assign($, {
 					y = obj[ObjectIndex.POSITION_Y]
 
 				// Update player based on arrows.
-				// Prevent the player from going out of bounds.
-				if ($.downKeys.ArrowDown && y < GameConst.HEIGHT - speed - GameConst.SHIP_HEIGHT) y += speed;
-				if ($.downKeys.ArrowUp && y > speed) y -= speed;
-				if ($.downKeys.ArrowRight && x < GameConst.WIDTH - speed - GameConst.SHIP_WIDTH) x += speed;
-				if ($.downKeys.ArrowLeft && x > speed) x -= speed;
+				// Update velocity.
+				if ($.downKeys.ArrowDown) velocity[1] = Math.min(velocity[1] + acceleration, maxSpeed);
+				else if ($.downKeys.ArrowUp) velocity[1] = Math.max(velocity[1] - acceleration, -maxSpeed);
+				else if (velocity[1] > 0) velocity[1] -= acceleration;
+				else if (velocity[1] < 0) velocity[1] += acceleration;
+				if ($.downKeys.ArrowRight) velocity[0] = Math.min(velocity[0] + acceleration, maxSpeed);
+				else if ($.downKeys.ArrowLeft) velocity[0] = Math.max(velocity[0] - acceleration, -maxSpeed);
+				else if (velocity[0] > 0) velocity[0] -= acceleration;
+				else if (velocity[0] < 0) velocity[0] += acceleration;
 
-				obj[ObjectIndex.POSITION_Y] = y
-				obj[ObjectIndex.POSITION_X] = x
+				x = obj[ObjectIndex.POSITION_X] + velocity[0];
+				y = obj[ObjectIndex.POSITION_Y] + velocity[1];
+
+				// Prevent the player from going out of bounds.
+				if (y < GameConst.HEIGHT - GameConst.SHIP_HEIGHT && y > 0) obj[ObjectIndex.POSITION_Y] = y;
+				if (x < GameConst.WIDTH - GameConst.SHIP_WIDTH && x > 0) obj[ObjectIndex.POSITION_X] = x;
 
 				if ($.downKeys[' '] && now - lastShotTime > 300) {
 					lastShotTime = now
