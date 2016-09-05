@@ -1,8 +1,6 @@
 $.assign($, {
-	EnemyProjectileGameObject: function (seed = 1465, x, y, angle) {
-		let speed = 3,
-		radians = $.radians(angle),
-
+	EnemyProjectileGameObject: function (seed = 1465, path) {
+		let lastPathTime = Date.now(),
 		obj = {
 			[ObjectIndex.OBJECT_TYPE]: ObjectTypeIndex.ENEMY_PROJECTILE,
 			// The seed
@@ -14,16 +12,21 @@ $.assign($, {
 			// Height
 			[ObjectIndex.HEIGHT]: 120,
 			// X Position
-			[ObjectIndex.POSITION_X]: x,
+			[ObjectIndex.POSITION_X]: path[0],
 			// Y Position
-			[ObjectIndex.POSITION_Y]: y,
+			[ObjectIndex.POSITION_Y]: path[1],
 
 			// Logic on player tick
 			[ObjectIndex.TICK]: () => {
-				// obj[ObjectIndex.POSITION_X] -= speed
-				obj[ObjectIndex.POSITION_X] += speed * Math.cos(radians)
-				obj[ObjectIndex.POSITION_Y] += speed * Math.sin(radians)
+				let [x, y, xPerMs, yPerMs, startTime] = path;
+				let now = Date.now();
+				let elapsedTime = now - lastPathTime;
+
+				obj[ObjectIndex.POSITION_X] += elapsedTime * xPerMs
+				obj[ObjectIndex.POSITION_Y] += elapsedTime * yPerMs
 				$.destroyProjectileIfOutsideGameRect(obj)
+
+				lastPathTime = now;
 			}
 		}
 		return obj;

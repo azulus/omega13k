@@ -10,7 +10,8 @@ $.assign($, {
 
 						// Each wave has the same ship graphics, explosion sounds and projectile sounds.
 						projectileSound = $.createLaserSound(Math.random),
-						explosionSound = $.createExplosionSound(Math.random)
+						explosionSound = $.createExplosionSound(Math.random),
+						projectileSeed = Math.random;
 
 					for (var i = 0; i < path.length; i++) {
 						let projectileDelay = i * 200;
@@ -20,6 +21,7 @@ $.assign($, {
 							path[i],
 							projectileSound,
 							explosionSound,
+							projectileSeed,
 							projectileDelay
 						))
 					}
