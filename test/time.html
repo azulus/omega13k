@@ -219,35 +219,17 @@
 				shouldResumeNormal = true;
 			}
 
+			// spawn enemies and update their positions
 			enemies = updateAndRetrieveEnemies(gameTime);
+
+			// spawn and update projectile positions
 			updateAndRetrieveEnemyProjectiles(gameTime, elapsedTime, enemies);
-			//
-			// if (timeMultiplier < 0) {
-			// 	// time rewound
-			// 	unspawnProjectiles(gameTime, lastGameTime);
-			// 	restoreHealth(gameTime);
-			// 	restorePlayerPosition(gameTime);
-			//
-			// } else if (timeMultiplier > 0) {
-			// 	// time moving, need to spawn enemies
-			// 	spawnProjectiles(gameTime, lastGameTime);
-			// 	updatePlayerPosition(gameTime, elapsedTime);
-			// }
-			//
-			// if (timeMultiplier !== 0) {
-			// 	// need to reposition according to current time
-			// 	moveEnemies(gameTime);
-			// 	moveProjectiles(gameTime);
-			// }
-			//
-			// if (timeMultiplier >= 0) {
-			// 	// time isn't rewound, check for collisions
-			// 	checkPlayerCollisions();
-			// }
-			//
-			// if (timeMultiplier > 0) {
-			// 	checkEnemyCollisions();
-			// }
+
+			// update player position (by player controls if non-negative, by replay if negative)
+
+			// check for collision between player and enemy projectiles (if non-negative time)
+
+			// update player health (if negative time, done automatically during collision tests normally)
 
 
 			// initialize the canvas
