@@ -91,14 +91,15 @@
 				let shouldDelete = false;
 				for (i = 0; shouldDelete === false && i < enemyProjectiles.length; i++) {
 					let projectile = enemyProjectiles[i];
-					if (projectile[1] && projectile[1] > gameTime) projectile[1] = undefined;
+					if (projectile[1] && projectile[1] > gameTime) {
+						if (i < firstProjectileIdx) firstProjectileIdx = i;
+						projectile[1] = undefined;
+					}
 					if (projectile[0] > gameTime) shouldDelete = true;
 				}
 				if (shouldDelete) {
 					enemyProjectiles = enemyProjectiles.filter(p => p[0] <= gameTime);
 				}
-
-				firstProjectileIdx = 0;
 			}
 
 			for (i = 0; i < enemies.length; i++) {
