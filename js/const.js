@@ -66,11 +66,11 @@ const GameConst = {
 };
 
 const SpeedConst = {
-  REWIND: -2,
+  REWIND: -4,
   PAUSE: 0,
   SLOW: 0.3,
   NORMAL: 1,
-  FAST_FORWARD: 2
+  FAST_FORWARD: 4
 };
 
 const ObjectIndex = {

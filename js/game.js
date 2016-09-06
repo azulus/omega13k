@@ -85,14 +85,6 @@ $.assign($, {
 	},
 
 	_startTime: null,
-	_canvas: null,
-	getCanvas: () => {
-		let val = $._canvas;
-		if (!val) {
-			$._canvas = val = $.getElementById('f');
-		}
-		return val;
-	},
 
 	drawLoop: () => {
 		if (!$._startTime) {
