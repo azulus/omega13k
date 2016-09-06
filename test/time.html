@@ -72,8 +72,10 @@
 				if (end !== undefined) continue;
 				let elapsedTime = gameTime - start;
 				let [x, y, xPerMs, yPerMs, startTime] = path;
-
-				$.drawShapesToCanvasGL(gl, prog, projectileShapeArray, x + (elapsedTime * xPerMs), y + (elapsedTime * yPerMs))
+				let newX = x + (elapsedTime * xPerMs);
+				let newY = y + (elapsedTime * yPerMs)
+				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) end = gameTime;
+				$.drawShapesToCanvasGL(gl, prog, projectileShapeArray, newX, newY)
 			}
 		};
 
@@ -104,7 +106,6 @@
 					let nextTime = enemy[LevelShipIndex.NEXT_PROJECTILE];
 					let path = enemy[LevelShipIndex.PROJECTILE_TIMES][nextTime];
 					if (path && path[0] <= gameTime) {
-						console.log('SPAWNING');
 						enemyProjectiles = enemyProjectiles.concat(
 							$.offsetProjectilePaths(
 								enemy[LevelShipIndex.PROJECTILE_PATH],
@@ -261,7 +262,7 @@
 		initGame()
 		generateLevel();
 		//requestAnimationFrame(gameLoop)
-		setInterval(gameLoop, 200)
+		setInterval(gameLoop, 16)
 	</script>
 </body>
 </html>
