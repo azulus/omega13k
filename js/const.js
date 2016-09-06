@@ -12,9 +12,16 @@ const LevelShipIndex = {
   START_TIME: 0,
   END_TIME: 1,
   KILL_TIME: 2,
-  ENEMY_DATA: 3,
+  SHAPES: 3,
   PATH_DATA: 4,
   PROJECTILE_PATH: 5
+};
+
+const LevelPlayerIndex = {
+  SHAPES: 1,
+  HEALTH: 2,
+  POSITION: 3,
+  CHRONO_METER: 4
 };
 
 const AudioIndex = {
