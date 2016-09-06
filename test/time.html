@@ -48,6 +48,9 @@
 		_activeEnemyCount: 0,
 		// projectile data
 		enemyProjectiles: null,
+		_activeProjectileIndexes: Array(2000).fill(0),
+		_activeProjectileCount: 0,
+		// player data
 		player: null,
 
 		speedMultiplier: 1,
@@ -165,7 +168,7 @@
 			$._activeEnemyCount = count;
 		},
 
-		updateAndRetrieveEnemyProjectiles: (elapsedTime) => {
+		updateProjectileStates: (elapsedTime) => {
 			if (elapsedTime === 0) return;
 			let i, idx = 0;
 
@@ -232,7 +235,7 @@
 			$.updateEnemyStates();
 
 			// spawn and update projectile positions
-			$.updateAndRetrieveEnemyProjectiles(elapsedTime);
+			$.updateProjectileStates(elapsedTime);
 
 			// update player position (by player controls if non-negative, by replay if negative)
 
@@ -255,6 +258,7 @@
 			$.renderEnemyProjectiles(gl, prog, $.enemyProjectiles);
 			// renderPlayerProjectiles(gameTime);
 			//
+			gl.flush();
 
 			if (shouldResumeNormal) {
 				$.setTimeMultiplier(1);
