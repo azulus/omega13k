@@ -38,10 +38,15 @@
 	<script src="../js/path.js"></script>
   <script type="text/javascript">
   	$.assign($, {
+		// timing data
 		levelStartTime: null,
 		levelGameTime: null,
 		levelLastLoopTime: null,
-		levelWaves: null,
+		// enemy data
+		levelEnemies: null,
+		_activeEnemyIndexes: Array(100).fill(0),
+		_activeEnemyCount: 0,
+		// projectile data
 		enemyProjectiles: null,
 		player: null,
 
@@ -52,9 +57,9 @@
 
 		setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
-		renderEnemies: (gl, prog, enemyIndexes) => {
-			for (let i = 0; i < enemyIndexes.length; i++){
-				let enemy = $.levelWaves[enemyIndexes[i]];
+		renderEnemies: (gl, prog) => {
+			for (let i = 0; i < $._activeEnemyCount; i++){
+				let enemy = $.levelEnemies[$._activeEnemyIndexes[i]];
 				let shapes = enemy[LevelShipIndex.SHAPES];
 				let paths = enemy[LevelShipIndex.PATH_DATA];
 				let pos = $.getPositionAtTime(paths, $.levelGameTime);
@@ -124,7 +129,7 @@
 				})
 			}
 
-			$.levelWaves = waves;
+			$.levelEnemies = waves;
 		},
 
 		initializeGame: () => {
@@ -140,11 +145,11 @@
 			$.enemyProjectiles = [];
 		},
 
-		updateAndRetrieveEnemies: () => {
-			let activeEnemies = [];
+		updateEnemyStates: () => {
+			let count = 0;
 
-			for (let i = 0; i < $.levelWaves.length; i++) {
-				let wave = $.levelWaves[i];
+			for (let i = 0; i < $.levelEnemies.length; i++) {
+				let wave = $.levelEnemies[i];
 
 				if (wave[LevelShipIndex.KILL_TIME] !== undefined && wave[LevelShipIndex.KILL_TIME] > $.levelGameTime) {
 					wave[LevelShipIndex.KILL_TIME] = undefined;
@@ -153,13 +158,14 @@
 				if (wave[LevelShipIndex.KILL_TIME] === undefined &&
 						wave[LevelShipIndex.START_TIME] <= $.levelGameTime &&
 						wave[LevelShipIndex.END_TIME] >= $.levelGameTime) {
-					activeEnemies.push(i);
+					$._activeEnemyIndexes[count++] = i;
 				}
 			}
-			return activeEnemies;
+
+			$._activeEnemyCount = count;
 		},
 
-		updateAndRetrieveEnemyProjectiles: (elapsedTime, enemyIndexes) => {
+		updateAndRetrieveEnemyProjectiles: (elapsedTime) => {
 			if (elapsedTime === 0) return;
 			let i, idx = 0;
 
@@ -178,8 +184,8 @@
 				}
 			}
 
-			for (i = 0; i < enemyIndexes.length; i++) {
-				let enemy = $.levelWaves[enemyIndexes[i]];
+			for (i = 0; i < $._activeEnemyCount; i++) {
+				let enemy = $.levelEnemies[$._activeEnemyIndexes[i]];
 
 				if (elapsedTime < 0) {
 					// reset the counters for new projectiles for each enemy
@@ -212,7 +218,6 @@
 			let currentTime = Date.now();
 			let elapsedTime = (currentTime - $.levelLastLoopTime) * $.speedMultiplier;
 			let shouldResumeNormal = false;
-			let enemyIndexes;
 			$.levelLastLoopTime = currentTime;
 
 			let lastGameTime = $.levelGameTime;
@@ -224,10 +229,10 @@
 			}
 
 			// spawn enemies and update their positions
-			enemyIndexes = $.updateAndRetrieveEnemies();
+			$.updateEnemyStates();
 
 			// spawn and update projectile positions
-			$.updateAndRetrieveEnemyProjectiles(elapsedTime, enemyIndexes);
+			$.updateAndRetrieveEnemyProjectiles(elapsedTime);
 
 			// update player position (by player controls if non-negative, by replay if negative)
 
@@ -246,7 +251,7 @@
 
 			// render shapes
 			let prog = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
-			$.renderEnemies(gl, prog, enemyIndexes);
+			$.renderEnemies(gl, prog);
 			$.renderEnemyProjectiles(gl, prog, $.enemyProjectiles);
 			// renderPlayerProjectiles(gameTime);
 			//
