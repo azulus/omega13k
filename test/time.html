@@ -1,28 +1,229 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Test Sound Generation</title>
+	<title>Test Path Generation</title>
+	<link rel="stylesheet" type="text/css" href="../game.css">
 </head>
 <body>
-  <a id='prev'></a>
-  <span id='curr'></span>
-  <a id='next'></a>
+	<ul>
+		<li><button id='rewind'>Rewind</button></li>
+		<li><button id='pause'>Pause</button></li>
+		<li><button id='slow'>Slow</button></li>
+		<li><button id='normal'>Normal</button></li>
+		<li><button id='fast'>Fast Forward</button></li>
+	</ul>
 
-  <script src='../js/lib/jsfxr.js'></script>
+	<div id='w' class='g'>
+		<canvas id='f' width=800 height=600></canvas>
+	</div>
+	<script src='../js/lib/jsfxr.min.js'></script>
 	<script src="../js/init.js"></script>
 	<script src="../js/const.js"></script>
 
+	<script src="../js/levels/boss.js"></script>
+	<script src="../js/levels/dialog.js"></script>
+	<script src="../js/levels/splash.js"></script>
+	<script src="../js/levels/wave.js"></script>
+
+	<script src="../js/audio.js"></script>
 	<script src="../js/dom.js"></script>
 	<script src="../js/drawing.js"></script>
+	<script src="../js/enemySpec.js"></script>
 	<script src="../js/geometry.js"></script>
-	<script src="../js/math.js"></script>
+	<script src="../js/keyboard.js"></script>
+	<script src="../js/levels.js"></script>
 	<script src="../js/rand.js"></script>
-	<script src="../js/audio.js"></script>
+	<script src="../js/shaders.js"></script>
+	<script src="../js/math.js"></script>
 	<script src="../js/path.js"></script>
-
   <script type="text/javascript">
+		let startTime = null;
+		let gameTime = null;
+		let lastTime = null;
+		let timeMultiplier = 1;
+
+		setTimeMultiplier = (tm) => {timeMultiplier = tm; return 1}
+
+		$.getElementById('rewind').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.REWIND) && e.preventDefault())
+		$.getElementById('pause').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
+		$.getElementById('slow').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
+		$.getElementById('normal').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
+		$.getElementById('fast').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
+
+		let clearCanvas = () => {
+
+		};
+
+		let renderBackground = (gameTime) => {
+
+		};
+
+		let renderPlayer = (gameTime) => {
+
+		};
+
+		let renderEnemies = (gameTime) => {
+
+		};
+
+		let renderPlayerProjectiles = (gameTime) => {
+
+		};
+
+		let renderEnemyProjectiles = (gameTime) => {
+
+		};
+
+		let render = (gameTime) => {
+			// clear the canvas
+			clearCanvas();
+			renderBackground(gameTime);
+			renderPlayer(gameTime);
+			renderEnemies(gameTime);
+			renderPlayerProjectiles(gameTime);
+			renderEnemyProjectiles(gameTime);
+		};
+
+		let checkPlayerCollisions = () => {
+
+		};
+
+		let checkEnemyCollisions = () => {
+
+		};
+
+		let spawnEnemies = (now, last) => {
+
+		};
+
+		let unspawnEnemies = (now, last) => {
+
+		};
+
+		let unspawnProjectiles = (now, last) => {
+
+		};
+
+		let spawnProjectiles = (now, last) => {
+
+		};
+
+		let moveEnemies = (now) => {
+
+		};
+
+		let moveProjectiles = (now) => {
+
+		}
+
+		let restoreHealth = (now) => {
+
+		};
+
+		let restorePlayerPosition = (now) => {
+
+		};
+
+		let updatePlayerPosition = (now, elapsed) => {
+
+		};
+
+		let initGame = () => {
+			startTime = lastTime = Date.now();
+			gameTime = 0;
+		}
+
+		let generateLevel = (seed=1, numWaves=10, idealMsBetweenWaves=5000,
+				idealProjectileWaves=3, idealProjectilesPerPath=3,
+				idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
+				projectileSpeed=200) => {
+			let r = $.getRandomNumberGenerator(seed),
+				i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles;
+
+		  // generate the timings and paths for each wave of enemies
+			for (i = 0; i < numWaves; i++) {
+				// create the delay between this and the previous wave
+				delay += $.randBetween(r, idealMsBetweenWaves * 0.75, idealMsBetweenWaves*1.25);
+				// generate the path for the wave to follow
+				path = $.generateRandomPath(r, delay);
+				// the time at which the wave starts
+				start = delay
+				// the time at which the wave ends (for convenience's sake)
+				end = delay + $.getTotalPathTime(path[0])
+				// the enemy to use for the wave
+				enemy = $.getRandomFromArray(r, $.enemySpec)
+				enemyR = $.getRandomNumberGenerator(enemy[0]);
+				// the projectile pattern to use
+				projectilePattern = $.generateProjectilePaths(
+					enemyR,
+					0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
+				 idealProjectilesPerPath-1, idealProjectilesPerPath+1,
+				 idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed)
+				// time between volleys of projectiles
+				timeBetweenProjectiles = $.floor($.randBetween(enemyR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25))
+				path.forEach(p => {
+					waves.push([start, end, undefined, enemy, p, projectilePattern, timeBetweenProjectiles])
+				})
+			}
+
+			return waves;
+		};
+
+		let gameLoop = () => {
+			let currentTime = Date.now();
+			let elapsedTime = currentTime - lastTime;
+			let shouldResumeNormal = false;
+			lastTime = currentTime;
+
+			let lastGameTime = gameTime;
+			gameTime += elapsedTime * timeMultiplier;
+
+			if (gameTime < 0) {
+				gameTime = 0;
+				shouldResumeNormal = true;
+			}
+
+			if (timeMultiplier < 0) {
+				// time rewound
+				unspawnEnemies(gameTime, lastGameTime);
+				unspawnProjectiles(gameTime, lastGameTime);
+				restoreHealth(gameTime);
+				restorePlayerPosition(gameTime);
+
+			} else if (timeMultiplier > 0) {
+				// time moving, need to spawn enemies
+				spawnEnemies(gameTime, lastGameTime);
+				spawnProjectiles(gameTime, lastGameTime);
+				updatePlayerPosition(gameTime, elapsedTime);
+			}
+
+			if (timeMultiplier !== 0) {
+				// need to reposition according to current time
+				moveEnemies(gameTime);
+				moveProjectiles(gameTime);
+			}
+
+			if (timeMultiplier >= 0) {
+				// time isn't rewound, check for collisions
+				checkPlayerCollisions();
+			}
+
+			if (timeMultiplier > 0) {
+				checkEnemyCollisions();
+			}
 
 
+			render();
+
+			if (shouldResumeNormal) {
+				setTimeMultiplier(1);
+			}
+		}
+
+		initGame()
+		generateLevel();
+		setInterval(gameLoop, 500)
+		// requestAnimationFrame(gameLoop)
 	</script>
 </body>
 </html>

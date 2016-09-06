@@ -8,6 +8,15 @@ const ShaderConst = {
   FRAGMENT_SHADER: 'f'
 };
 
+const LevelShipIndex = {
+  START_TIME: 0,
+  END_TIME: 1,
+  KILL_TIME: 2,
+  ENEMY_DATA: 3,
+  PATH_DATA: 4,
+  PROJECTILE_PATH: 5
+};
+
 const AudioIndex = {
   WAVE_TYPE: 0,
   ATTACK_TIME: 1,
@@ -45,6 +54,14 @@ const GameConst = {
   HEIGHT: 600,
   SHIP_WIDTH: 50,
   SHIP_HEIGHT: 50
+};
+
+const SpeedConst = {
+  REWIND: -2,
+  PAUSE: 0,
+  SLOW: 0.3,
+  NORMAL: 1,
+  FAST_FORWARD: 2
 };
 
 const ObjectIndex = {

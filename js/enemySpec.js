@@ -4,7 +4,7 @@
  */
 $.assign($, {
 	enemySpec: [
-		[5,		ShapeGeneratorConst.MIRRORED_SHIP],
+		[5,		ShapeGeneratorConst.MIRRORED_SHIP, ],
 		[15, 	ShapeGeneratorConst.MIRRORED_SHIP],
 		[122,	ShapeGeneratorConst.MIRRORED_SHIP],
 		[165,	ShapeGeneratorConst.MIRRORED_SHIP],
