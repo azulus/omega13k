@@ -80,6 +80,7 @@
 		};
 
 		let updateAndRetrieveEnemyProjectiles = (gameTime, elapsedTime, enemies) => {
+			if (elapsedTime === 0) return;
 			let i;
 
 			if (elapsedTime < 0) {
