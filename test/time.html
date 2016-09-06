@@ -42,8 +42,10 @@
 		let lastTime = null;
 		let timeMultiplier = 1;
 		let levelWaves;
+		let enemyProjectiles;
 		let player;
 		let canvas = $.getElementById('f');
+		let projectileShapeArray = [$.makeWebGLReady(['#ddd', 5, [5, 5]])]
 
 		setTimeMultiplier = (tm) => {timeMultiplier = tm; return 1}
 
@@ -52,18 +54,6 @@
 		$.getElementById('slow').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
 		$.getElementById('normal').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
 		$.getElementById('fast').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
-
-		let clearCanvas = () => {
-
-		};
-
-		let renderBackground = (gameTime) => {
-
-		};
-
-		let renderPlayer = (gameTime) => {
-
-		};
 
 		let renderEnemies = (gl, prog, gameTime, enemies) => {
 			for (let i = 0; i < enemies.length; i++){
@@ -76,15 +66,60 @@
 			}
 		};
 
-		let renderPlayerProjectiles = (gameTime) => {
+		let renderEnemyProjectiles = (gl, prog, gameTime, projectiles) => {
+			for (let i = 0; i < projectiles.length; i++){
+				let [start, end, path] = projectiles[i];
+				if (end !== undefined) continue;
+				let elapsedTime = gameTime - start;
+				let [x, y, xPerMs, yPerMs, startTime] = path;
 
+				$.drawShapesToCanvasGL(gl, prog, projectileShapeArray, x + (elapsedTime * xPerMs), y + (elapsedTime * yPerMs))
+			}
 		};
 
-		let renderEnemyProjectiles = (gameTime) => {
+		let updateAndRetrieveEnemyProjectiles = (gameTime, elapsedTime, enemies) => {
+			let i;
 
+			if (elapsedTime < 0) {
+				let shouldDelete = false;
+				for (i = 0; shouldDelete === false && i < enemyProjectiles.length; i++) {
+					if (enemyProjectiles[i][0] > gameTime) shouldDelete = true;
+				}
+				if (shouldDelete) {
+					enemyProjectiles = enemyProjectiles.filter(p => p[0] <= gameTime);
+				}
+			}
+
+			for (i = 0; i < enemies.length; i++) {
+				let enemy = enemies[i];
+
+				if (elapsedTime < 0) {
+					// reset the counters for new projectiles for each enemy
+					while(enemy[LevelShipIndex.NEXT_PROJECTILE] > 0 &&
+							enemy[LevelShipIndex.PROJECTILE_TIMES][enemy[LevelShipIndex.NEXT_PROJECTILE] - 1][0] > gameTime) {
+						enemy[LevelShipIndex.NEXT_PROJECTILE]--;
+					}
+				} else if (elapsedTime > 0) {
+					// spawn new waves of projectiles
+					let nextTime = enemy[LevelShipIndex.NEXT_PROJECTILE];
+					let path = enemy[LevelShipIndex.PROJECTILE_TIMES][nextTime];
+					if (path && path[0] <= gameTime) {
+						console.log('SPAWNING');
+						enemyProjectiles = enemyProjectiles.concat(
+							$.offsetProjectilePaths(
+								enemy[LevelShipIndex.PROJECTILE_PATH],
+								path[1],
+								path[2],
+								path[0]
+							).map(p => [path[0], undefined, p])
+						)
+						enemy[LevelShipIndex.NEXT_PROJECTILE]++;
+					}
+				}
+			}
 		};
 
-		let updateAndRetrieveEnemies = (gameTime, elapsedTime) => {
+		let updateAndRetrieveEnemies = (gameTime) => {
 			let activeEnemies = [];
 
 			for (let i = 0; i < levelWaves.length; i++) {
@@ -113,6 +148,7 @@
 				100
 			];
 			gameTime = 0;
+			enemyProjectiles = [];
 		}
 
 		let generateLevel = (seed=1, numWaves=10, idealMsBetweenWaves=5000,
@@ -146,7 +182,11 @@
 				// time between volleys of projectiles
 				timeBetweenProjectiles = $.floor($.randBetween(enemyR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25))
 				path.forEach(p => {
-					waves.push([start, end, undefined, enemyShapes, p, projectilePattern, timeBetweenProjectiles])
+					let times = [];
+					for (let j = start + timeBetweenProjectiles; j <= end; j += timeBetweenProjectiles) {
+						times.push([j, ...$.getPositionAtTime(p, j)]);
+					}
+					waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0])
 				})
 			}
 
@@ -155,13 +195,13 @@
 
 		let gameLoop = () => {
 			let currentTime = Date.now();
-			let elapsedTime = currentTime - lastTime;
+			let elapsedTime = (currentTime - lastTime) * timeMultiplier;
 			let shouldResumeNormal = false;
 			let enemies;
 			lastTime = currentTime;
 
 			let lastGameTime = gameTime;
-			gameTime += elapsedTime * timeMultiplier;
+			gameTime += elapsedTime;
 
 			if (gameTime < 0) {
 				gameTime = 0;
@@ -169,6 +209,7 @@
 			}
 
 			enemies = updateAndRetrieveEnemies(gameTime);
+			updateAndRetrieveEnemyProjectiles(gameTime, elapsedTime, enemies);
 			//
 			// if (timeMultiplier < 0) {
 			// 	// time rewound
@@ -208,8 +249,9 @@
 			// render shapes
 			let prog = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
 			renderEnemies(gl, prog, gameTime, enemies);
+			renderEnemyProjectiles(gl, prog, gameTime, enemyProjectiles);
 			// renderPlayerProjectiles(gameTime);
-			// renderEnemyProjectiles(gameTime);
+			//
 
 			if (shouldResumeNormal) {
 				setTimeMultiplier(1);
@@ -219,7 +261,7 @@
 		initGame()
 		generateLevel();
 		//requestAnimationFrame(gameLoop)
-		setInterval(gameLoop, 16)
+		setInterval(gameLoop, 200)
 	</script>
 </body>
 </html>

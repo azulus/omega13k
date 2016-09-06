@@ -14,7 +14,9 @@ const LevelShipIndex = {
   KILL_TIME: 2,
   SHAPES: 3,
   PATH_DATA: 4,
-  PROJECTILE_PATH: 5
+  PROJECTILE_PATH: 5,
+  PROJECTILE_TIMES: 6,
+  NEXT_PROJECTILE: 7
 };
 
 const LevelPlayerIndex = {
