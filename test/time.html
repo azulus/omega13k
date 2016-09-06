@@ -117,12 +117,7 @@
 					let path = enemy[LevelShipIndex.PROJECTILE_TIMES][nextTime];
 					if (path && path[0] <= gameTime) {
 						enemyProjectiles = enemyProjectiles.concat(
-							$.offsetProjectilePaths(
-								enemy[LevelShipIndex.PROJECTILE_PATH],
-								path[1],
-								path[2],
-								path[0]
-							).map(p => [path[0], undefined, p])
+							path[1]
 						)
 						enemy[LevelShipIndex.NEXT_PROJECTILE]++;
 					}
@@ -195,7 +190,13 @@
 				path.forEach(p => {
 					let times = [];
 					for (let j = start + timeBetweenProjectiles; j <= end; j += timeBetweenProjectiles) {
-						times.push([j, ...$.getPositionAtTime(p, j)]);
+						let pos = $.getPositionAtTime(p, j);
+						let projectilePaths = $.offsetProjectilePaths(
+							projectilePattern,
+							...pos,
+							j
+						).map(pp => [j, undefined, pp])
+						times.push([j, projectilePaths]);
 					}
 					waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0])
 				})
@@ -237,7 +238,7 @@
 			$.clear3DCanvas(gl);
 
 			// draw the background
-			$.renderStarfield(gl, gameTime, canvas.width, canvas.height);
+			// $.renderStarfield(gl, gameTime, canvas.width, canvas.height);
 
 			// render shapes
 			let prog = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
