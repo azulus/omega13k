@@ -43,6 +43,7 @@
 		let timeMultiplier = 1;
 		let levelWaves;
 		let enemyProjectiles;
+		let firstProjectileIdx = 0;
 		let player;
 		let canvas = $.getElementById('f');
 		let projectileShapeArray = [$.makeWebGLReady(['#ddd', 5, [5, 5]])]
@@ -67,14 +68,17 @@
 		};
 
 		let renderEnemyProjectiles = (gl, prog, gameTime, projectiles) => {
-			for (let i = 0; i < projectiles.length; i++){
+			for (let i = firstProjectileIdx; i < projectiles.length; i++){
 				let [start, end, path] = projectiles[i];
-				if (end !== undefined) continue;
+				if (end !== undefined) {
+					if (firstProjectileIdx === i) firstProjectileIdx++;
+					continue
+				};
 				let elapsedTime = gameTime - start;
 				let [x, y, xPerMs, yPerMs, startTime] = path;
 				let newX = x + (elapsedTime * xPerMs);
 				let newY = y + (elapsedTime * yPerMs)
-				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) end = gameTime;
+				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = gameTime;
 				$.drawShapesToCanvasGL(gl, prog, projectileShapeArray, newX, newY)
 			}
 		};
@@ -86,11 +90,15 @@
 			if (elapsedTime < 0) {
 				let shouldDelete = false;
 				for (i = 0; shouldDelete === false && i < enemyProjectiles.length; i++) {
-					if (enemyProjectiles[i][0] > gameTime) shouldDelete = true;
+					let projectile = enemyProjectiles[i];
+					if (projectile[1] && projectile[1] > gameTime) projectile[1] = undefined;
+					if (projectile[0] > gameTime) shouldDelete = true;
 				}
 				if (shouldDelete) {
 					enemyProjectiles = enemyProjectiles.filter(p => p[0] <= gameTime);
 				}
+
+				firstProjectileIdx = 0;
 			}
 
 			for (i = 0; i < enemies.length; i++) {
