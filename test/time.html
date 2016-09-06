@@ -52,9 +52,9 @@
 
 		setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
-		renderEnemies: (gl, prog, enemies) => {
-			for (let i = 0; i < enemies.length; i++){
-				let enemy = enemies[i];
+		renderEnemies: (gl, prog, enemyIndexes) => {
+			for (let i = 0; i < enemyIndexes.length; i++){
+				let enemy = $.levelWaves[enemyIndexes[i]];
 				let shapes = enemy[LevelShipIndex.SHAPES];
 				let paths = enemy[LevelShipIndex.PATH_DATA];
 				let pos = $.getPositionAtTime(paths, $.levelGameTime);
@@ -153,13 +153,13 @@
 				if (wave[LevelShipIndex.KILL_TIME] === undefined &&
 						wave[LevelShipIndex.START_TIME] <= $.levelGameTime &&
 						wave[LevelShipIndex.END_TIME] >= $.levelGameTime) {
-					activeEnemies.push(wave);
+					activeEnemies.push(i);
 				}
 			}
 			return activeEnemies;
 		},
 
-		updateAndRetrieveEnemyProjectiles: (elapsedTime, enemies) => {
+		updateAndRetrieveEnemyProjectiles: (elapsedTime, enemyIndexes) => {
 			if (elapsedTime === 0) return;
 			let i, idx = 0;
 
@@ -178,8 +178,8 @@
 				}
 			}
 
-			for (i = 0; i < enemies.length; i++) {
-				let enemy = enemies[i];
+			for (i = 0; i < enemyIndexes.length; i++) {
+				let enemy = $.levelWaves[enemyIndexes[i]];
 
 				if (elapsedTime < 0) {
 					// reset the counters for new projectiles for each enemy
@@ -212,7 +212,7 @@
 			let currentTime = Date.now();
 			let elapsedTime = (currentTime - $.levelLastLoopTime) * $.speedMultiplier;
 			let shouldResumeNormal = false;
-			let enemies;
+			let enemyIndexes;
 			$.levelLastLoopTime = currentTime;
 
 			let lastGameTime = $.levelGameTime;
@@ -224,10 +224,10 @@
 			}
 
 			// spawn enemies and update their positions
-			enemies = $.updateAndRetrieveEnemies();
+			enemyIndexes = $.updateAndRetrieveEnemies();
 
 			// spawn and update projectile positions
-			$.updateAndRetrieveEnemyProjectiles(elapsedTime, enemies);
+			$.updateAndRetrieveEnemyProjectiles(elapsedTime, enemyIndexes);
 
 			// update player position (by player controls if non-negative, by replay if negative)
 
@@ -246,7 +246,7 @@
 
 			// render shapes
 			let prog = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
-			$.renderEnemies(gl, prog, enemies);
+			$.renderEnemies(gl, prog, enemyIndexes);
 			$.renderEnemyProjectiles(gl, prog, $.enemyProjectiles);
 			// renderPlayerProjectiles(gameTime);
 			//
