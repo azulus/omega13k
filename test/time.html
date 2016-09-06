@@ -48,18 +48,11 @@
 		speedMultiplier: 1,
 
 		_firstProjectileIdx: 0,
-		_projectileShapeArray: [$.makeWebGLReady(['#ddd', 5, [5, 5]])]
-	})
+		_projectileShapeArray: [$.makeWebGLReady(['#ddd', 5, [5, 5]])],
 
-		setTimeMultiplier = (tm) => {$.speedMultiplier = tm; return 1}
+		setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
-		$.getElementById('rewind').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.REWIND) && e.preventDefault())
-		$.getElementById('pause').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
-		$.getElementById('slow').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
-		$.getElementById('normal').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
-		$.getElementById('fast').addEventListener('click', (e) => setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
-
-		let renderEnemies = (gl, prog, enemies) => {
+		renderEnemies: (gl, prog, enemies) => {
 			for (let i = 0; i < enemies.length; i++){
 				let enemy = enemies[i];
 				let shapes = enemy[LevelShipIndex.SHAPES];
@@ -68,9 +61,9 @@
 
 				$.drawShapesToCanvasGL(gl, prog, shapes, ...pos);
 			}
-		};
+		},
 
-		let renderEnemyProjectiles = (gl, prog, projectiles) => {
+		renderEnemyProjectiles: (gl, prog, projectiles) => {
 			for (let i = $._firstProjectileIdx; i < projectiles.length; i++){
 				let [start, end, path] = projectiles[i];
 				if (end !== undefined) {
@@ -84,83 +77,9 @@
 				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
 				$.drawShapesToCanvasGL(gl, prog, $._projectileShapeArray, newX, newY)
 			}
-		};
+		},
 
-		let updateAndRetrieveEnemyProjectiles = (elapsedTime, enemies) => {
-			if (elapsedTime === 0) return;
-			let i, idx = 0;
-
-			if (elapsedTime < 0) {
-				let shouldDelete = false;
-				for (i = 0; shouldDelete === false && i < $.enemyProjectiles.length; i++) {
-					let projectile = $.enemyProjectiles[i];
-					if (projectile[1] && projectile[1] > $.levelGameTime) {
-						if (i < $._firstProjectileIdx) $._firstProjectileIdx = i;
-						projectile[1] = undefined;
-					}
-					if (projectile[0] > $.levelGameTime) shouldDelete = true;
-				}
-				if (shouldDelete) {
-					$.enemyProjectiles = $.enemyProjectiles.filter(p => p[0] <= $.levelGameTime);
-				}
-			}
-
-			for (i = 0; i < enemies.length; i++) {
-				let enemy = enemies[i];
-
-				if (elapsedTime < 0) {
-					// reset the counters for new projectiles for each enemy
-					while(enemy[LevelShipIndex.NEXT_PROJECTILE] > 0 &&
-							enemy[LevelShipIndex.PROJECTILE_TIMES][enemy[LevelShipIndex.NEXT_PROJECTILE] - 1][0] > $.levelGameTime) {
-						enemy[LevelShipIndex.NEXT_PROJECTILE]--;
-					}
-				} else if (elapsedTime > 0) {
-					// spawn new waves of projectiles
-					let nextTime = enemy[LevelShipIndex.NEXT_PROJECTILE];
-					let path = enemy[LevelShipIndex.PROJECTILE_TIMES][nextTime];
-					if (path && path[0] <= $.levelGameTime) {
-						$.enemyProjectiles = $.enemyProjectiles.concat(
-							path[1]
-						)
-						enemy[LevelShipIndex.NEXT_PROJECTILE]++;
-					}
-				}
-			}
-		};
-
-		let updateAndRetrieveEnemies = () => {
-			let activeEnemies = [];
-
-			for (let i = 0; i < $.levelWaves.length; i++) {
-				let wave = $.levelWaves[i];
-
-				if (wave[LevelShipIndex.KILL_TIME] !== undefined && wave[LevelShipIndex.KILL_TIME] > $.levelGameTime) {
-					wave[LevelShipIndex.KILL_TIME] = undefined;
-				}
-
-				if (wave[LevelShipIndex.KILL_TIME] === undefined &&
-						wave[LevelShipIndex.START_TIME] <= $.levelGameTime &&
-						wave[LevelShipIndex.END_TIME] >= $.levelGameTime) {
-					activeEnemies.push(wave);
-				}
-			}
-			return activeEnemies;
-		};
-
-		let initGame = () => {
-			$.levelStartTime = $.levelLastLoopTime = Date.now();
-			let r = $.getRandomNumberGenerator(1037);
-			$.player = [
-				$.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm'),
-				[0, 100],
-				[0, 290, 235],
-				100
-			];
-			$.levelGameTime = 0;
-			$.enemyProjectiles = [];
-		}
-
-		let generateLevel = (seed=1, numWaves=10, idealMsBetweenWaves=5000,
+		initializeLevel: (seed=1, numWaves=10, idealMsBetweenWaves=5000,
 				idealProjectileWaves=3, idealProjectilesPerPath=3,
 				idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
 				projectileSpeed=200) => {
@@ -206,7 +125,88 @@
 			}
 
 			$.levelWaves = waves;
-		};
+		},
+
+		initializeGame: () => {
+			$.levelStartTime = $.levelLastLoopTime = Date.now();
+			let r = $.getRandomNumberGenerator(1037);
+			$.player = [
+				$.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm'),
+				[0, 100],
+				[0, 290, 235],
+				100
+			];
+			$.levelGameTime = 0;
+			$.enemyProjectiles = [];
+		},
+
+		updateAndRetrieveEnemies: () => {
+			let activeEnemies = [];
+
+			for (let i = 0; i < $.levelWaves.length; i++) {
+				let wave = $.levelWaves[i];
+
+				if (wave[LevelShipIndex.KILL_TIME] !== undefined && wave[LevelShipIndex.KILL_TIME] > $.levelGameTime) {
+					wave[LevelShipIndex.KILL_TIME] = undefined;
+				}
+
+				if (wave[LevelShipIndex.KILL_TIME] === undefined &&
+						wave[LevelShipIndex.START_TIME] <= $.levelGameTime &&
+						wave[LevelShipIndex.END_TIME] >= $.levelGameTime) {
+					activeEnemies.push(wave);
+				}
+			}
+			return activeEnemies;
+		},
+
+		updateAndRetrieveEnemyProjectiles: (elapsedTime, enemies) => {
+			if (elapsedTime === 0) return;
+			let i, idx = 0;
+
+			if (elapsedTime < 0) {
+				let shouldDelete = false;
+				for (i = 0; shouldDelete === false && i < $.enemyProjectiles.length; i++) {
+					let projectile = $.enemyProjectiles[i];
+					if (projectile[1] && projectile[1] > $.levelGameTime) {
+						if (i < $._firstProjectileIdx) $._firstProjectileIdx = i;
+						projectile[1] = undefined;
+					}
+					if (projectile[0] > $.levelGameTime) shouldDelete = true;
+				}
+				if (shouldDelete) {
+					$.enemyProjectiles = $.enemyProjectiles.filter(p => p[0] <= $.levelGameTime);
+				}
+			}
+
+			for (i = 0; i < enemies.length; i++) {
+				let enemy = enemies[i];
+
+				if (elapsedTime < 0) {
+					// reset the counters for new projectiles for each enemy
+					while(enemy[LevelShipIndex.NEXT_PROJECTILE] > 0 &&
+							enemy[LevelShipIndex.PROJECTILE_TIMES][enemy[LevelShipIndex.NEXT_PROJECTILE] - 1][0] > $.levelGameTime) {
+						enemy[LevelShipIndex.NEXT_PROJECTILE]--;
+					}
+				} else if (elapsedTime > 0) {
+					// spawn new waves of projectiles
+					let nextTime = enemy[LevelShipIndex.NEXT_PROJECTILE];
+					let path = enemy[LevelShipIndex.PROJECTILE_TIMES][nextTime];
+					if (path && path[0] <= $.levelGameTime) {
+						$.enemyProjectiles = $.enemyProjectiles.concat(
+							path[1]
+						)
+						enemy[LevelShipIndex.NEXT_PROJECTILE]++;
+					}
+				}
+			}
+		}
+	})
+
+		$.getElementById('rewind').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.REWIND) && e.preventDefault())
+		$.getElementById('pause').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
+		$.getElementById('slow').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
+		$.getElementById('normal').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
+		$.getElementById('fast').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
 
 		let gameLoop = () => {
 			let currentTime = Date.now();
@@ -224,10 +224,10 @@
 			}
 
 			// spawn enemies and update their positions
-			enemies = updateAndRetrieveEnemies();
+			enemies = $.updateAndRetrieveEnemies();
 
 			// spawn and update projectile positions
-			updateAndRetrieveEnemyProjectiles(elapsedTime, enemies);
+			$.updateAndRetrieveEnemyProjectiles(elapsedTime, enemies);
 
 			// update player position (by player controls if non-negative, by replay if negative)
 
@@ -246,18 +246,18 @@
 
 			// render shapes
 			let prog = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
-			renderEnemies(gl, prog, enemies);
-			renderEnemyProjectiles(gl, prog, $.enemyProjectiles);
+			$.renderEnemies(gl, prog, enemies);
+			$.renderEnemyProjectiles(gl, prog, $.enemyProjectiles);
 			// renderPlayerProjectiles(gameTime);
 			//
 
 			if (shouldResumeNormal) {
-				setTimeMultiplier(1);
+				$.setTimeMultiplier(1);
 			}
 		}
 
-		initGame()
-		generateLevel();
+		$.initializeGame()
+		$.initializeLevel();
 		//requestAnimationFrame(gameLoop)
 		setInterval(gameLoop, 16)
 	</script>
