@@ -54,7 +54,7 @@ $.assign($, {
 						.slice(0, 2)
 						.forEach((pts, idx) => {
 
-							let projectilePaths = $.generateProjectilePaths(projectileSeed, pts[0] + obj[ObjectIndex.POSITION_X], pts[1] + obj[ObjectIndex.POSITION_Y]);
+							let projectilePaths = $.generateProjectilePaths(projectileSeed, ProjectilePathDirection.LEFT, pts[0] + obj[ObjectIndex.POSITION_X], pts[1] + obj[ObjectIndex.POSITION_Y]);
 							for (var i = 0; i < projectilePaths.length; i++) {
 								let projectile = new $.EnemyProjectileGameObject(
 									null,

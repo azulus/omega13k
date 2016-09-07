@@ -95,7 +95,7 @@ $.assign($, {
   offsetProjectilePaths: (paths, x, y, time) => paths.map(path => $.setArrayVals(
     [].concat(path), 0, x, 1, y, 4, time + path[4])),
 
-  generateProjectilePaths: (r, x, y, offsetTime=0, minWaves=1, maxWaves=5,
+  generateProjectilePaths: (r, dir, x, y, offsetTime=0, minWaves=1, maxWaves=5,
    minProjectilesPerWave=1, maxProjectilesPerWave=5,
    minPaths=1, maxPaths=6, maxFireTime=2000, projectileSpeed=200) => {
      let numAngles = $.randBetween(r, minPaths, maxPaths),
@@ -114,7 +114,7 @@ $.assign($, {
        for (i = 0; i < numWaves; i++) {
          for (j = 0; j < numAngles; j++) {
            offset = j - midPoint;
-           angle =( (180 + (offset * angleBetween) + 360 + (interleaveAngleBetween * (i === 0 ? 0 : i % interleaveTimes))) % 360) * $.DEGREES_TO_RADIANS;
+           angle =( (dir + (offset * angleBetween) + 360 + (interleaveAngleBetween * (i === 0 ? 0 : i % interleaveTimes))) % 360) * $.DEGREES_TO_RADIANS;
            xPerMs = Math.cos(angle) * projectileSpeed / 1000;
            yPerMs = Math.sin(angle) * projectileSpeed / 1000;
 

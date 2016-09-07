@@ -206,6 +206,13 @@ const PlayerConst = {
   STARTING_LIFE: 100
 };
 
+const ProjectilePathDirection = {
+  UP: 90,
+  LEFT: 180,
+  DOWN: 270,
+  RIGHT: 360
+};
+
 const ShaderConst = {
   VERTEX_SHADER: 'v',
   FRAGMENT_SHADER: 'f'
