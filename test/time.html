@@ -63,6 +63,10 @@
 
 		setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
+		renderPlayer: (gl, prog) => {
+			$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...$.getCurrentPlayerPosition())
+		},
+
 		renderEnemies: (gl, prog) => {
 			for (let i = 0; i < $._activeEnemyCount; i++){
 				let enemy = $.levelEnemies[$._activeEnemyIndexes[i]];
@@ -298,6 +302,9 @@
 			// render shapes
 			let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
 			$.renderEnemies(gl, shapeProg);
+			$.renderPlayer(gl, shapeProg);
+
+			// render projectiles
 			let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
 			$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
 			// renderPlayerProjectiles(gameTime);
