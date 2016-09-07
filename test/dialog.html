@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="../js/init.js"></script>
+	<script src="../js/const.js"></script>
+	<script src="../js/dialog.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+
+		const dialog = $.getDialog(0);
+		console.log('dialog is:', dialog);
+
+		setInterval(() => {
+			let now = Date.now();
+			let timeDiff = now - dialog[DialogIndex.START_TIME];
+			console.log('text to now:', $.getLettersAtTime(dialog, timeDiff));
+		}, 100);
+	</script>
+</body>
+</html>

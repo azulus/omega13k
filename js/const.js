@@ -130,6 +130,15 @@ const PathSegmentIndex = {
   CONTROL_POINT: 6
 };
 
+const DialogIndex = {
+  START_TIME: 0,
+  TEXT: 1
+};
+
+const DialogConst = {
+  MS_PER_STEP: 150
+};
+
 const EnemyConfigIndex = {
   SEED: 0,
   SEED_SHAPE_STR: 1
