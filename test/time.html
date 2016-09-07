@@ -49,6 +49,8 @@
 		// projectile data
 		enemyProjectiles: null,
 		_activeProjectilePositions: new Float32Array(Array(2000).fill(0)),
+		_activeProjectileIndex: new Array(1000).fill(0),
+		_activeProjectileCount: 0,
 		// player data
 		player: null,
 
@@ -72,6 +74,7 @@
 
 		renderEnemyProjectiles: (gl, prog, projectiles) => {
 			let count = 0;
+			$._activeProjectileCount = 0;
 			for (let i = $._firstProjectileIdx; i < projectiles.length; i++){
 				let [start, end, path] = projectiles[i];
 				if (end !== undefined) {
@@ -85,6 +88,7 @@
 				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
 				$._activeProjectilePositions[count++] = newX;
 				$._activeProjectilePositions[count++] = newY;
+				$._activeProjectileIndex[$._activeProjectileCount++] = i;
 			}
 
 			if (count > 0) {
