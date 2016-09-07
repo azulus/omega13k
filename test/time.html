@@ -52,12 +52,14 @@
 		_activeProjectileIndex: new Array(1000).fill(0),
 		_activeProjectileCount: 0,
 		// player data
-		player: null,
+		playerShapes: null,
+		playerPosition: [],
+		playerHealth: [],
 
 		speedMultiplier: 1,
 
+		// first index of visible projectiles, for optimization purposes
 		_firstProjectileIdx: 0,
-		_projectileShapeArray: [$.makeWebGLReady(['#ddd', 5, [5, 5]])],
 
 		setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
@@ -154,15 +156,18 @@
 			$.levelEnemies = waves;
 		},
 
+		getCurrentPlayerHealth: () => $.playerHealth[$.playerHealth.length - 1][1],
+		getCurrentPlayerPosition: () => {
+			let curr = $.playerPosition[$.playerPosition.length - 1];
+			return [curr[1], curr[2]];
+		},
+
 		initializeGame: () => {
 			$.levelStartTime = $.levelLastLoopTime = Date.now();
 			let r = $.getRandomNumberGenerator(1037);
-			$.player = [
-				$.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm'),
-				[0, 100],
-				[0, 290, 235],
-				100
-			];
+			$.playerShapes = $.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
+			$.playerHealth = [[0, 100]];
+			$.playerPosition = [[0, 290, 235]];
 			$.levelGameTime = 0;
 			$.enemyProjectiles = [];
 		},
@@ -236,6 +241,14 @@
 	    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
 
 	    return prog;
+		},
+
+		updatePlayerPosition: (elapsedTime) => {
+
+		},
+
+		restorePlayerHealth: () => {
+
 		}
 	})
 
@@ -266,6 +279,8 @@
 			$.updateProjectileStates(elapsedTime);
 
 			// update player position (by player controls if non-negative, by replay if negative)
+			$.updatePlayerPosition(elapsedTime);
+			if (elapsedTime < 0) $.restorePlayerHealth();
 
 			// check for collision between player and enemy projectiles (if non-negative time)
 
@@ -294,6 +309,7 @@
 			}
 		}
 
+		$.initKeyboard();
 		$.initializeGame()
 		$.initializeLevel();
 		//requestAnimationFrame(gameLoop)
