@@ -71,8 +71,8 @@
 
 		setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
-		renderPlayer: (gl, prog) => {
-			$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...$.getCurrentPlayerPosition())
+		renderPlayer: (gl, prog, position) => {
+			$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...position)
 		},
 
 		renderEnemies: (gl, prog) => {
@@ -122,7 +122,7 @@
 			}
 		},
 
-		renderPlayerProjectiles: (gl, prog, projectiles) => {
+		renderPlayerProjectiles: (gl, prog, projectiles, pos) => {
 			let count = 0;
 			$._activePlayerProjectileCount = 0;
 			for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
@@ -134,6 +134,16 @@
 				};
 				let elapsedTime = $.levelGameTime - start;
 				let [x, y, xPerMs, yPerMs, startTime] = path;
+
+				// projectiles may be spawned off screen, recenter them based on pos
+				if (x === -1) {
+					[x, y] = pos;
+					x += GameConst.SHIP_WIDTH / 2;
+					y += GameConst.SHIP_HEIGHT / 2;
+					path[0] = x;
+					path[1] = y;
+				}
+
 				let newX = x + (elapsedTime * xPerMs);
 				let newY = y + (elapsedTime * yPerMs)
 				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH) projectiles[i][1] = $.levelGameTime;
@@ -311,7 +321,7 @@
 				if ($.levelGameTime >= nextProjectileTime) {
 					let pos = $.getCurrentPlayerPosition();
 					$.playerProjectiles = $.playerProjectiles.concat(
-						$.offsetProjectilePaths($.playerProjectilePath, pos[0] + GameConst.SHIP_WIDTH / 2, pos[1] + GameConst.SHIP_HEIGHT / 2, nextProjectileTime).map(p => [
+						$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => [
 							p[ProjectilePathIndex.OFFSET_TIME], undefined, p, p[ProjectilePathIndex.OFFSET_TIME] + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES
 						])
 					);
@@ -359,8 +369,8 @@
 				let curr = $.playerPosition[$.playerPosition.length - 1];
 				$.playerPosition.push([
 					$.levelGameTime,
-					curr[1] + $.playerXVelocity * actualElapsedTime,
-					curr[2] + $.playerYVelocity * actualElapsedTime
+					$.clamp(curr[1] + $.playerXVelocity * actualElapsedTime, 0, GameConst.WIDTH - GameConst.SHIP_WIDTH),
+					$.clamp(curr[2] + $.playerYVelocity * actualElapsedTime, 0, GameConst.HEIGHT - GameConst.SHIP_HEIGHT)
 				]);
 			}
 		},
@@ -417,12 +427,13 @@
 			// render shapes
 			let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
 			$.renderEnemies(gl, shapeProg);
-			$.renderPlayer(gl, shapeProg);
+			let playerPosition = $.getCurrentPlayerPosition();
+			$.renderPlayer(gl, shapeProg, playerPosition);
 
 			// render projectiles
 			let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
 			$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
-			$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles);
+			$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
 			//
 
 			// render health bar

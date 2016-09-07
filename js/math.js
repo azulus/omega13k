@@ -4,6 +4,12 @@ $.assign($, {
    */
   distance: (start, end) => $.pow(end[0] - start[0], 2) + $.pow(end[1] - start[1], 2),
 
+  clamp: (val, min, max) => {
+    if (val < min) return min;
+    if (val > max) return max;
+    return val
+  },
+
   /**
    * Offsets an array of points by a given x and y
    */
