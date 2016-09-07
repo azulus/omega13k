@@ -151,7 +151,8 @@ const LevelSpecConst = {
 
 const CachedProgramIndex = {
   STARFIELD: 0,
-  TWO_DIMENSION: 1
+  TWO_DIMENSION: 1,
+  PROJECTILES: 2
 };
 
 const VectorShaderConst = {
@@ -171,6 +172,21 @@ const VectorShaderConst = {
      vec2 zeroToTwo = zeroToOne * 2.0;
      vec2 clipSpace = zeroToTwo - 1.0;
      gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+  }
+  `,
+  PROJECTILES: `
+  attribute vec2 aPoint;
+  uniform vec2 u_resolution;
+  varying vec3 vColor;
+  void main() {
+     vec2 zeroToOne = aPoint / u_resolution;
+     vec2 zeroToTwo = zeroToOne * 2.0;
+     vec2 clipSpace = zeroToTwo - 1.0;
+
+     gl_Position = vec4(clipSpace * vec2(1, -1), 0., 1.);
+
+    gl_PointSize=10.;
+    vColor = vec3(0.5, 0.5, 0.5);
   }
   `
 };
@@ -223,5 +239,13 @@ const FragmentShaderConst = {
   void main() {
      gl_FragColor = u_color;
   }
-`
+  `,
+  PROJECTILES: `
+  precision mediump float;
+  varying vec3 vColor;
+  void main(void) {
+    gl_FragColor = vec4(vColor, 1.);
+    gl_FragColor.a = 1.;
+  }
+  `
 };

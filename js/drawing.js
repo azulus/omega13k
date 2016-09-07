@@ -81,7 +81,6 @@ $.assign($, {
     gl.enableVertexAttribArray(posLocation);
     gl.vertexAttribPointer(posLocation, 2, gl.FLOAT, false, 0, 0);
 
-    gl.useProgram(prog)
     gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
 
     return prog;

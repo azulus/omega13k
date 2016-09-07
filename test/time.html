@@ -48,8 +48,7 @@
 		_activeEnemyCount: 0,
 		// projectile data
 		enemyProjectiles: null,
-		_activeProjectileIndexes: Array(2000).fill(0),
-		_activeProjectileCount: 0,
+		_activeProjectilePositions: new Float32Array(Array(2000).fill(0)),
 		// player data
 		player: null,
 
@@ -72,6 +71,7 @@
 		},
 
 		renderEnemyProjectiles: (gl, prog, projectiles) => {
+			let count = 0;
 			for (let i = $._firstProjectileIdx; i < projectiles.length; i++){
 				let [start, end, path] = projectiles[i];
 				if (end !== undefined) {
@@ -83,7 +83,22 @@
 				let newX = x + (elapsedTime * xPerMs);
 				let newY = y + (elapsedTime * yPerMs)
 				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
-				$.drawShapesToCanvasGL(gl, prog, $._projectileShapeArray, newX, newY)
+				$._activeProjectilePositions[count++] = newX;
+				$._activeProjectilePositions[count++] = newY;
+			}
+
+			if (count > 0) {
+				let prog = $.prepareCanvasForProjectiles(gl, GameConst.WIDTH, GameConst.HEIGHT);
+
+				let pointsLoc = gl.getAttribLocation(prog, 'aPoint');
+				let colorLoc = gl.getAttribLocation(prog, 'aColor');
+
+				gl.enableVertexAttribArray(pointsLoc);
+			  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+			  gl.bufferData(gl.ARRAY_BUFFER, $._activeProjectilePositions, gl.STATIC_DRAW);
+			  gl.vertexAttribPointer(pointsLoc, 2, gl.FLOAT, false, 0, 0);
+
+				gl.drawArrays(gl.POINTS, 0, count / 2);
 			}
 		},
 
@@ -208,6 +223,15 @@
 					}
 				}
 			}
+		},
+
+		prepareCanvasForProjectiles: (gl, width, height) => {
+	    let prog = $.getProjectilesProgram(gl)
+
+	    gl.useProgram(prog)
+	    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
+
+	    return prog;
 		}
 	})
 
@@ -253,9 +277,10 @@
 			// $.renderStarfield(gl, gameTime, canvas.width, canvas.height);
 
 			// render shapes
-			let prog = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
-			$.renderEnemies(gl, prog);
-			$.renderEnemyProjectiles(gl, prog, $.enemyProjectiles);
+			let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
+			$.renderEnemies(gl, shapeProg);
+			let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
+			$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
 			// renderPlayerProjectiles(gameTime);
 			//
 			gl.flush();

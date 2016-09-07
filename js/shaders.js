@@ -50,6 +50,7 @@ $.assign($, {
 
   getStarfieldProgram: (gl) => $.getCachedProgram(CachedProgramIndex.STARFIELD, gl, VectorShaderConst.STARFIELD, FragmentShaderConst.STARFIELD),
   get2DProgram: (gl) => $.getCachedProgram(CachedProgramIndex.TWO_DIMENSION, gl, VectorShaderConst.TWO_DIMENSION, FragmentShaderConst.TWO_DIMENSION),
+  getProjectilesProgram: (gl) => $.getCachedProgram(CachedProgramIndex.PROJECTILES, gl, VectorShaderConst.PROJECTILES, FragmentShaderConst.PROJECTILES),
 
   STARFIELD_FLOAT_ARRAY: new Float32Array([
     -1.0, -1.0,
