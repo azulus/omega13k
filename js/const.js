@@ -1,3 +1,5 @@
+// now alphabetized for your pleasure!
+
 const AudioIndex = {
   WAVE_TYPE: 0,
   ATTACK_TIME: 1,
@@ -124,6 +126,13 @@ const GameConst = {
   SHIP_HEIGHT: 50
 };
 
+const KeyboardBitConst = {
+  DOWN_KEY: 1,
+  LEFT_KEY: 2,
+  UP_KEY: 4,
+  RIGHT_KEY: 8
+};
+
 const LevelPlayerIndex = {
   SHAPES: 1,
   HEALTH: 2,
@@ -187,6 +196,14 @@ const PathSegmentIndex = {
   START_POINT: 4,
   END_POINT: 5,
   CONTROL_POINT: 6
+};
+
+const PlayerConst = {
+  MAX_DIST_PER_MS: 0.5,
+  ACCELERATION_PER_MS: 0.0025,
+  SOUND_SEED: 102,
+  SHAPE_SEED: 1037,
+  STARTING_LIFE: 100
 };
 
 const ShaderConst = {

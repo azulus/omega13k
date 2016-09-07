@@ -52,6 +52,8 @@
 		_activeProjectileIndex: new Array(1000).fill(0),
 		_activeProjectileCount: 0,
 		// player data
+		playerXVelocity: 0,
+		playerYVelocity: 0,
 		playerShapes: null,
 		playerPosition: [],
 		playerHealth: [],
@@ -168,9 +170,9 @@
 
 		initializeGame: () => {
 			$.levelStartTime = $.levelLastLoopTime = Date.now();
-			let r = $.getRandomNumberGenerator(1037);
+			let r = $.getRandomNumberGenerator(PlayerConst.SHAPE_SEED);
 			$.playerShapes = $.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
-			$.playerHealth = [[0, 100]];
+			$.playerHealth = [[0, PlayerConst.STARTING_LIFE]];
 			$.playerPosition = [[0, 290, 235]];
 			$.levelGameTime = 0;
 			$.enemyProjectiles = [];
@@ -248,7 +250,40 @@
 		},
 
 		updatePlayerPosition: (elapsedTime) => {
+			if (elapsedTime > 0) {
+				let velocityChange = PlayerConst.ACCELERATION_PER_MS * elapsedTime;
 
+				if ($.downKeys.ArrowDown === $.downKeys.ArrowUp) {
+					if ($.playerYVelocity < 0) {
+						$.playerYVelocity = Math.min($.playerYVelocity + velocityChange, 0);
+					} else if ($.playerYVelocity > 0){
+						$.playerYVelocity = Math.max($.playerYVelocity - velocityChange, 0);
+					}
+				} else {
+					if ($.downKeys.ArrowDown) $.playerYVelocity = Math.min($.playerYVelocity + velocityChange, PlayerConst.MAX_DIST_PER_MS)
+					if ($.downKeys.ArrowUp) $.playerYVelocity = Math.max($.playerYVelocity - velocityChange, -PlayerConst.MAX_DIST_PER_MS)
+				}
+
+				if ($.downKeys.ArrowLeft === $.downKeys.ArrowRight) {
+					if ($.playerXVelocity < 0) {
+						$.playerXVelocity = Math.min($.playerXVelocity + velocityChange, 0);
+					} else if ($.playerXVelocity > 0){
+						$.playerXVelocity = Math.max($.playerXVelocity - velocityChange, 0);
+					}
+				} else {
+					if ($.downKeys.ArrowLeft) $.playerXVelocity = Math.max($.playerXVelocity - velocityChange, -PlayerConst.MAX_DIST_PER_MS)
+					if ($.downKeys.ArrowRight) $.playerXVelocity = Math.min($.playerXVelocity + velocityChange, PlayerConst.MAX_DIST_PER_MS)
+				}
+
+				if ($.playerXVelocity === 0 && $.playerYVelocity === 0) return;
+
+				let curr = $.playerPosition[$.playerPosition.length - 1];
+				$.playerPosition.push([
+					$.levelGameTime,
+					curr[1] + $.playerXVelocity * elapsedTime,
+					curr[2] + $.playerYVelocity * elapsedTime
+				]);
+			}
 		},
 
 		restorePlayerHealth: () => {
