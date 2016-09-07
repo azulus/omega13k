@@ -339,7 +339,7 @@
 		},
 
 		updatePlayerPosition: (elapsedTime, actualElapsedTime) => {
-			if (elapsedTime > 0) {
+			if (elapsedTime >= 0) {
 				// normal movement, apply velocity
 				let velocityChange = PlayerConst.ACCELERATION_PER_MS * actualElapsedTime;
 
@@ -368,11 +368,17 @@
 				if ($.playerXVelocity === 0 && $.playerYVelocity === 0) return;
 
 				let curr = $.playerPosition[$.playerPosition.length - 1];
-				$.playerPosition.push([
+				let posData = [
 					$.levelGameTime,
 					$.clamp(curr[1] + $.playerXVelocity * actualElapsedTime, 0, GameConst.WIDTH - GameConst.SHIP_WIDTH),
 					$.clamp(curr[2] + $.playerYVelocity * actualElapsedTime, 0, GameConst.HEIGHT - GameConst.SHIP_HEIGHT)
-				]);
+				];
+				if ($.playerPosition[$.playerPosition.length - 1][0] === $.levelGameTime) {
+					$.playerPosition[$.playerPosition.length - 1] = posData;
+				} else {
+					$.playerPosition.push(posData);
+				}
+
 			} else if (elapsedTime < 0){
 				let idx = $.playerPosition.length - 1;
 				while (idx > 0 && $.playerPosition[idx][0] > $.levelGameTime) {
