@@ -205,8 +205,7 @@ const PlayerConst = {
   SHAPE_SEED: 1037,
   STARTING_LIFE: 100,
   PROJECTILE_SEED: 54,
-  MS_BETWEEN_PROJECTILE_WAVES: 2000,
-  PROJECTILE_WAVE_DURATION: 1000
+  MS_BETWEEN_PROJECTILE_WAVES: 2000
 };
 
 const ProjectilePathDirection = {
@@ -214,6 +213,14 @@ const ProjectilePathDirection = {
   LEFT: 180,
   DOWN: 270,
   RIGHT: 360
+};
+
+const ProjectilePathIndex = {
+  START_X: 0,
+  START_Y: 1,
+  X_PER_MS: 2,
+  Y_PER_MS: 3,
+  OFFSET_TIME: 4
 };
 
 const ShaderConst = {
@@ -265,6 +272,7 @@ const VectorShaderConst = {
   PROJECTILES: `
   attribute vec2 aPoint;
   uniform vec2 u_resolution;
+  uniform vec3 u_color;
   varying vec3 vColor;
   void main() {
      vec2 zeroToOne = aPoint / u_resolution;
@@ -274,7 +282,7 @@ const VectorShaderConst = {
      gl_Position = vec4(clipSpace * vec2(1, -1), 0., 1.);
 
     gl_PointSize=10.;
-    vColor = vec3(0.5, 0.5, 0.5);
+    vColor = u_color;
   }
   `
 };
