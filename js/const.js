@@ -1,31 +1,3 @@
-const ShapeGeneratorConst = {
-  MIRRORED_SHIP: 'm',
-  INVERTED_MIRRORED_SHIP: 'mv'
-};
-
-const ShaderConst = {
-  VERTEX_SHADER: 'v',
-  FRAGMENT_SHADER: 'f'
-};
-
-const LevelShipIndex = {
-  START_TIME: 0,
-  END_TIME: 1,
-  KILL_TIME: 2,
-  SHAPES: 3,
-  PATH_DATA: 4,
-  PROJECTILE_PATH: 5,
-  PROJECTILE_TIMES: 6,
-  NEXT_PROJECTILE: 7
-};
-
-const LevelPlayerIndex = {
-  SHAPES: 1,
-  HEALTH: 2,
-  POSITION: 3,
-  CHRONO_METER: 4
-};
-
 const AudioIndex = {
   WAVE_TYPE: 0,
   ATTACK_TIME: 1,
@@ -53,48 +25,6 @@ const AudioIndex = {
   MASTER_VOLUME: 23
 };
 
-const PathConst = {
-  MIN_SHIPS: 2,
-  MAX_SHIPS: 7
-};
-
-const GameConst = {
-  WIDTH: 800,
-  HEIGHT: 600,
-  SHIP_WIDTH: 50,
-  SHIP_HEIGHT: 50
-};
-
-const SpeedConst = {
-  REWIND: -4,
-  PAUSE: 0,
-  SLOW: 0.3,
-  NORMAL: 1,
-  FAST_FORWARD: 4
-};
-
-const ObjectIndex = {
-  SEED: 0,
-  SEED_SHAPE_STR: 1,
-  GENERATED_SHAPES: 2,
-  DOM: 3,
-  WIDTH: 4,
-  HEIGHT: 5,
-  POSITION_X: 6,
-  POSITION_Y: 7,
-  TICK: 8,
-  DESTROYED: 9,
-  OBJECT_TYPE: 10,
-  PROJECTILE_COLLISION: 11
-}
-
-const ObjectTypeIndex = {
-  PLAYER: 0,
-  PLAYER_PROJECTILE: 1,
-  ENEMY: 2,
-  ENEMY_PROJECTILE: 3
-}
-
 const BoundingBoxIndex = {
   POSITION_X: 0,
   POSITION_Y: 1,
@@ -102,32 +32,14 @@ const BoundingBoxIndex = {
   HEIGHT: 3
 };
 
-const ShapeIndex = {
-    COLOR: 0,
-    RADIUS: 1,
-    POINTS: 2,
-    BOUNDING_BOX: 3,
-    WEBGL_REPRESENTATION: 4,
-    WEBGL_REPRESENTATION_LENGTH: 5
+const CachedProgramIndex = {
+  STARFIELD: 0,
+  TWO_DIMENSION: 1,
+  PROJECTILES: 2
 };
 
 const CircleConst = {
   COMPONENT_TRIANGLES: 24
-};
-
-const PathIndex = {
-  SEGMENTS: 0,
-  LAST_KNOWN_SEGMENT: 1
-};
-
-const PathSegmentIndex = {
-  START_TIME: 0,
-  END_TIME: 1,
-  DURATION: 2,
-  PERCENT_PER_MILLISECOND: 3,
-  START_POINT: 4,
-  END_POINT: 5,
-  CONTROL_POINT: 6
 };
 
 const DialogIndex = {
@@ -142,53 +54,6 @@ const DialogConst = {
 const EnemyConfigIndex = {
   SEED: 0,
   SEED_SHAPE_STR: 1
-};
-
-const LevelSpecConst = {
-  ON_ENTER: '0',
-  ON_EXIT: '1'
-};
-
-const CachedProgramIndex = {
-  STARFIELD: 0,
-  TWO_DIMENSION: 1,
-  PROJECTILES: 2
-};
-
-const VectorShaderConst = {
-  STARFIELD: `
-    attribute vec2 pos;
-    void main() {
-      gl_Position = vec4(pos, 0, 1);
-    }
-  `,
-  TWO_DIMENSION: `
-  attribute vec2 a_position;
-  uniform vec2 u_resolution;
-  uniform vec2 u_offset;
-
-  void main() {
-     vec2 zeroToOne = (a_position + u_offset) / u_resolution;
-     vec2 zeroToTwo = zeroToOne * 2.0;
-     vec2 clipSpace = zeroToTwo - 1.0;
-     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-  }
-  `,
-  PROJECTILES: `
-  attribute vec2 aPoint;
-  uniform vec2 u_resolution;
-  varying vec3 vColor;
-  void main() {
-     vec2 zeroToOne = aPoint / u_resolution;
-     vec2 zeroToTwo = zeroToOne * 2.0;
-     vec2 clipSpace = zeroToTwo - 1.0;
-
-     gl_Position = vec4(clipSpace * vec2(1, -1), 0., 1.);
-
-    gl_PointSize=10.;
-    vColor = vec3(0.5, 0.5, 0.5);
-  }
-  `
 };
 
 const FragmentShaderConst = {
@@ -248,6 +113,141 @@ const FragmentShaderConst = {
     discard;
     gl_FragColor = vec4(vColor, 1.);
     gl_FragColor.a = 1.;
+  }
+  `
+};
+
+const GameConst = {
+  WIDTH: 800,
+  HEIGHT: 600,
+  SHIP_WIDTH: 50,
+  SHIP_HEIGHT: 50
+};
+
+const LevelPlayerIndex = {
+  SHAPES: 1,
+  HEALTH: 2,
+  POSITION: 3,
+  CHRONO_METER: 4
+};
+
+const LevelShipIndex = {
+  START_TIME: 0,
+  END_TIME: 1,
+  KILL_TIME: 2,
+  SHAPES: 3,
+  PATH_DATA: 4,
+  PROJECTILE_PATH: 5,
+  PROJECTILE_TIMES: 6,
+  NEXT_PROJECTILE: 7
+};
+
+const LevelSpecConst = {
+  ON_ENTER: '0',
+  ON_EXIT: '1'
+};
+
+const ObjectIndex = {
+  SEED: 0,
+  SEED_SHAPE_STR: 1,
+  GENERATED_SHAPES: 2,
+  DOM: 3,
+  WIDTH: 4,
+  HEIGHT: 5,
+  POSITION_X: 6,
+  POSITION_Y: 7,
+  TICK: 8,
+  DESTROYED: 9,
+  OBJECT_TYPE: 10,
+  PROJECTILE_COLLISION: 11
+}
+
+const ObjectTypeIndex = {
+  PLAYER: 0,
+  PLAYER_PROJECTILE: 1,
+  ENEMY: 2,
+  ENEMY_PROJECTILE: 3
+}
+
+const PathConst = {
+  MIN_SHIPS: 2,
+  MAX_SHIPS: 7
+};
+
+const PathIndex = {
+  SEGMENTS: 0,
+  LAST_KNOWN_SEGMENT: 1
+};
+
+const PathSegmentIndex = {
+  START_TIME: 0,
+  END_TIME: 1,
+  DURATION: 2,
+  PERCENT_PER_MILLISECOND: 3,
+  START_POINT: 4,
+  END_POINT: 5,
+  CONTROL_POINT: 6
+};
+
+const ShaderConst = {
+  VERTEX_SHADER: 'v',
+  FRAGMENT_SHADER: 'f'
+};
+
+const ShapeIndex = {
+    COLOR: 0,
+    RADIUS: 1,
+    POINTS: 2,
+    BOUNDING_BOX: 3,
+    WEBGL_REPRESENTATION: 4,
+    WEBGL_REPRESENTATION_LENGTH: 5
+};
+
+const ShapeGeneratorConst = {
+  MIRRORED_SHIP: 'm',
+  INVERTED_MIRRORED_SHIP: 'mv'
+};
+
+const SpeedConst = {
+  REWIND: -4,
+  PAUSE: 0,
+  SLOW: 0.3,
+  NORMAL: 1,
+  FAST_FORWARD: 4
+};
+
+const VectorShaderConst = {
+  STARFIELD: `
+    attribute vec2 pos;
+    void main() {
+      gl_Position = vec4(pos, 0, 1);
+    }
+  `,
+  TWO_DIMENSION: `
+  attribute vec2 a_position;
+  uniform vec2 u_resolution;
+  uniform vec2 u_offset;
+
+  void main() {
+     vec2 zeroToOne = (a_position + u_offset) / u_resolution;
+     vec2 zeroToTwo = zeroToOne * 2.0;
+     vec2 clipSpace = zeroToTwo - 1.0;
+     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+  }
+  `,
+  PROJECTILES: `
+  attribute vec2 aPoint;
+  uniform vec2 u_resolution;
+  varying vec3 vColor;
+  void main() {
+     vec2 zeroToOne = aPoint / u_resolution;
+     vec2 zeroToTwo = zeroToOne * 2.0;
+     vec2 clipSpace = zeroToTwo - 1.0;
+
+     gl_Position = vec4(clipSpace * vec2(1, -1), 0., 1.);
+
+    gl_PointSize=10.;
+    vColor = vec3(0.5, 0.5, 0.5);
   }
   `
 };
