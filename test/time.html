@@ -340,6 +340,7 @@
 
 		updatePlayerPosition: (elapsedTime, actualElapsedTime) => {
 			if (elapsedTime > 0) {
+				// normal movement, apply velocity
 				let velocityChange = PlayerConst.ACCELERATION_PER_MS * actualElapsedTime;
 
 				if ($.downKeys.ArrowDown === $.downKeys.ArrowUp) {
@@ -372,6 +373,14 @@
 					$.clamp(curr[1] + $.playerXVelocity * actualElapsedTime, 0, GameConst.WIDTH - GameConst.SHIP_WIDTH),
 					$.clamp(curr[2] + $.playerYVelocity * actualElapsedTime, 0, GameConst.HEIGHT - GameConst.SHIP_HEIGHT)
 				]);
+			} else if (elapsedTime < 0){
+				let idx = $.playerPosition.length - 1;
+				while (idx > 0 && $.playerPosition[idx][0] > $.levelGameTime) {
+					idx--;
+				}
+				if (idx !== $.playerPosition.length - 1) {
+					$.playerPosition = $.playerPosition.slice(0, idx + 1);
+				}
 			}
 		},
 
