@@ -33,6 +33,11 @@
         overflow: auto;
     }
 
+    #soundEditor li {
+        display: inline-block;
+        width: 30%;
+    }
+
     #trackIndex {
         flex-basis: 5%;
     }
@@ -49,6 +54,9 @@
     #soundIndex, #loopIndex {
         flex-basis: 20%;
         border-right: 1px #000 solid;
+    }
+    h3 {
+        margin: 0.5em;
     }
 
     </style>
@@ -68,10 +76,16 @@
             <div id='soundEditor'>
                 <h3>Sound Editor</h3>
                 <form>
-                    <input type="radio" name="WAVE_TYPE" id="r1" value="0" /><label for="r1"> square wave</label>
-                    <input type="radio" name="WAVE_TYPE" id="r2" value="1" /><label for="r2"> sawtooth</label>
-                    <input type="radio" name="WAVE_TYPE" id="r3" value="2" /><label for="r3"> sinewave</label>
-                    <input type="radio" name="WAVE_TYPE" id="r4" value="3" /><label for="r4"> noise</label>
+                    <div>
+                        <input type="radio" name="WAVE_TYPE" id="r1" value="0" checked /><label for="r1"> square wave</label>
+                        <input type="radio" name="WAVE_TYPE" id="r2" value="1" /><label for="r2"> sawtooth</label>
+                        <input type="radio" name="WAVE_TYPE" id="r3" value="2" /><label for="r3"> sinewave</label>
+                        <input type="radio" name="WAVE_TYPE" id="r4" value="3" /><label for="r4"> noise</label>
+                    </div>
+                    <div>
+                        <input type='checkbox' id='playOnChange' checked>
+                        <label for='playOnChange'>play on change?</label>
+                    </div>
                     <ul id='soundRanges'></ul>
 
 
@@ -137,11 +151,33 @@
             ['LP_FILTER_CUTOFF_SWEEP', 0.5, 6],
             ['LP_FILTER_RESONANCE', 0, 6],
             ['HP_FILTER_CUTOFF', 0.1, 6],
-            ['HP_FILTER_CUTOFF_SWEEP', 0.5, 6]
+            ['HP_FILTER_CUTOFF_SWEEP', 0.5, 6],
+            ['MASTER_VOLUME', 0.5, 7]
         ]
+        let playCurrentSound = function() {
+            let vals = [];
+            soundEditorRangeFields.forEach(field => {
+                let [name, initValue, group] = field;
+                if (initValue > 0) {
+                    vals.push(AudioIndex[name]);
+                    vals.push(initValue);
+                }
+            });
+            let sound = $.formatSound($.setArrayVals(
+                Array(24).fill(0),
+                AudioIndex.WAVE_TYPE,
+                0,
+                ...vals
+            ));
+            $.playSound(sound);
+        };
         let soundRanges = $.getElementById('soundRanges');
-        let updateValue = (val, e) => {
-            val.innerHTML = e.target.value;
+        let playOnChanged = $.getElementById('playOnChange');
+        let updateValue = (val, field, e) => {
+            field[1] = parseFloat(val.innerHTML = e.target.value);
+            if (playOnChanged.checked) {
+                playCurrentSound();
+            }
         };
         soundEditorRangeFields.forEach(field => {
             let [name, initValue, group] = field;
@@ -163,7 +199,7 @@
             input.max = 1;
             input.step = 0.01;
             input.value = initValue;
-            input.addEventListener('input', updateValue.bind(null, val));
+            input.addEventListener('input', updateValue.bind(null, val, field));
             $.appendChild(li, input);
             $.appendChild(li, val);
 
