@@ -225,6 +225,25 @@
 			return [curr[1], curr[2]];
 		},
 
+		setPlayerHealth: (newHealth) => {
+			let curr = $.playerHealth[$.playerHealth.length - 1];
+			if (curr[0] === $.levelGameTime) {
+				curr[1] = newHealth;
+			} else {
+				$.playerHealth.push([$.levelGameTime, newHealth]);
+			}
+		},
+
+		restorePlayerHealth: () => {
+			let idx = $.playerHealth.length - 1;
+			while (idx > 0 && $.playerHealth[idx][0] > $.levelGameTime) {
+				idx--;
+			}
+			if (idx !== $.playerHealth.length - 1) {
+				$.playerPosition = $.playerHealth.slice(0, idx + 1);
+			}
+		},
+
 		initializeGame: () => {
 			$.levelStartTime = $.levelLastLoopTime = Date.now();
 			let r = $.getRandomNumberGenerator(PlayerConst.SHAPE_SEED);
@@ -388,10 +407,6 @@
 					$.playerPosition = $.playerPosition.slice(0, idx + 1);
 				}
 			}
-		},
-
-		restorePlayerHealth: () => {
-
 		}
 	})
 
