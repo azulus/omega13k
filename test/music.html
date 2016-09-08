@@ -72,7 +72,7 @@
             </form>
     </div>
         <div id='sounds'>
-            <div id='soundIndex'>Sound Index</div>
+            <div id='soundIndex'>Sound Index <ul id='soundList'></ul></div>
             <div id='soundEditor'>
                 <h3>Sound Editor</h3>
                 <form>
@@ -123,6 +123,51 @@
 	<script src="../js/path.js"></script>
 
     <script language='javascript'>
+        let soundList = $.getElementById('soundList');
+        let soundRanges = $.getElementById('soundRanges');
+        let playOnChanged = $.getElementById('playOnChange');
+
+        let sounds = [
+            [
+                'Coin',
+                'WAVE_TYPE', 0,
+                'SUSTAIN_TIME', 0.06,
+                'SUSTAIN_PUNCH', 0.41,
+                'DECAY_TIME', 0.34,
+                'START_FREQUENCY', 0.88,
+                'CHANGE_AMOUNT', 0.5,
+                'LP_FILTER_CUTOFF', 1,
+                'MASTER_VOLUME', 0.5
+            ]
+        ];
+
+        let setCurrentSound = (idx) => {
+            let s = sounds[idx];
+            let [name, ...values] = s;
+            let valueMap = {};
+            for (let i = 0; i < values.length; i+= 2) {
+                valueMap[values[i]] = values[i + 1];
+            }
+            soundEditorRangeFields.forEach(sound => {
+                let [name, val, group] = sound;
+                updateFieldValue(name, valueMap[name] || 0);
+            });
+            console.log('setting idx', idx);
+            if (playOnChanged.checked) playCurrentSound();
+        };
+
+        sounds.forEach((sound, idx) => {
+            let [name, ...values] = sound;
+            let li = $.createElement('li');
+            $.appendChild(soundList, li);
+
+            let a = $.createElement('a');
+            a.href = 'javascript:void(0);';
+            a.addEventListener('click', setCurrentSound.bind(null, idx));
+            a.innerHTML = name;
+            $.appendChild(li, a);
+        })
+
         let soundEditorRangeFields = [
             ['ATTACK_TIME', 0, 0],
             ['SUSTAIN_TIME', 0.1, 0],
@@ -169,15 +214,20 @@
                 0,
                 ...vals
             ));
+            console.log(sound);
             $.playSound(sound);
         };
-        let soundRanges = $.getElementById('soundRanges');
-        let playOnChanged = $.getElementById('playOnChange');
-        let updateValue = (val, field, e) => {
-            field[1] = parseFloat(val.innerHTML = e.target.value);
-            if (playOnChanged.checked) {
-                playCurrentSound();
-            }
+        let updateFieldValue = (name, val) => {
+            document.getElementById('value-' + name).innerHTML = val;
+            soundEditorRangeFields.forEach(field => {
+                if (field[0] === name) {
+                    field[1] = val;
+                }
+            })
+        };
+        let updateValue = (name, e) => {
+            updateFieldValue(name, parseFloat(e.target.value));
+            if (playOnChanged.checked) playCurrentSound();
         };
         soundEditorRangeFields.forEach(field => {
             let [name, initValue, group] = field;
@@ -190,6 +240,7 @@
             $.appendChild(li, label);
 
             let val = $.createElement('span');
+            val.id = 'value-' + name;
             val.innerHTML = initValue;
 
             let input = $.createElement('input');
@@ -199,7 +250,7 @@
             input.max = 1;
             input.step = 0.01;
             input.value = initValue;
-            input.addEventListener('input', updateValue.bind(null, val, field));
+            input.addEventListener('input', updateValue.bind(null, name));
             $.appendChild(li, input);
             $.appendChild(li, val);
 
