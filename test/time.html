@@ -281,41 +281,61 @@
 			$._activeEnemyCount = count;
 		},
 
+		_rewindEnemyProjectileStates: (elapsedTime) => {
+			let i;
+			// enemy projectiles
+			let shouldDelete = false;
+			for (i = 0; i < $.enemyProjectiles.length; i++) {
+				projectile = $.enemyProjectiles[i];
+				if (projectile[1] && projectile[1] > $.levelGameTime) {
+					if (i < $._firstEnemyProjectileIdx) $._firstEnemyProjectileIdx = i;
+					projectile[1] = undefined;
+				}
+				if (projectile[0] > $.levelGameTime) shouldDelete = true;
+			}
+			if (shouldDelete) $.enemyProjectiles = $.enemyProjectiles.filter(p => p[0] <= $.levelGameTime);
+
+			// player projectiles
+			shouldDelete = false;
+			for (i = 0; i < $.playerProjectiles.length; i++) {
+				projectile = $.playerProjectiles[i];
+				if (projectile[1] && projectile[1] > $.levelGameTime) {
+					if (i < $._firstPlayerProjectileIdx) $._firstPlayerProjectileIdx = i;
+					projectile[1] = undefined;
+				}
+				if (projectile[0] > $.levelGameTime) shouldDelete = true;
+			}
+			if (shouldDelete) $.playerProjectiles = $.playerProjectiles.filter(p => p[0] <= $.levelGameTime);
+		},
+
+		_spawnPlayerProjectiles: (elapsedTime) => {
+			// spawn player projectiles if needed
+			let lastProjectileTime = $.playerProjectiles.length === 0 ? 0 :
+				$.playerProjectiles[$.playerProjectiles.length - 1][3];
+			let nextProjectileTime = lastProjectileTime + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES;
+			if ($.levelGameTime >= nextProjectileTime) {
+				let pos = $.getCurrentPlayerPosition();
+				$.playerProjectiles = $.playerProjectiles.concat(
+					$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => [
+						p[ProjectilePathIndex.OFFSET_TIME], undefined, p, p[ProjectilePathIndex.OFFSET_TIME] + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES
+					])
+				);
+			}
+		},
+
 		updateProjectileStates: (elapsedTime) => {
 			if (elapsedTime === 0) return;
 			let i, idx = 0, projectile;
 
 			if (elapsedTime < 0) {
-				// enemy projectiles
-				let shouldDelete = false;
-				for (i = 0; i < $.enemyProjectiles.length; i++) {
-					projectile = $.enemyProjectiles[i];
-					if (projectile[1] && projectile[1] > $.levelGameTime) {
-						if (i < $._firstEnemyProjectileIdx) $._firstEnemyProjectileIdx = i;
-						projectile[1] = undefined;
-					}
-					if (projectile[0] > $.levelGameTime) shouldDelete = true;
-				}
-				if (shouldDelete) $.enemyProjectiles = $.enemyProjectiles.filter(p => p[0] <= $.levelGameTime);
-
-				// player projectiles
-				shouldDelete = false;
-				for (i = 0; i < $.playerProjectiles.length; i++) {
-					projectile = $.playerProjectiles[i];
-					if (projectile[1] && projectile[1] > $.levelGameTime) {
-						if (i < $._firstPlayerProjectileIdx) $._firstPlayerProjectileIdx = i;
-						projectile[1] = undefined;
-					}
-					if (projectile[0] > $.levelGameTime) shouldDelete = true;
-				}
-				if (shouldDelete) $.playerProjectiles = $.playerProjectiles.filter(p => p[0] <= $.levelGameTime);
+				$._rewindEnemyProjectileStates(elapsedTime);
 			}
 
 			for (i = 0; i < $._activeEnemyCount; i++) {
 				let enemy = $.levelEnemies[$._activeEnemyIndexes[i]];
 
 				if (elapsedTime < 0) {
-					// reset the counters for new projectiles for each enemy
+					// mark enemy projectiles as unspawned
 					while(enemy[LevelShipIndex.NEXT_PROJECTILE] > 0 &&
 							enemy[LevelShipIndex.PROJECTILE_TIMES][enemy[LevelShipIndex.NEXT_PROJECTILE] - 1][0] > $.levelGameTime) {
 						enemy[LevelShipIndex.NEXT_PROJECTILE]--;
@@ -334,18 +354,7 @@
 			}
 
 			if (elapsedTime > 0) {
-				// spawn player projectiles if needed
-				let lastProjectileTime = $.playerProjectiles.length === 0 ? 0 :
-					$.playerProjectiles[$.playerProjectiles.length - 1][3];
-				let nextProjectileTime = lastProjectileTime + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES;
-				if ($.levelGameTime >= nextProjectileTime) {
-					let pos = $.getCurrentPlayerPosition();
-					$.playerProjectiles = $.playerProjectiles.concat(
-						$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => [
-							p[ProjectilePathIndex.OFFSET_TIME], undefined, p, p[ProjectilePathIndex.OFFSET_TIME] + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES
-						])
-					);
-				}
+				$._spawnPlayerProjectiles(elapsedTime);
 			}
 		},
 
