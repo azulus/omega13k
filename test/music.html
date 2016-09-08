@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Track Creator</title>
+	<style type="text/css">
+    html,body {
+        width: 100%;
+        height: 100%;
+        margin:0;
+        padding:0;
+        font-size: 0.8em;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    #trackCreator {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #sounds, #loops, #trackEditor, #trackIndex {
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px #000 solid;
+    }
+
+    #soundEditor {
+        flex-basis: 80%;
+        overflow: auto;
+    }
+
+    #trackIndex {
+        flex-basis: 5%;
+    }
+    #sounds {
+        flex-basis: 40%;
+    }
+    #loops {
+        flex-basis: 20%;
+    }
+    #trackEditor {
+        flex-basis: 35%;
+    }
+
+    #soundIndex, #loopIndex {
+        flex-basis: 20%;
+        border-right: 1px #000 solid;
+    }
+
+    </style>
+</head>
+<body>
+    <div id='trackCreator'>
+        <div id='trackIndex'>
+            <form>
+                <label for='trackList'>Tracks:</label>
+                <select id='trackList'>
+                    <option>some track</option>
+                </select>
+            </form>
+    </div>
+        <div id='sounds'>
+            <div id='soundIndex'>Sound Index</div>
+            <div id='soundEditor'>
+                <h3>Sound Editor</h3>
+                <form>
+                    <input type="radio" name="WAVE_TYPE" id="r1" value="0" /><label for="r1"> square wave</label>
+                    <input type="radio" name="WAVE_TYPE" id="r2" value="1" /><label for="r2"> sawtooth</label>
+                    <input type="radio" name="WAVE_TYPE" id="r3" value="2" /><label for="r3"> sinewave</label>
+                    <input type="radio" name="WAVE_TYPE" id="r4" value="3" /><label for="r4"> noise</label>
+                    <ul id='soundRanges'></ul>
+
+
+                </form>
+            </div>
+        </div>
+        <div id='loops'>
+            <div id='loopIndex'>Loop Index</div>
+            <div id='loopEditor'>Loop Editor</div>
+        </div>
+        <div id='trackEditor'>
+            Track Editor
+        </div>
+
+    </div>
+	<script src='../js/lib/jsfxr.min.js'></script>
+	<script src="../js/init.js"></script>
+	<script src="../js/const.js"></script>
+
+	<script src="../js/levels/boss.js"></script>
+	<script src="../js/levels/dialog.js"></script>
+	<script src="../js/levels/splash.js"></script>
+	<script src="../js/levels/wave.js"></script>
+
+	<script src="../js/audio.js"></script>
+	<script src="../js/dom.js"></script>
+	<script src="../js/drawing.js"></script>
+	<script src="../js/enemySpec.js"></script>
+	<script src="../js/geometry.js"></script>
+	<script src="../js/keyboard.js"></script>
+	<script src="../js/levels.js"></script>
+	<script src="../js/rand.js"></script>
+	<script src="../js/shaders.js"></script>
+	<script src="../js/math.js"></script>
+	<script src="../js/path.js"></script>
+
+    <script language='javascript'>
+        let soundEditorRangeFields = [
+            ['ATTACK_TIME', 0, 0],
+            ['SUSTAIN_TIME', 0.1, 0],
+            ['SUSTAIN_PUNCH', 0, 0],
+            ['DECAY_TIME', 0.3, 0],
+
+            ['START_FREQUENCY', 0.7, 1],
+            ['MIN_FREQUENCY', 0, 1],
+            ['SLIDE', 0.25, 1],
+            ['DELTA_SLIDE', 0.5, 1],
+            ['VIBRATO_DEPTH', 0, 1],
+            ['VIBRATO_SPEED', 0, 1],
+
+            ['CHANGE_AMOUNT', 0.5, 2],
+            ['CHANGE_SPEED', 0, 2],
+
+            ['SQUARE_DUTY', 0.4, 3],
+            ['DUTY_SWEEP', 0.5, 3],
+
+            ['REPEAT_SPEED', 0, 4],
+
+            ['PHASER_OFFSET', 0.5, 5],
+            ['PHASER_SWEEP', 0.5, 5],
+
+            ['LP_FILTER_CUTOFF', 1, 6],
+            ['LP_FILTER_CUTOFF_SWEEP', 0.5, 6],
+            ['LP_FILTER_RESONANCE', 0, 6],
+            ['HP_FILTER_CUTOFF', 0.1, 6],
+            ['HP_FILTER_CUTOFF_SWEEP', 0.5, 6]
+        ]
+        let soundRanges = $.getElementById('soundRanges');
+        let updateValue = (val, e) => {
+            val.innerHTML = e.target.value;
+        };
+        soundEditorRangeFields.forEach(field => {
+            let [name, initValue, group] = field;
+            let li = $.createElement('li');
+            $.appendChild(soundRanges, li);
+
+            let label = $.createElement('label');
+            label.for = name;
+            label.innerHTML = name.replace('_', ' ');
+            $.appendChild(li, label);
+
+            let val = $.createElement('span');
+            val.innerHTML = initValue;
+
+            let input = $.createElement('input');
+            input.id = name;
+            input.type = 'range';
+            input.min = 0;
+            input.max = 1;
+            input.step = 0.01;
+            input.value = initValue;
+            input.addEventListener('input', updateValue.bind(null, val));
+            $.appendChild(li, input);
+            $.appendChild(li, val);
+
+
+        })
+    </script>
+
+</body>
+</html>
