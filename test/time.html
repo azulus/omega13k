@@ -384,6 +384,7 @@
 				// normal movement, apply velocity
 				let velocityChange = PlayerConst.ACCELERATION_PER_MS * actualElapsedTime;
 
+				// apply acceleration to player velocity
 				if ($.downKeys.ArrowDown === $.downKeys.ArrowUp) {
 					if ($.playerYVelocity < 0) {
 						$.playerYVelocity = Math.min($.playerYVelocity + velocityChange, 0);
@@ -408,12 +409,15 @@
 
 				if ($.playerXVelocity === 0 && $.playerYVelocity === 0) return;
 
+				// update player position based on velocity
 				let curr = $.playerPosition[$.playerPosition.length - 1];
 				let posData = [
 					$.levelGameTime,
 					$.clamp(curr[1] + $.playerXVelocity * actualElapsedTime, 0, GameConst.WIDTH - GameConst.SHIP_WIDTH),
 					$.clamp(curr[2] + $.playerYVelocity * actualElapsedTime, 0, GameConst.HEIGHT - GameConst.SHIP_HEIGHT)
 				];
+
+				// push the latest position onto the position stack
 				if ($.playerPosition[$.playerPosition.length - 1][0] === $.levelGameTime) {
 					$.playerPosition[$.playerPosition.length - 1] = posData;
 				} else {
@@ -421,6 +425,7 @@
 				}
 
 			} else if (elapsedTime < 0){
+				// rewind the player position
 				let idx = $.playerPosition.length - 1;
 				while (idx > 0 && $.playerPosition[idx][0] > $.levelGameTime) {
 					idx--;
