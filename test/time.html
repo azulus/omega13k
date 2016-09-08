@@ -59,6 +59,7 @@
 		playerHealth: [],
 		playerProjectilePath: null,
 		playerProjectiles: null,
+		playerChrono: 1000,
 		_activePlayerProjectilePositions: new Float32Array(Array(2000).fill(0)),
 		_activePlayerProjectileIndex: new Array(1000).fill(0),
 		_activePlayerProjectileCount: 0,
@@ -348,13 +349,25 @@
 			}
 		},
 
+		renderHealth: (gl, prog, width, height) => {
+			let x = 0, y = 0, w = $.getCurrentPlayerHealth() / 100 * width, h = 6;
+			let shapes = [$.makeWebGLReady(['#afa',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
+			$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
+		},
+
+		renderChrono: (gl, prog, width, height) => {
+			let x = 0, y = 10, w = $.playerChrono / 1000 * width, h = 6;
+			let shapes = [$.makeWebGLReady(['#aaf',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
+			$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
+		},
+
 		prepareCanvasForProjectiles: (gl, width, height) => {
-	    let prog = $.getProjectilesProgram(gl)
+		    let prog = $.getProjectilesProgram(gl)
 
-	    gl.useProgram(prog)
-	    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
+		    gl.useProgram(prog)
+		    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
 
-	    return prog;
+		    return prog;
 		},
 
 		updatePlayerPosition: (elapsedTime, actualElapsedTime) => {
@@ -460,13 +473,18 @@
 			let playerPosition = $.getCurrentPlayerPosition();
 			$.renderPlayer(gl, shapeProg, playerPosition);
 
+			// render health bar
+			$.renderHealth(gl, shapeProg, canvas.width, canvas.height);
+			$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
+
 			// render projectiles
 			let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
 			$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
 			$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
 			//
 
-			// render health bar
+
+
 			// render chrono bar
 
 			// apply effects based on current speed
