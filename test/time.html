@@ -91,7 +91,7 @@
 			let count = 0;
 			$._activeEnemyProjectileCount = 0;
 			for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
-				let [start, end, path] = projectiles[i];
+				let [start, end, path, destroyed] = projectiles[i];
 				if (start > $.levelGameTime) break;
 				if (end !== undefined) {
 					if ($._firstEnemyProjectileIdx === i) $._firstEnemyProjectileIdx++;
@@ -101,7 +101,7 @@
 				let [x, y, xPerMs, yPerMs, startTime] = path;
 				let newX = x + (elapsedTime * xPerMs);
 				let newY = y + (elapsedTime * yPerMs)
-				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
+				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || destroyed) projectiles[i][1] = $.levelGameTime;
 				$._activeEnemyProjectilePositions[count++] = newX;
 				$._activeEnemyProjectilePositions[count++] = newY;
 				$._activeEnemyProjectileIndex[$._activeEnemyProjectileCount++] = i;
@@ -123,11 +123,30 @@
 			}
 		},
 
+		checkEnemyProjectileCollisions: () => {
+			let count = 0;
+			const projectiles = $.enemyProjectiles;
+			for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
+				const playerPosition = $.getCurrentPlayerPosition();
+				if ($.checkCollision(
+					$.playerShapes,
+					playerPosition[0],
+					playerPosition[1],
+					$._activeEnemyProjectilePositions[count++],
+					$._activeEnemyProjectilePositions[count++],
+					10 // Radius
+					)) {
+					// If there's a collision, set a destroyed timestamp on the projectile.
+					projectiles[i].push(Date.now());
+				}
+			}
+		},
+
 		renderPlayerProjectiles: (gl, prog, projectiles, pos) => {
 			let count = 0;
 			$._activePlayerProjectileCount = 0;
 			for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
-				let [start, end, path] = projectiles[i];
+				let [start, end, path, whatsThis, destroyed] = projectiles[i];
 				if (start > $.levelGameTime) break;
 				if (end !== undefined) {
 					if ($._firstPlayerProjectileIdx === i) $._firstPlayerProjectileIdx++;
@@ -147,7 +166,7 @@
 
 				let newX = x + (elapsedTime * xPerMs);
 				let newY = y + (elapsedTime * yPerMs)
-				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH) projectiles[i][1] = $.levelGameTime;
+				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH || destroyed) projectiles[i][1] = $.levelGameTime;
 				$._activePlayerProjectilePositions[count++] = newX;
 				$._activePlayerProjectilePositions[count++] = newY;
 				$._activePlayerProjectileIndex[$._activePlayerProjectileCount++] = i;
@@ -166,6 +185,29 @@
 			  gl.vertexAttribPointer(pointsLoc, 2, gl.FLOAT, false, 0, 0);
 
 				gl.drawArrays(gl.POINTS, 0, count / 2);
+			}
+		},
+
+		checkPlayerProjectileCollisions: () => {
+			let count = 0;
+			const projectiles = $.playerProjectiles;
+			for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
+				for (let j = 0; j < $._activeEnemyCount; j++){
+					let enemy = $.levelEnemies[$._activeEnemyIndexes[j]];
+					let paths = enemy[LevelShipIndex.PATH_DATA];
+					let pos = $.getPositionAtTime(paths, $.levelGameTime);
+					if ($.checkCollision(
+						enemy[LevelShipIndex.SHAPES],
+						pos[0],
+						pos[1],
+						$._activePlayerProjectilePositions[count++],
+						$._activePlayerProjectilePositions[count++],
+						10 // Radius
+						)) {
+						// If there's a collision, set a destroyed timestamp on the projectile.
+						projectiles[i].push(Date.now());
+					}
+				}
 			}
 		},
 
@@ -469,6 +511,8 @@
 			$.updateProjectileStates(elapsedTime);
 
 			// check for collision between player and enemy projectiles (if non-negative time)
+			$.checkEnemyProjectileCollisions();
+			$.checkPlayerProjectileCollisions();
 
 			// update player health (if negative time, done automatically during collision tests normally)
 
