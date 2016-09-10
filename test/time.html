@@ -206,6 +206,8 @@
 						)) {
 						// If there's a collision, set a destroyed timestamp on the projectile.
 						projectiles[i].push(Date.now());
+						// Destroy the ship.
+						enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					}
 				}
 			}
