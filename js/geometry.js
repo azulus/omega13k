@@ -130,15 +130,7 @@ $.assign($, {
 
   getTriangleSign: (x1, y1, x2, y2, x3, y3) => (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3),
 
-  checkCollision: (gameObject, projectile) => {
-    let shapes = gameObject[ObjectIndex.GENERATED_SHAPES],
-      firstShape = projectile[ObjectIndex.GENERATED_SHAPES][0],
-      offsetX = gameObject[ObjectIndex.POSITION_X],
-      offsetY = gameObject[ObjectIndex.POSITION_Y],
-      projectilePositionX = projectile[ObjectIndex.POSITION_X] + firstShape[ShapeIndex.POINTS][0],
-      projectilePositionY = projectile[ObjectIndex.POSITION_Y] + firstShape[ShapeIndex.POINTS][1],
-      projectileRadius = firstShape[ShapeIndex.RADIUS]
-
+  checkCollision: (shapes, offsetX, offsetY, projectilePositionX, projectilePositionY, projectileRadius) => {
     // check bounding boxes first
     for (let i = 0; i < shapes.length; i++) {
       let shape = shapes[i],
