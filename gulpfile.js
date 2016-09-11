@@ -40,7 +40,7 @@ gulp.task('initbuild', function() {
         .pipe(rimraf());
 
   // get a list of all js scripts from our dev file
-  html = fs.readFileSync('dev.html', 'utf-8', function(e, data) {
+  html = fs.readFileSync('index.html', 'utf-8', function(e, data) {
     return data;
   });
 
@@ -116,7 +116,7 @@ gulp.task('addjs', ['minifyjs'], function() {
     }
     console.log(extra_js.length, 'OK', exclude_min);
 
-    var stream = gulp.src('dev.html')
+    var stream = gulp.src('index.html')
       .pipe(replace(/<.*?script.*?>.*?<\/.*?script.*?>/igm, ''))
       .pipe(replace(/<\/body>/igm, '<script>'+extra_js+' '+js+'</script></body>'))
       .pipe(replace(/game.css/igm, 'g.css'))
