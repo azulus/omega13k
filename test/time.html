@@ -293,7 +293,7 @@
 				idx--;
 			}
 			if (idx !== $.playerHealth.length - 1) {
-				$.playerPosition = $.playerHealth.slice(0, idx + 1);
+				$.playerHealth = $.playerHealth.slice(0, idx + 1);
 			}
 		},
 
@@ -524,6 +524,8 @@
 
 			// update player position (by player controls if non-negative, by replay if negative)
 			$.updatePlayerPosition(elapsedTime, actualElapsedTime);
+
+			// update player health (if negative time, done automatically during collision tests normally)
 			if (elapsedTime < 0) $.restorePlayerHealth();
 
 			// spawn and update projectile positions
@@ -532,9 +534,6 @@
 			// check for collision between player and enemy projectiles (if non-negative time)
 			$.checkEnemyProjectileCollisions();
 			$.checkPlayerProjectileCollisions();
-
-			// update player health (if negative time, done automatically during collision tests normally)
-
 
 			// initialize the canvas
 			let canvas = $.getCanvas();
