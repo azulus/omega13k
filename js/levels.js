@@ -25,6 +25,10 @@ $.assign($, {
 		[LevelSpecConst.BOSS],
 	],
 
+	// Temporary boss health variable.
+	// May consider allowing for rewinding this.
+	bossHealth: 0,
+
 	advanceLevel() {
 		$.inBossLevel = 0;
 		$.currentLevelIndex++;
@@ -46,6 +50,7 @@ $.assign($, {
 		if (levelType === LevelSpecConst.ENEMY_WAVE) {
 			$.initializeLevel.apply(null, level);
 		} else if (levelType === LevelSpecConst.BOSS) {
+			$.bossHealth = ($.currentLevelIndex + 1) * ($.currentLevelIndex + 1)* 50;
 			$.inBossLevel = 1;
 			$.initializeBoss.apply(null, level);
 		}
