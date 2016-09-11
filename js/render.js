@@ -98,13 +98,13 @@ $.assign($, {
 	},
 
 	renderHealth: (gl, prog, width, height) => {
-		let x = 0, y = 0, w = $.getCurrentPlayerHealth() / 100 * width, h = 6, i;
+		let x = 0, y = 0, w = $.getCurrentPlayerHealth() / PlayerConst.MAX_HEALTH * width, h = 6, i;
 		let shapes = [$.makeWebGLReady(['#afa',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
 		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
 	},
 
   renderChrono: (gl, prog, width, height) => {
-		let x = 0, y = 10, w = $.playerChrono / 1000 * width, h = 6;
+		let x = 0, y = 10, w = $.playerChrono / PlayerConst.MAX_CHRONO * width, h = 6;
 		let shapes = [$.makeWebGLReady(['#aaf',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
 		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
 	},

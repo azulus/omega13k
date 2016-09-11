@@ -35,13 +35,6 @@ $.assign($, {
 		$.currentLevelIndex++;
 		const level = $.levelSpec[$.currentLevelIndex];
 
-		// Reset level details
-		$.levelGameTime = 0;
-		$._firstEnemyProjectileIdx = 0;
-		$._firstPlayerProjectileIdx = 0;
-		$.enemyProjectiles = [];
-		$.playerProjectiles = [];
-
 		if (!level) {
 			$.gameWon = 1
 			return

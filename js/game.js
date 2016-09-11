@@ -154,6 +154,23 @@ $.assign($, {
 			idealProjectileWaves=3, idealProjectilesPerPath=3,
 			idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
 			projectileSpeed=200) => {
+		$.levelEnemies =
+		$.levelStartTime = $.levelLastLoopTime = Date.now();
+		$.playerHealth = [[0, ($.inBossLevel ? $.getCurrentPlayerHealth : PlayerConst.STARTING_HEALTH)]];
+		$.playerPosition = [[0, ...$.getCurrentPlayerPosition()]];
+		$.levelGameTime = 0;
+		$.enemyProjectiles = [];
+		$.playerProjectiles = [];
+		$.levelGameTime = 0;
+		$._firstEnemyProjectileIdx = 0;
+		$._firstPlayerProjectileIdx = 0;
+		$.enemyProjectiles = [];
+		$.playerProjectiles = [];
+		$._activeEnemyCount = 0;
+		$._activeEnemyProjectileCount = 0;
+		$._activePlayerProjectileCount = 0;
+
+
 		let r = $.getRandomNumberGenerator(seed),
 			i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
 			enamyShapes, enemyBoundingBox, enemyShapes;
@@ -233,10 +250,8 @@ $.assign($, {
 		let r = $.getRandomNumberGenerator(PlayerConst.SHAPE_SEED);
 		$.playerShapes = $.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
 		$.playerBoundingBox = $.getContainingBoundingBox($.playerShapes);
-		$.playerHealth = [[0, PlayerConst.STARTING_LIFE]];
 		$.playerPosition = [[0, 290, 235]];
 		$.levelGameTime = 0;
-		$.enemyProjectiles = [];
 
 		$.playerProjectilePath = $.generateProjectilePaths(
 			$.getRandomNumberGenerator(PlayerConst.PROJECTILE_SEED),
