@@ -519,17 +519,14 @@ let gameLoop = () => {
 
 	// render health bar
 	$.renderHealth(gl, shapeProg, canvas.width, canvas.height);
+
+	// render chrono bar
 	$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
 
 	// render projectiles
 	let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
 	$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
 	$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
-	//
-
-
-
-	// render chrono bar
 
 	// apply effects based on current speed
 
