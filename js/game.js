@@ -33,9 +33,6 @@ $.assign($, {
 	_firstEnemyProjectileIdx: 0,
 	_firstPlayerProjectileIdx: 0,
 
-	// Game state
-	gameWon: false,
-
 	setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
 	renderPlayer: (gl, prog, position) => {
@@ -187,40 +184,6 @@ $.assign($, {
 				}
 			}
 		}
-	},
-
-	initializeBoss: (seed=1, idealProjectileWaves=3, idealProjectilesPerPath=8,
-			idealProjectilePaths=8, idealTimeBetweenProjectiles=1000,
-			projectileSpeed=100) => {
-
-		let r = $.getRandomNumberGenerator(seed),
-			waves = [],
-			path = $.generateBossPath(r),
-
-			// Fake end time for now for bosses.
-			endTime = 9999999999,
-
-			boss = $.getRandomFromArray(r, $.enemySpec),
-
-			bossR = $.getRandomNumberGenerator(boss[ObjectIndex.SEED]),
-
-			bossShapes = $.getRandomShapes(bossR, GameConst.SHIP_WIDTH * 2, GameConst.SHIP_HEIGHT * 2, boss[ObjectIndex.SEED_SHAPE_STR]),
-
-			bossBoundingBox = $.getContainingBoundingBox(bossShapes),
-
-			// the projectile pattern to use
-			projectilePattern = $.generateProjectilePaths(
-				bossR,
-				ProjectilePathDirectionConst.LEFT,
-				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
-				idealProjectilesPerPath-1, idealProjectilesPerPath+1,
-				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed),
-
-			times = [];
-
-		waves.push([0, endTime, undefined, bossShapes, path, projectilePattern, times, 0, bossBoundingBox])
-
-		$.levelEnemies = waves;
 	},
 
 	initializeLevel: (seed=1, numWaves=10, idealMsBetweenWaves=5000,
@@ -582,10 +545,7 @@ let gameLoop = () => {
 
 	// Handle level change.
 	let wave = $.levelEnemies[$.levelEnemies.length - 1];
-	if (
-		// Normal wave
-		wave[LevelShipIndex.END_TIME] <= $.levelGameTime ||
-		$.inBossLevel && $._activeEnemyCount === 0) {
+	if (wave[LevelShipIndex.END_TIME] <= $.levelGameTime) {
 		$.advanceLevel();
 	}
 
@@ -595,8 +555,8 @@ let gameLoop = () => {
 		$.setTimeMultiplier(1);
 	}
 
-	if ($.gameWon) {
-		console.log('game won.');
+	if ($.gameLost) {
+		console.log('game over.');
 	} else {
 		requestAnimationFrame(gameLoop);
 	}
