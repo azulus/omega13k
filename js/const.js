@@ -205,7 +205,7 @@ const PlayerConst = {
   SHAPE_SEED: 1037,
   STARTING_LIFE: 100,
   PROJECTILE_SEED: 54,
-  MS_BETWEEN_PROJECTILE_WAVES: 2000
+  MS_BETWEEN_PROJECTILE_WAVES: 400
 };
 
 const ProjectilePathDirection = {
