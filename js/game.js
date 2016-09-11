@@ -1,4 +1,5 @@
 $.assign($, {
+	gameWon: 0,
 	// timing data
 	levelStartTime: null,
 	levelGameTime: null,
