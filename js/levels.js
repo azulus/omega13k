@@ -1,5 +1,6 @@
 $.assign($, {
 	currentLevelIndex: -1,
+	inBossLevel: 0,
 
 	/*
 		For normal levels:
@@ -13,14 +14,19 @@ $.assign($, {
 	*/
 	levelSpec: [
 		[LevelSpecConst.ENEMY_WAVE, 1, 10, 5000],
+		[LevelSpecConst.BOSS],
 		[LevelSpecConst.ENEMY_WAVE, 1, 12, 4700],
+		[LevelSpecConst.BOSS],
 		[LevelSpecConst.ENEMY_WAVE, 1, 15, 4400],
+		[LevelSpecConst.BOSS],
 		[LevelSpecConst.ENEMY_WAVE, 1, 20, 4000],
+		[LevelSpecConst.BOSS],
 		[LevelSpecConst.ENEMY_WAVE, 1, 25, 3500],
-		[LevelSpecConst.ENEMY_WAVE, 1, 30, 3000],
+		[LevelSpecConst.BOSS],
 	],
 
 	advanceLevel() {
+		$.inBossLevel = 0;
 		$.currentLevelIndex++;
 		const level = $.levelSpec[$.currentLevelIndex];
 
@@ -32,7 +38,7 @@ $.assign($, {
 		$.playerProjectiles = [];
 
 		if (!level) {
-			$.gameLost = 1
+			$.gameWon = 1
 			return
 		}
 
@@ -40,6 +46,7 @@ $.assign($, {
 		if (levelType === LevelSpecConst.ENEMY_WAVE) {
 			$.initializeLevel.apply(null, level);
 		} else if (levelType === LevelSpecConst.BOSS) {
+			$.inBossLevel = 1;
 			$.initializeBoss.apply(null, level);
 		}
 	}
