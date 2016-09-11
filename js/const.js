@@ -126,13 +126,6 @@ const GameConst = {
   SHIP_HEIGHT: 50
 };
 
-const KeyboardBitConst = {
-  DOWN_KEY: 1,
-  LEFT_KEY: 2,
-  UP_KEY: 4,
-  RIGHT_KEY: 8
-};
-
 const LevelPlayerIndex = {
   SHAPES: 1,
   HEALTH: 2,
@@ -152,11 +145,7 @@ const LevelShipIndex = {
   BOUNDING_BOX: 8
 };
 
-const LevelSpecConst = {
-  ON_ENTER: '0',
-  ON_EXIT: '1'
-};
-
+// TODO: Remove?
 const ObjectIndex = {
   SEED: 0,
   SEED_SHAPE_STR: 1,
@@ -170,13 +159,6 @@ const ObjectIndex = {
   DESTROYED: 9,
   OBJECT_TYPE: 10,
   PROJECTILE_COLLISION: 11
-}
-
-const ObjectTypeIndex = {
-  PLAYER: 0,
-  PLAYER_PROJECTILE: 1,
-  ENEMY: 2,
-  ENEMY_PROJECTILE: 3
 }
 
 const PathConst = {
