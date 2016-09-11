@@ -126,6 +126,13 @@ const GameConst = {
   SHIP_HEIGHT: 50
 };
 
+const LevelSpecConst = {
+  ENEMY_WAVE: 0,
+  BOSS: 1,
+  DIALOG: 2,
+  END_SCREEN: 3,
+};
+
 const LevelPlayerIndex = {
   SHAPES: 1,
   HEALTH: 2,

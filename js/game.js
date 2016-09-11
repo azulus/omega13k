@@ -543,15 +543,26 @@ let gameLoop = () => {
 		$.playerChrono += elapsedTime * PlayerConst.CHRONO_RECOVERY_PER_MS;
 	}
 
+	// Handle level change.
+	let wave = $.levelEnemies[$.levelEnemies.length - 1];
+	if (wave[LevelShipIndex.END_TIME] <= $.levelGameTime) {
+		$.advanceLevel();
+	}
+
 	gl.flush();
 
 	if (shouldResumeNormal) {
 		$.setTimeMultiplier(1);
 	}
+
+	if ($.gameLost) {
+		console.log('game over.');
+	} else {
+		requestAnimationFrame(gameLoop);
+	}
 }
 
 $.initKeyboard();
 $.initializeGame()
-$.initializeLevel();
-//requestAnimationFrame(gameLoop)
-setInterval(gameLoop, 16)
+$.advanceLevel();
+requestAnimationFrame(gameLoop)
