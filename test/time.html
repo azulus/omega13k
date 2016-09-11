@@ -5,17 +5,17 @@
 	<link rel="stylesheet" type="text/css" href="../game.css">
 </head>
 <body>
+	<div id='w'>
+		<canvas id='f' width=800 height=600></canvas>
+	</div>
 	<ul>
-		<li style="color: #fff;">Rewind: (spacebar)</li>
+		<li><strong>Controls</strong> <a id='close' href="#">Close</a></li>
+		<li>Rewind: spacebar</li>
 		<li><button id='pause'>Pause</button></li>
 		<li><button id='slow'>Slow</button></li>
 		<li><button id='normal'>Normal</button></li>
 		<li><button id='fast'>Fast Forward</button></li>
 	</ul>
-
-	<div id='w' class='g'>
-		<canvas id='f' width=800 height=600></canvas>
-	</div>
 	<script src='../js/lib/jsfxr.min.js'></script>
 	<script src="../js/init.js"></script>
 	<script src="../js/const.js"></script>
@@ -483,6 +483,10 @@
 		$.getElementById('slow').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
 		$.getElementById('normal').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
 		$.getElementById('fast').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
+		$.getElementById('close').addEventListener('click', (e) => {
+			e.preventDefault();
+			e.target.parentNode.parentNode.style.display = 'none'
+		})
 
 		let gameLoop = () => {
 			let currentTime = Date.now();

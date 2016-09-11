@@ -18,19 +18,9 @@ body {
 #w {
 	position: relative;
 	/* 600 for canvas + 12 for life bar */
-	height: 612px;
+	height: 600px;
 	width: 800px;
 	overflow: hidden;
-}
-
-/**
- * Splash page
- */
-#s {
-	width: 800px;
-	color: #fff;
-	position: absolute;
-	z-index: 2;
 }
 
 /**
@@ -59,25 +49,7 @@ body {
 	z-index: 2;
 }
 
-.g #g,
-.g #l {
-	display: block;
-}
-
-.g #s {
-	display: none;
-}
-
-#g canvas {
-	position: absolute;
-	transform: translate(-1000px, -1000px);
-}
-
-#l {
-	display: none;
-	background: green;
-	width: 1px;
-	height: 12px;
-	margin-top: 600px;
-	transition: transform 400ms linear;
+ul {
+	list-style-type: none;
+	color: #fff;
 }
