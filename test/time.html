@@ -91,7 +91,7 @@
 			let count = 0;
 			$._activeEnemyProjectileCount = 0;
 			for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
-				let [start, end, path, destroyed] = projectiles[i];
+				let [start, end, path] = projectiles[i];
 				if (start > $.levelGameTime) break;
 				if (end !== undefined) {
 					if ($._firstEnemyProjectileIdx === i) $._firstEnemyProjectileIdx++;
@@ -101,7 +101,7 @@
 				let [x, y, xPerMs, yPerMs, startTime] = path;
 				let newX = x + (elapsedTime * xPerMs);
 				let newY = y + (elapsedTime * yPerMs)
-				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || destroyed) projectiles[i][1] = $.levelGameTime;
+				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
 				$._activeEnemyProjectilePositions[count++] = newX;
 				$._activeEnemyProjectilePositions[count++] = newY;
 				$._activeEnemyProjectileIndex[$._activeEnemyProjectileCount++] = i;
@@ -136,8 +136,8 @@
 					$._activeEnemyProjectilePositions[count++],
 					10 // Radius
 					)) {
-					// If there's a collision, set a destroyed timestamp on the projectile.
-					projectiles[i].push(Date.now());
+					// "Destroy" the projectile.
+					projectiles[i][1] = $.levelGameTime;
 					// Reduce player health.
 					let currHealth = $.playerHealth[$.playerHealth.length - 1][1],
 						projectileDamage = 1;
@@ -150,7 +150,7 @@
 			let count = 0;
 			$._activePlayerProjectileCount = 0;
 			for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
-				let [start, end, path, whatsThis, destroyed] = projectiles[i];
+				let [start, end, path, whatsThis] = projectiles[i];
 				if (start > $.levelGameTime) break;
 				if (end !== undefined) {
 					if ($._firstPlayerProjectileIdx === i) $._firstPlayerProjectileIdx++;
@@ -170,7 +170,7 @@
 
 				let newX = x + (elapsedTime * xPerMs);
 				let newY = y + (elapsedTime * yPerMs)
-				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH || destroyed) projectiles[i][1] = $.levelGameTime;
+				if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH) projectiles[i][1] = $.levelGameTime;
 				$._activePlayerProjectilePositions[count++] = newX;
 				$._activePlayerProjectilePositions[count++] = newY;
 				$._activePlayerProjectileIndex[$._activePlayerProjectileCount++] = i;
@@ -208,8 +208,8 @@
 						$._activePlayerProjectilePositions[count++],
 						10 // Radius
 						)) {
-						// If there's a collision, set a destroyed timestamp on the projectile.
-						projectiles[i].push(Date.now());
+						// "Destroy" the projectile.
+						projectiles[i][1] = $.levelGameTime;
 						// Destroy the ship.
 						enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					}
