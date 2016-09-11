@@ -148,7 +148,8 @@ const LevelShipIndex = {
   PATH_DATA: 4,
   PROJECTILE_PATH: 5,
   PROJECTILE_TIMES: 6,
-  NEXT_PROJECTILE: 7
+  NEXT_PROJECTILE: 7,
+  BOUNDING_BOX: 8
 };
 
 const LevelSpecConst = {

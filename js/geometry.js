@@ -130,7 +130,11 @@ $.assign($, {
 
   getTriangleSign: (x1, y1, x2, y2, x3, y3) => (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3),
 
-  checkCollision: (shapes, offsetX, offsetY, projectilePositionX, projectilePositionY, projectileRadius) => {
+  checkCollision: (shapes, shapesBoundingBox, offsetX, offsetY, projectilePositionX, projectilePositionY, projectileRadius) => {
+    if (!$.circleInBoundingBox(projectilePositionX, projectilePositionY, projectileRadius, shapesBoundingBox, offsetX, offsetY)) {
+      return false;
+    }
+
     // check bounding boxes first
     for (let i = 0; i < shapes.length; i++) {
       let shape = shapes[i],
@@ -226,9 +230,29 @@ $.assign($, {
     return false;
   },
 
+  getContainingBoundingBox: (shapes) => $.mergeBoundingBoxes(shapes.map(shape => $.getBoundingBox(shape))),
+
+  circleInBoundingBox: (x, y, r, box, offsetX=0, offsetY=0) => (x + r < box[0] + offsetX) // left
+      || (x - r > box[0] + offsetX + box[2]) // right
+      || (y + r < box[1] + offsetY) // top
+      || (y - r > box[1] + offsetY + box[3]),
+
+  mergeBoundingBoxes: (...boxes) => {
+    let minX = minY = Infinity, maxX = maxY = -1;
+    boxes.forEach(box => {
+      let [x, y, w, h] = box;
+      let right = x + w, bottom = y + h;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (right > maxX) maxX = right;
+      if (bottom > maxY) maxY = bottom;
+    })
+    return [minX, minY, maxX-minX, maxY-minY];
+  },
+
   getBoundingBox: (shape) => {
     if (!shape[ShapeIndex.BOUNDING_BOX]) {
-        let box, pts = shape.pts;
+        let box, pts = shape[ShapeIndex.POINTS];
         if (shape[ShapeIndex.RADIUS]) {
           box = [
               pts[0]-shape[ShapeIndex.RADIUS],

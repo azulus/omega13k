@@ -50,6 +50,7 @@
 		playerXVelocity: 0,
 		playerYVelocity: 0,
 		playerShapes: null,
+		playerBoundingBox: null,
 		playerPosition: [],
 		playerHealth: [],
 		playerProjectilePath: null,
@@ -126,6 +127,7 @@
 				const playerPosition = $.getCurrentPlayerPosition();
 				if ($.checkCollision(
 					$.playerShapes,
+					$.playerBoundingBox,
 					playerPosition[0],
 					playerPosition[1],
 					$._activeEnemyProjectilePositions[count++],
@@ -200,6 +202,7 @@
 
 					if ($.checkCollision(
 						enemy[LevelShipIndex.SHAPES],
+						enemy[LevelShipIndex.BOUNDING_BOX],
 						$._activeEnemyPositions[posIdx],
 						$._activeEnemyPositions[posIdx+1],
 						$._activePlayerProjectilePositions[xIdx],
@@ -220,7 +223,8 @@
 				idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
 				projectileSpeed=200) => {
 			let r = $.getRandomNumberGenerator(seed),
-				i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles;
+				i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
+				enamyShapes, enemyBoundingBox;
 
 		  // generate the timings and paths for each wave of enemies
 			for (i = 0; i < numWaves; i++) {
@@ -236,6 +240,7 @@
 				enemy = $.getRandomFromArray(r, $.enemySpec)
 				enemyR = $.getRandomNumberGenerator(enemy[ObjectIndex.SEED]);
 				enemyShapes = $.getRandomShapes(enemyR, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, enemy[ObjectIndex.SEED_SHAPE_STR])
+				enemyBoundingBox = $.getContainingBoundingBox(enemyShapes);
 
 				// the projectile pattern to use
 				projectilePattern = $.generateProjectilePaths(
@@ -258,7 +263,7 @@
 						).map(pp => [j, undefined, pp])
 						times.push([j, projectilePaths]);
 					}
-					waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0])
+					waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0, enemyBoundingBox])
 				})
 			}
 
@@ -295,6 +300,7 @@
 			$.levelStartTime = $.levelLastLoopTime = Date.now();
 			let r = $.getRandomNumberGenerator(PlayerConst.SHAPE_SEED);
 			$.playerShapes = $.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
+			$.playerBoundingBox = $.getContainingBoundingBox($.playerShapes);
 			$.playerHealth = [[0, PlayerConst.STARTING_LIFE]];
 			$.playerPosition = [[0, 290, 235]];
 			$.levelGameTime = 0;
