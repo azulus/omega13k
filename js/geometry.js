@@ -172,6 +172,10 @@ $.assign($, {
         }
 
       } else if ($.isTriangle(shape)) {
+        if (!$.circleInBoundingBox(projectilePositionX, projectilePositionY, projectileRadius, $.getBoundingBox(shape), offsetX, offsetY)) {
+          continue;
+        }
+
         // vertex is inside circle
         let rSquared = $.pow(projectileRadius,2);
         for (let i = 0; i < pts.length; i+=2) {
@@ -232,12 +236,13 @@ $.assign($, {
 
   getContainingBoundingBox: (shapes) => $.mergeBoundingBoxes(shapes.map(shape => $.getBoundingBox(shape))),
 
-  circleInBoundingBox: (x, y, r, box, offsetX=0, offsetY=0) => (x + r < box[0] + offsetX) // left
+  circleInBoundingBox: (x, y, r, box, offsetX=0, offsetY=0) => !((x + r < box[0] + offsetX) // left
       || (x - r > box[0] + offsetX + box[2]) // right
       || (y + r < box[1] + offsetY) // top
-      || (y - r > box[1] + offsetY + box[3]),
+      || (y - r > box[1] + offsetY + box[3]) // below
+    ),
 
-  mergeBoundingBoxes: (...boxes) => {
+  mergeBoundingBoxes: (boxes) => {
     let minX = minY = Infinity, maxX = maxY = -1;
     boxes.forEach(box => {
       let [x, y, w, h] = box;
