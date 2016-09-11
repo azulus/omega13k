@@ -548,10 +548,14 @@
 
 			// update time multiplier and chrono bar
 			if ($.downKeys[' '] && $.playerChrono > 0) {
+				// Use chrono bar and rewind time.
 				$.setTimeMultiplier(SpeedConst.REWIND);
 				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
-			} else {
+			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
+				// Restore to normal time if we're not holding spacebar.
 				$.setTimeMultiplier(SpeedConst.NORMAL)
+			} else if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) {
+				// Recover chrono.
 				$.playerChrono += elapsedTime * PlayerConst.CHRONO_RECOVERY_PER_MS;
 			}
 
