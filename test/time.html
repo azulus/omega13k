@@ -124,14 +124,15 @@
 			let count = 0;
 			const projectiles = $.enemyProjectiles;
 			for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
+				let xIdx = count++, yIdx = count++;
 				const playerPosition = $.getCurrentPlayerPosition();
 				if ($.checkCollision(
 					$.playerShapes,
 					$.playerBoundingBox,
 					playerPosition[0],
 					playerPosition[1],
-					$._activeEnemyProjectilePositions[count++],
-					$._activeEnemyProjectilePositions[count++],
+					$._activeEnemyProjectilePositions[xIdx],
+					$._activeEnemyProjectilePositions[yIdx],
 					10 // Radius
 					)) {
 					// "Destroy" the projectile.
