@@ -1,5 +1,4 @@
 $.assign($, {
-	gameWon: 0,
 	// timing data
 	levelStartTime: null,
 	levelGameTime: null,
@@ -33,6 +32,9 @@ $.assign($, {
 	// first index of visible projectiles, for optimization purposes
 	_firstEnemyProjectileIdx: 0,
 	_firstPlayerProjectileIdx: 0,
+
+	// Game state
+	gameWon: false,
 
 	setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
@@ -82,11 +84,70 @@ $.assign($, {
 					)) {
 					// "Destroy" the projectile.
 					projectiles[i][1] = $.levelGameTime;
-					// Destroy the ship.
-					enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
+
+					if ($.inBossLevel) {
+						// Currently special casing boss levels.
+						if ($.bossHealth > 0) $.bossHealth--;
+						else enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
+					} else {
+						// Destroy the ship.
+						enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
+					}
 				}
 			}
 		}
+	},
+
+	initializeBoss: (seed=1, idealProjectileWaves=3, idealProjectilesPerPath=8,
+			idealProjectilePaths=8, idealTimeBetweenProjectiles=1000,
+			projectileSpeed=100) => {
+
+		let r = $.getRandomNumberGenerator(seed),
+			waves = [],
+			path = $.generateBossPath(r),
+
+			// Fake end time for now for bosses.
+			endTime = 99999999,
+
+			bossWidth = GameConst.SHIP_WIDTH * 2,
+
+			bossHeight = GameConst.SHIP_HEIGHT * 2,
+
+			boss = $.getRandomFromArray(r, $.enemySpec),
+
+			bossR = $.getRandomNumberGenerator(boss[ObjectIndex.SEED]),
+
+			bossShapes = $.getRandomShapes(bossR, bossWidth, bossHeight, boss[ObjectIndex.SEED_SHAPE_STR]),
+
+			bossBoundingBox = $.getContainingBoundingBox(bossShapes),
+
+			timeBetweenProjectiles = $.floor($.randBetween(bossR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25)),
+
+			// the projectile pattern to use
+			projectilePattern = $.generateProjectilePaths(
+				bossR,
+				ProjectilePathDirectionConst.LEFT,
+				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
+				idealProjectilesPerPath-1, idealProjectilesPerPath+1,
+				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed),
+
+			times = [];
+
+		// For bosses, push a single projectile path, and replay it.
+		for (var j = timeBetweenProjectiles; j < timeBetweenProjectiles + 10000; j += 200) {
+			let pos = $.getPositionAtTime(path, j);
+			let projectilePaths = $.offsetProjectilePaths(
+				projectilePattern,
+				pos[0] + bossWidth / 2,
+				pos[1] + bossHeight / 2,
+				j
+			).map(pp => [j, undefined, pp])
+			times.push([j, projectilePaths]);
+		}
+
+		waves.push([0, endTime, undefined, bossShapes, path, projectilePattern, times, 0, bossBoundingBox])
+
+		$.levelEnemies = waves;
 	},
 
 	initializeLevel: (seed=1, numWaves=10, idealMsBetweenWaves=5000,
@@ -350,99 +411,116 @@ $.assign($, {
 				$.playerPosition = $.playerPosition.slice(0, idx + 1);
 			}
 		}
+	},
+
+	startGame: () => {
+		$.getElementById('pause').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
+		$.getElementById('slow').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
+		$.getElementById('normal').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
+		$.getElementById('fast').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
+		$.getElementById('close').addEventListener('click', (e) => {
+			e.preventDefault();
+			e.target.parentNode.parentNode.style.display = 'none'
+		})
+
+		let gameLoop = () => {
+			let currentTime = Date.now();
+			let actualElapsedTime = (currentTime - $.levelLastLoopTime)
+			let elapsedTime = actualElapsedTime * $.speedMultiplier;
+			let shouldResumeNormal = false;
+			$.levelLastLoopTime = currentTime;
+
+			let lastGameTime = $.levelGameTime;
+			$.levelGameTime += elapsedTime;
+
+			if ($.levelGameTime < 0) {
+				$.levelGameTime = 0;
+				shouldResumeNormal = true;
+			}
+
+			// spawn enemies and update their positions
+			$.updateEnemyStates();
+
+			// update player position (by player controls if non-negative, by replay if negative)
+			$.updatePlayerPosition(elapsedTime, actualElapsedTime);
+
+			// update player health (if negative time, done automatically during collision tests normally)
+			if (elapsedTime < 0) $.restorePlayerHealth();
+
+			// spawn and update projectile positions
+			$.updateProjectileStates(elapsedTime);
+
+			// check for collision between player and enemy projectiles (if non-negative time)
+			$.checkEnemyProjectileCollisions();
+			$.checkPlayerProjectileCollisions();
+
+			// initialize the canvas
+			let canvas = $.getCanvas();
+			let gl = $.get3DContext(canvas);
+			$.clear3DCanvas(gl);
+
+			// draw the background
+			// $.renderStarfield(gl, gameTime, canvas.width, canvas.height);
+
+			// render shapes
+			let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
+			$.renderEnemies(gl, shapeProg);
+			let playerPosition = $.getCurrentPlayerPosition();
+			$.renderPlayer(gl, shapeProg, playerPosition);
+
+			// render health bar
+			$.renderHealth(gl, shapeProg, canvas.width, canvas.height);
+
+			// render chrono bar
+			$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
+
+			// render projectiles
+			let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
+			$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
+			$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
+
+			// apply effects based on current speed
+
+			// update time multiplier and chrono bar
+			if ($.downKeys[' '] && $.playerChrono > 0) {
+				// Use chrono bar and rewind time.
+				$.setTimeMultiplier(SpeedConst.REWIND);
+				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
+			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
+				// Restore to normal time if we're not holding spacebar.
+				$.setTimeMultiplier(SpeedConst.NORMAL)
+			} else if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) {
+				// Recover chrono.
+				$.playerChrono += elapsedTime * PlayerConst.CHRONO_RECOVERY_PER_MS;
+			}
+
+			// Handle level change.
+			let wave = $.levelEnemies[$.levelEnemies.length - 1];
+			if (
+				// Normal wave
+				wave[LevelShipIndex.END_TIME] <= $.levelGameTime ||
+				$.inBossLevel && $._activeEnemyCount === 0) {
+				$.advanceLevel();
+			}
+
+			gl.flush();
+
+			if (shouldResumeNormal) {
+				$.setTimeMultiplier(1);
+			}
+
+			if ($.gameWon) {
+				console.log('game won.');
+			} else {
+				requestAnimationFrame(gameLoop);
+			}
+		}
+
+		$.initKeyboard();
+		$.initializeGame()
+		$.advanceLevel();
+		requestAnimationFrame(gameLoop);
 	}
 })
 
-
-$.getElementById('pause').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
-$.getElementById('slow').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
-$.getElementById('normal').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
-$.getElementById('fast').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
-$.getElementById('close').addEventListener('click', (e) => {
-	e.preventDefault();
-	e.target.parentNode.parentNode.style.display = 'none'
-})
-
-let gameLoop = () => {
-	let currentTime = Date.now();
-	let actualElapsedTime = (currentTime - $.levelLastLoopTime)
-	let elapsedTime = actualElapsedTime * $.speedMultiplier;
-	let shouldResumeNormal = false;
-	$.levelLastLoopTime = currentTime;
-
-	let lastGameTime = $.levelGameTime;
-	$.levelGameTime += elapsedTime;
-
-	if ($.levelGameTime < 0) {
-		$.levelGameTime = 0;
-		shouldResumeNormal = true;
-	}
-
-	// spawn enemies and update their positions
-	$.updateEnemyStates();
-
-	// update player position (by player controls if non-negative, by replay if negative)
-	$.updatePlayerPosition(elapsedTime, actualElapsedTime);
-
-	// update player health (if negative time, done automatically during collision tests normally)
-	if (elapsedTime < 0) $.restorePlayerHealth();
-
-	// spawn and update projectile positions
-	$.updateProjectileStates(elapsedTime);
-
-	// check for collision between player and enemy projectiles (if non-negative time)
-	$.checkEnemyProjectileCollisions();
-	$.checkPlayerProjectileCollisions();
-
-	// initialize the canvas
-	let canvas = $.getCanvas();
-	let gl = $.get3DContext(canvas);
-	$.clear3DCanvas(gl);
-
-	// draw the background
-	// $.renderStarfield(gl, gameTime, canvas.width, canvas.height);
-
-	// render shapes
-	let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
-	$.renderEnemies(gl, shapeProg);
-	let playerPosition = $.getCurrentPlayerPosition();
-	$.renderPlayer(gl, shapeProg, playerPosition);
-
-	// render health bar
-	$.renderHealth(gl, shapeProg, canvas.width, canvas.height);
-
-	// render chrono bar
-	$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
-
-	// render projectiles
-	let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
-	$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
-	$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
-
-	// apply effects based on current speed
-
-	// update time multiplier and chrono bar
-	if ($.downKeys[' '] && $.playerChrono > 0) {
-		// Use chrono bar and rewind time.
-		$.setTimeMultiplier(SpeedConst.REWIND);
-		$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
-	} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
-		// Restore to normal time if we're not holding spacebar.
-		$.setTimeMultiplier(SpeedConst.NORMAL)
-	} else if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) {
-		// Recover chrono.
-		$.playerChrono += elapsedTime * PlayerConst.CHRONO_RECOVERY_PER_MS;
-	}
-
-	gl.flush();
-
-	if (shouldResumeNormal) {
-		$.setTimeMultiplier(1);
-	}
-}
-
-$.initKeyboard();
-$.initializeGame()
-$.initializeLevel();
-//requestAnimationFrame(gameLoop)
-setInterval(gameLoop, 16)
+window.addEventListener('load', $.startGame);
