@@ -39,7 +39,7 @@
 		r = $.getRandomNumberGenerator(seed)
 
     let {width, height} = canvas;
-		let projectilePaths = $.generateProjectilePaths(r, ProjectilePathDirection.LEFT, canvas.width - 50, canvas.height / 2, 0,
+		let projectilePaths = $.generateProjectilePaths(r, ProjectilePathDirectionConst.LEFT, canvas.width - 50, canvas.height / 2, 0,
       5, 10, 5, 10, 10, 20, 500);
 		let projectile = $.makeWebGLReady(['#ddd', 5, [5, 5]])
 

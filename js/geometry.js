@@ -135,7 +135,6 @@ $.assign($, {
       return false;
     }
 
-    // check bounding boxes first
     for (let i = 0; i < shapes.length; i++) {
       let shape = shapes[i],
         pts = shape[ShapeIndex.POINTS];
@@ -243,7 +242,7 @@ $.assign($, {
     ),
 
   mergeBoundingBoxes: (boxes) => {
-    let minX = minY = Infinity, maxX = maxY = -1;
+    let minX = Infinity, minY = Infinity, maxX = -1, maxY = -1;
     boxes.forEach(box => {
       let [x, y, w, h] = box;
       let right = x + w, bottom = y + h;

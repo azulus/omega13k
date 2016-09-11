@@ -204,7 +204,22 @@ module.exports = function(src) {
 
       'ObjectProperty': (node) => {
         if (currentIndexNode) {
-          currentIndex[node.key.name] = node.value.value;
+          switch(node.value.type) {
+            case 'UnaryExpression':
+              currentIndex[node.key.name] = -1 * node.value.argument.value;
+              break;
+            case 'TemplateLiteral':
+              // template literals, no interpolation
+              currentIndex[node.key.name] = node.value.quasis.map(quasi => quasi.raw).join('');
+              break;
+            default:
+              currentIndex[node.key.name] = node.value.value;
+              if (currentIndex[node.key.name] === undefined) {
+                console.log(node.value);
+                throw new Error();
+              }
+              break;
+          }
         }
       },
 
@@ -299,6 +314,7 @@ module.exports = function(src) {
 
     var functionStack = [{
       variables: {
+        'Infinity': 'Infinity',
         'Float32Array': 'Float32Array',
         'parseInt': 'parseInt',
         'Error': 'Error',

@@ -194,7 +194,7 @@ const PlayerConst = {
   CHRONO_RECOVERY_PER_MS: 0.02
 };
 
-const ProjectilePathDirection = {
+const ProjectilePathDirectionConst = {
   UP: 90,
   LEFT: 180,
   DOWN: 270,

@@ -192,7 +192,7 @@ $.assign($, {
 			projectileSpeed=200) => {
 		let r = $.getRandomNumberGenerator(seed),
 			i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
-			enamyShapes, enemyBoundingBox;
+			enamyShapes, enemyBoundingBox, enemyShapes;
 
 	  // generate the timings and paths for each wave of enemies
 		for (i = 0; i < numWaves; i++) {
@@ -213,7 +213,7 @@ $.assign($, {
 			// the projectile pattern to use
 			projectilePattern = $.generateProjectilePaths(
 				enemyR,
-				ProjectilePathDirection.LEFT,
+				ProjectilePathDirectionConst.LEFT,
 				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
 			 idealProjectilesPerPath-1, idealProjectilesPerPath+1,
 			 idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed)
@@ -276,7 +276,7 @@ $.assign($, {
 
 		$.playerProjectilePath = $.generateProjectilePaths(
 			$.getRandomNumberGenerator(PlayerConst.PROJECTILE_SEED),
-			ProjectilePathDirection.RIGHT,
+			ProjectilePathDirectionConst.RIGHT,
 			0, 0, 0)
 		$.playerProjectiles = [];
 	},
@@ -307,7 +307,7 @@ $.assign($, {
 	},
 
 	_rewindEnemyProjectileStates: (elapsedTime) => {
-		let i;
+		let i, projectile;
 		// enemy projectiles
 		let shouldDelete = false;
 		for (i = 0; i < $.enemyProjectiles.length; i++) {
