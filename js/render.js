@@ -103,9 +103,15 @@ $.assign($, {
 		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
 	},
 
-	renderChrono: (gl, prog, width, height) => {
+  renderChrono: (gl, prog, width, height) => {
 		let x = 0, y = 10, w = $.playerChrono / 1000 * width, h = 6;
 		let shapes = [$.makeWebGLReady(['#aaf',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
+		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
+	},
+
+  renderBossHealth: (gl, prog, width, height) => {
+		let x = 0, y = GameConst.HEIGHT - 10, w = $.bossHealth / $.maxBossHealth * width, h = 6;
+		let shapes = [$.makeWebGLReady(['#f88',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
 		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
 	}
 })

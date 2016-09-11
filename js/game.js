@@ -474,6 +474,10 @@ $.assign($, {
 			// render chrono bar
 			$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
 
+			if ($.inBossLevel) {
+				$.renderBossHealth(gl, shapeProg, canvas.width, canvas.height);
+			}
+
 			// render projectiles
 			let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
 			$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
