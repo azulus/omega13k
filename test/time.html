@@ -192,6 +192,7 @@
 			let count = 0;
 			const projectiles = $.playerProjectiles;
 			for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
+				let xIdx = count++, yIdx = count++;
 				for (let j = 0; j < $._activeEnemyCount; j++){
 					let posIdx = j * 2;
 					let enemy = $.levelEnemies[$._activeEnemyIndexes[j]];
@@ -201,8 +202,8 @@
 						enemy[LevelShipIndex.SHAPES],
 						$._activeEnemyPositions[posIdx],
 						$._activeEnemyPositions[posIdx+1],
-						$._activePlayerProjectilePositions[count++],
-						$._activePlayerProjectilePositions[count++],
+						$._activePlayerProjectilePositions[xIdx],
+						$._activePlayerProjectilePositions[yIdx],
 						10 // Radius
 						)) {
 						// "Destroy" the projectile.
