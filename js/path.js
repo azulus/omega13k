@@ -1,6 +1,52 @@
 $.assign($, {
   DEGREES_TO_RADIANS: Math.PI / 180,
 
+  generateBossPath: (r) => {
+    let paths = [],
+
+      usableWidth = GameConst.WIDTH - (GameConst.SHIP_WIDTH * 2) - 5,
+      usableHeight = GameConst.HEIGHT - (GameConst.SHIP_HEIGHT * 2) - 5,
+
+      currentPoint = [
+        GameConst.WIDTH + 20,
+        usableHeight / 2
+      ],
+
+      nextPoint = [
+        usableWidth - 50,
+        usableHeight / 2
+      ],
+
+      dist = $.distance(currentPoint, nextPoint),
+
+      travelTime = $.floor((r() * 2 + (Math.sqrt(dist) / 20)) * 100);
+
+    let segment = [
+      0, // Start time.
+      travelTime,
+      travelTime,
+      1/travelTime,
+      currentPoint,
+      nextPoint
+    ];
+
+    paths.push(segment);
+
+    // Fake pause time for now.
+    let pauseTime = 99999999;
+
+    paths.push([
+      segment[PathSegmentIndex.END_TIME],
+      segment[PathSegmentIndex.END_TIME] + pauseTime,
+      pauseTime,
+      1/pauseTime,
+      segment[PathSegmentIndex.END_POINT],
+      segment[PathSegmentIndex.END_POINT]
+    ]);
+
+    return [paths];
+  },
+
   generateRandomPath: (r,startTime = 0) => {
 
     let isSymmetrical = r() < 0.5
