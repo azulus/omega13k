@@ -27,7 +27,6 @@ const AudioIndex = {
   MASTER_VOLUME: 23
 };
 
-<<<<<<< 5ecfc020c68ed5142024e1f58f2d1fb17ea03f48
 const AudioConst = {
   ENEMY_PROJECTILE_POOL_SIZE: 5,
   ENEMY_EXPLOSION_POOL_SIZE: 3,
@@ -38,7 +37,8 @@ const AudioConst = {
 
 const AudioPoolIndex = {
   PLAY: 0
-=======
+};
+
 const BackgroundConst = {
   SEED: 123,
   NUM_STARS: 500,
@@ -46,8 +46,7 @@ const BackgroundConst = {
   MAX_BRIGHTNESS: 0.8,
   MIN_VELOCITY: 0.01, // takes 10 minutes to cross screen = 10 * 60 * 1000 = 600000 ms to move 800
   MAX_VELOCITY: 0.2 // crosses screen in 10 seconds
->>>>>>> new starfield
-};
+}
 
 const BoundingBoxIndex = {
   POSITION_X: 0,
