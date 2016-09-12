@@ -1,4 +1,15 @@
 $.assign($, {
+	SCREEN_VERTICES: new Float32Array([
+		1, 1,
+		-1, 1,
+		-1, -1,
+		1, 1,
+		-1, -1,
+		1, -1
+	]),
+	framebuffers: Array(4),
+	textures: Array(4),
+
 	renderPlayer: (gl, prog, position) => {
 		$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...position)
 	},
@@ -113,5 +124,81 @@ $.assign($, {
 		let x = 0, y = GameConst.HEIGHT - 10, w = $.bossHealth / $.maxBossHealth * width, h = 6;
 		let shapes = [$.makeWebGLReady(['#f88',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
 		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
+	},
+
+	createTexture: (gl) => {
+		let texture = gl.createTexture(gl);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+		return texture;
+	},
+
+	loadTexture: (gl, fbIdx) => {
+		if ($.textures[fbIdx] === undefined) {
+			$.textures[fbIdx] = gl.createTexture();
+		}
+		gl.bindTexture(gl.TEXTURE_2D, $.textures[fbIdx]);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, GameConst.WIDTH, GameConst.HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		return $.textures[fbIdx];
+	},
+
+	loadFramebuffer: (gl, fbIdx, texture) => {
+		if ($.framebuffers[fbIdx] === undefined) {
+			$.framebuffers[fbIdx] = gl.createFramebuffer();
+		}
+		gl.bindFramebuffer(gl.FRAMEBUFFER, $.framebuffers[fbIdx]);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+		return $.framebuffers[fbIdx];
+	},
+
+	renderGame: () => {
+		// initialize the canvas
+		let canvas = $.getCanvas();
+		let gl = $.get3DContext(canvas);
+		$.clear3DCanvas(gl);
+
+		// draw the background
+		// $.renderStarfield(gl, gameTime, canvas.width, canvas.height);
+
+		// render shapes
+		// let shipTexture = $.loadTexture(gl, FramebufferIndex.SHIPS);
+		// let shipFb = $.loadFramebuffer(gl, FramebufferIndex.SHIPS, shipTexture);
+
+		let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
+		$.renderEnemies(gl, shapeProg);
+		let playerPosition = $.getCurrentPlayerPosition();
+		$.renderPlayer(gl, shapeProg, playerPosition);
+		//
+		// gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		// let vertBuffer = gl.createBuffer();
+		// gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
+		// gl.bufferData(gl.ARRAY_BUFFER, $.SCREEN_VERTICES, gl.STATIC_DRAW);
+		// gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+		// render health bar
+		$.renderHealth(gl, shapeProg, canvas.width, canvas.height);
+
+		// render chrono bar
+		$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
+
+		if ($.inBossLevel) {
+			$.renderBossHealth(gl, shapeProg, canvas.width, canvas.height);
+		}
+
+		// render projectiles
+		let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
+		$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
+		$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
+
+		gl.flush();
 	}
 })

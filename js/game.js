@@ -470,34 +470,7 @@ $.assign($, {
 			$.checkEnemyProjectileCollisions();
 			$.checkPlayerProjectileCollisions();
 
-			// initialize the canvas
-			let canvas = $.getCanvas();
-			let gl = $.get3DContext(canvas);
-			$.clear3DCanvas(gl);
-
-			// draw the background
-			// $.renderStarfield(gl, gameTime, canvas.width, canvas.height);
-
-			// render shapes
-			let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
-			$.renderEnemies(gl, shapeProg);
-			let playerPosition = $.getCurrentPlayerPosition();
-			$.renderPlayer(gl, shapeProg, playerPosition);
-
-			// render health bar
-			$.renderHealth(gl, shapeProg, canvas.width, canvas.height);
-
-			// render chrono bar
-			$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
-
-			if ($.inBossLevel) {
-				$.renderBossHealth(gl, shapeProg, canvas.width, canvas.height);
-			}
-
-			// render projectiles
-			let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
-			$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
-			$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
+			$.renderGame();
 
 			// apply effects based on current speed
 
@@ -522,8 +495,6 @@ $.assign($, {
 				$.inBossLevel && $._activeEnemyCount === 0) {
 				$.advanceLevel();
 			}
-
-			gl.flush();
 
 			if (shouldResumeNormal) {
 				$.setTimeMultiplier(1);

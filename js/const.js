@@ -119,6 +119,13 @@ const FragmentShaderConst = {
   `
 };
 
+const FramebufferIndex = {
+  BACKGROUND: 0,
+  SHIPS: 1,
+  PROJECTILES: 2,
+  STATUS: 3
+};
+
 const GameConst = {
   WIDTH: 800,
   HEIGHT: 600,
