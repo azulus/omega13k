@@ -386,15 +386,6 @@ $.assign($, {
 		}
 	},
 
-	prepareCanvasForProjectiles: (gl, width, height) => {
-	    let prog = $.getProjectilesProgram(gl)
-
-	    gl.useProgram(prog)
-	    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
-
-	    return prog;
-	},
-
 	updatePlayerPosition: (elapsedTime, actualElapsedTime) => {
 		if (elapsedTime >= 0) {
 			// normal movement, apply velocity
@@ -549,6 +540,7 @@ $.assign($, {
 		console.log('initializing game');
 		$.initKeyboard();
 		$.initializeStarfield();
+		$.initializePlumes();
 		$.initializeGame()
 		$.advanceLevel();
 		requestAnimationFrame(gameLoop);

@@ -2,9 +2,90 @@ $.assign($, {
 	framebuffers: Array(4),
 	textures: Array(4),
 	stars: new Float32Array(BackgroundConst.NUM_STARS * 4),
+	plumes: new Float32Array(PlumeConst.MAX_PLUMES * 4),
+
+	prepareCanvasForShapes: (gl, width, height) => {
+    let prog = $.get2DProgram(gl)
+
+    var posLocation = gl.getAttribLocation(prog, 'a_position');
+  	gl.useProgram(prog);
+		gl.disable(gl.BLEND);
+
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(
+    	gl.ARRAY_BUFFER,
+      $.SCREEN_VERTICES,
+      gl.STATIC_DRAW
+    );
+    gl.enableVertexAttribArray(posLocation);
+    gl.vertexAttribPointer(posLocation, 2, gl.FLOAT, false, 0, 0);
+
+    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
+
+    return prog;
+  },
+
+	prepareCanvasForProjectiles: (gl, width, height) => {
+	    let prog = $.getProjectilesProgram(gl)
+
+	    gl.useProgram(prog)
+	    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
+
+	    return prog;
+	},
+
+	prepareCanvasForPlumes: (gl, width, height) => {
+	    let prog = $.getPlumesProgram(gl);
+
+	    gl.useProgram(prog);
+			gl.enable(gl.BLEND);
+			gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+	    gl.uniform2f(gl.getUniformLocation(prog, 'uResolution'), width, height)
+			gl.uniform1f(gl.getUniformLocation(prog, 'uTime'), $.levelGameTime * 0.001);
+
+	    return prog;
+	},
 
 	renderPlayer: (gl, prog, position) => {
 		$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...position)
+	},
+
+	initializePlumes: () => {
+		for (var i=0; i < PlumeConst.MAX_PLUMES; i++)  {
+   		// set up the distance from the center
+   		let dist = 0.8 * Math.random() * Math.random() * Math.random();
+      // based on distance, set up the lifetime
+      let lifetime = (dist + 1.5) * Math.random() + 1;
+      // set the velocity
+      let velocity = ( 30.0 *(Math.random()) );
+      // choose whether distance is positive or negative
+      if (Math.random() < 0.5) dist *= -1;
+      dist *= 5;
+      $.plumes[(i * 4) + 0] = velocity;
+      $.plumes[(i * 4) + 1] = dist;
+      $.plumes[(i * 4) + 2] = lifetime;
+      $.plumes[(i * 4) + 3] = 1 / lifetime;
+   }
+	},
+
+	renderEnemyPlumes: (gl, prog) => {
+		gl.uniform3f(gl.getUniformLocation(prog, 'uColor'), 0.8, 0.4, 0.4);
+
+		let originLoc = gl.getUniformLocation(prog, 'uOrigin'),
+			posLoc = gl.getAttribLocation(prog, 'aPos'),
+			posIdx, i;
+
+		gl.enableVertexAttribArray( posLoc );
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+		gl.bufferData(gl.ARRAY_BUFFER, $.plumes, gl.STATIC_DRAW);
+		gl.vertexAttribPointer( posLoc, 4, gl.FLOAT, false, 0, 0);
+
+		for (i = 0; i < $._activeEnemyCount; i++){
+			posIdx = i * 2;
+			gl.uniform3f(originLoc, $._activeEnemyPositions[posIdx] + GameConst.SHIP_WIDTH, $._activeEnemyPositions[posIdx+1] + GameConst.HALF_SHIP_HEIGHT, i)
+			gl.drawArrays(gl.POINTS, 0, PlumeConst.MAX_PLUMES);
+		}
 	},
 
 	renderEnemies: (gl, prog) => {
@@ -183,23 +264,6 @@ $.assign($, {
 		gl.vertexAttribPointer(resolutionLoc, 4, gl.FLOAT, false, 0, 0);
 
 		gl.drawArrays(gl.POINTS, 0, BackgroundConst.NUM_STARS);
-
-
-		// let tex = $.loadTexture(gl, FramebufferIndex.BACKGROUND, GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT);
-		// let fb = $.loadFramebuffer(gl, FramebufferIndex.BACKGROUND, tex);
-    // let prog = $.getStarfieldProgram(gl);
-		//
-    // $.attributeSetFloats(gl, prog, 'pos', 2, $.SCREEN_VERTICES);
-		//
-    // gl.useProgram(prog)
-		//
-    // gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT, 1)
-    // gl.uniform1f(gl.getUniformLocation(prog, 'globalTime'), $.levelGameTime / 100)
-		//
-    // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
-		//
-		// gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		// return tex;
   },
 
 	renderGame: () => {
@@ -211,21 +275,15 @@ $.assign($, {
 		// draw the background
 		$.renderStarfield(gl, canvas.width, canvas.height);
 
+		// render engine plumes
+		let plumeProg = $.prepareCanvasForPlumes(gl, canvas.width, canvas.height);
+		$.renderEnemyPlumes(gl, plumeProg);
+
 		// render shapes
-		// let shipTexture = $.loadTexture(gl, FramebufferIndex.SHIPS);
-		// let shipFb = $.loadFramebuffer(gl, FramebufferIndex.SHIPS, shipTexture);
-
 		let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
-
 		$.renderEnemies(gl, shapeProg);
 		let playerPosition = $.getCurrentPlayerPosition();
 		$.renderPlayer(gl, shapeProg, playerPosition);
-		//
-		// gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		// let vertBuffer = gl.createBuffer();
-		// gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
-		// gl.bufferData(gl.ARRAY_BUFFER, $.SCREEN_VERTICES, gl.STATIC_DRAW);
-		// gl.drawArrays(gl.TRIANGLES, 0, 6);
 
 		// render health bar
 		$.renderHealth(gl, shapeProg, canvas.width, canvas.height);

@@ -58,7 +58,8 @@ const BoundingBoxIndex = {
 const CachedProgramIndex = {
   STARFIELD: 0,
   TWO_DIMENSION: 1,
-  PROJECTILES: 2
+  PROJECTILES: 2,
+  PLUMES: 3
 };
 
 const CircleConst = {
@@ -80,6 +81,17 @@ const EnemyConfigIndex = {
 };
 
 const FragmentShaderConst = {
+  PLUMES: `
+  precision mediump float;
+  varying vec3 vColor;
+  varying float vLifetime;
+  void main(void) {
+   if(length(gl_PointCoord-vec2(0.5)) > 0.7)
+    discard;
+    gl_FragColor = vec4(vColor, 1.);
+    gl_FragColor.a = vLifetime * .5;
+  }
+  `,
   STARFIELD: `
   precision mediump float;
   varying float vBrightness;
@@ -94,6 +106,7 @@ const FragmentShaderConst = {
 
   void main() {
      gl_FragColor = u_color;
+     gl_FragColor.a = 1.;
   }
   `,
   PROJECTILES: `
@@ -121,7 +134,9 @@ const GameConst = {
   STARFIELD_WIDTH: 128,
   STARFIELD_HEIGHT: 128,
   SHIP_WIDTH: 50,
-  SHIP_HEIGHT: 50
+  SHIP_HEIGHT: 50,
+  HALF_SHIP_WIDTH: 25,
+  HALF_SHIP_HEIGHT: 25
 };
 
 const LevelSpecConst = {
@@ -203,6 +218,10 @@ const PlayerConst = {
   MAX_CHRONO: 1000
 };
 
+const PlumeConst = {
+  MAX_PLUMES: 40
+};
+
 const ProjectilePathDirectionConst = {
   UP: 90,
   LEFT: 180,
@@ -262,6 +281,34 @@ const VectorShaderConst = {
     gl_PointSize=1.;
     vBrightness = aStar[2];
   }
+  `,
+  PLUMES: `
+    attribute vec4 aPos;
+
+    uniform float uTime;
+    uniform vec3 uColor;
+    uniform vec3 uOrigin;
+    uniform vec2 uResolution;
+
+    varying float vLifetime;
+    varying vec3 vColor;
+
+    void main(void) {
+      float ti = mod(uTime + uOrigin[2], aPos[2]) * aPos[3];
+      vec2 point = vec2(
+      	uOrigin[0] + (aPos[0]*ti),
+        uOrigin[1] + aPos[1]
+      );
+
+      vec2 zeroToOne = vec2(uOrigin[0] + (aPos[0]*ti), uOrigin[1] + aPos[1]) / uResolution;
+      vec2 zeroToTwo = zeroToOne * 2.0;
+      vec2 clipSpace = zeroToTwo - 1.0;
+      gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+
+      vLifetime = 4.*ti*(1. - ti);
+      vColor = uColor;
+      gl_PointSize = 5.;
+    }
   `,
   TWO_DIMENSION: `
   attribute vec2 a_position;

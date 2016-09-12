@@ -51,26 +51,5 @@ $.assign($, {
   getStarfieldProgram: (gl) => $.getCachedProgram(CachedProgramIndex.STARFIELD, gl, VectorShaderConst.STARFIELD, FragmentShaderConst.STARFIELD),
   get2DProgram: (gl) => $.getCachedProgram(CachedProgramIndex.TWO_DIMENSION, gl, VectorShaderConst.TWO_DIMENSION, FragmentShaderConst.TWO_DIMENSION),
   getProjectilesProgram: (gl) => $.getCachedProgram(CachedProgramIndex.PROJECTILES, gl, VectorShaderConst.PROJECTILES, FragmentShaderConst.PROJECTILES),
-
-  getStarfieldAnimator: (canvas) => {
-    let gl = $.get3DContext(canvas),
-      prog = $.getStarfieldProgram(gl),
-      start = Date.now()
-
-    $.attributeSetFloats(gl, prog, 'pos', 2, $.SCREEN_VERTICES);
-    gl.useProgram(prog)
-    gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), canvas.width, canvas.height, 1)
-
-    let anim = () => {
-      gl.uniform1f(gl.getUniformLocation(prog, 'globalTime'), (Date.now() - start) / 1000)
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
-      requestAnimationFrame(anim)
-    }
-    return anim
-  },
-
-  applyStarfield: (canvas) => {
-    let anim = $.getStarfieldAnimator(canvas)
-    anim();
-  }
+  getPlumesProgram: (gl) => $.getCachedProgram(CachedProgramIndex.PLUMES, gl, VectorShaderConst.PLUMES, FragmentShaderConst.PLUMES)
 });

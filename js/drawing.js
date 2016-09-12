@@ -67,27 +67,6 @@ $.assign($, {
 		1, -1
 	]),
 
-  prepareCanvasForShapes: (gl, width, height) => {
-    let prog = $.get2DProgram(gl)
-
-    var posLocation = gl.getAttribLocation(prog, 'a_position');
-  	gl.useProgram(prog);
-
-    var buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(
-    	gl.ARRAY_BUFFER,
-      $.SCREEN_VERTICES,
-      gl.STATIC_DRAW
-    );
-    gl.enableVertexAttribArray(posLocation);
-    gl.vertexAttribPointer(posLocation, 2, gl.FLOAT, false, 0, 0);
-
-    gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), width, height)
-
-    return prog;
-  },
-
   drawShapesToCanvasGL: (gl, prog, shapes, ox=0, oy=0) => {
     gl.uniform2f(gl.getUniformLocation(prog, 'u_offset'), ox, oy);
     shapes.forEach(rs => $.drawShapeGL(gl, prog, rs, ox, oy))
