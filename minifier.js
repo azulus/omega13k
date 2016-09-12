@@ -235,6 +235,7 @@ module.exports = function(src) {
   if (SHOULD_MERGE_CONSECUTIVE_DECLARATIONS) {
     visit(ast, {
       'VariableDeclaration': (node, key, idx) => {
+        node.kind = 'let';
         if (typeof idx === 'undefined' || idx === 0) return;
         var parent = parentOf(node);
 
