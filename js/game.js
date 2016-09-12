@@ -87,6 +87,9 @@ $.assign($, {
 					// "Destroy" the projectile.
 					projectiles[i][1] = $.levelGameTime;
 
+					// Play the enemy explosion audio.
+					enemy[LevelShipIndex.EXPLOSION_AUDIO_POOL][AudioPoolIndex.PLAY]();
+
 					if ($.inBossLevel) {
 						// Currently special casing boss levels.
 						if ($.bossHealth > 0) $.bossHealth--;
@@ -123,6 +126,8 @@ $.assign($, {
 
 			bossBoundingBox = $.getContainingBoundingBox(bossShapes),
 
+			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE),
+
 			timeBetweenProjectiles = $.floor($.randBetween(bossR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25)),
 
 			// the projectile pattern to use
@@ -147,7 +152,7 @@ $.assign($, {
 			times.push([j, projectilePaths]);
 		}
 
-		waves.push([0, endTime, undefined, bossShapes, path, projectilePattern, times, 0, bossBoundingBox])
+		waves.push([0, endTime, undefined, bossShapes, path, projectilePattern, times, 0, bossBoundingBox, explosionAudioPool])
 
 		$.levelEnemies = waves;
 	},
@@ -175,10 +180,12 @@ $.assign($, {
 
 		let r = $.getRandomNumberGenerator(seed),
 			i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
-			enamyShapes, enemyBoundingBox, enemyShapes;
+			enamyShapes, enemyBoundingBox, enemyShapes, explosionAudioPool;
 
 	  // generate the timings and paths for each wave of enemies
 		for (i = 0; i < numWaves; i++) {
+			// Create the explosion sound for this wave of enemies.
+			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE)
 			// create the delay between this and the previous wave
 			delay += $.randBetween(r, idealMsBetweenWaves * 0.75, idealMsBetweenWaves*1.25);
 			// generate the path for the wave to follow
@@ -214,7 +221,7 @@ $.assign($, {
 					).map(pp => [j, undefined, pp])
 					times.push([j, projectilePaths]);
 				}
-				waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0, enemyBoundingBox])
+				waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0, enemyBoundingBox, explosionAudioPool])
 			})
 		}
 
@@ -518,7 +525,7 @@ $.assign($, {
 			}
 		}
 
-		$.playerProjectileAudioPool = $.createAudioPool($.createLaserSound($.getRandomNumberGenerator(102)), 6);
+		$.playerProjectileAudioPool = $.createAudioPool($.createLaserSound($.getRandomNumberGenerator(102)), AudioConst.PLAYER_PROJECTILE_POOL_SIZE);
 
 		console.log('initializing game');
 		$.initKeyboard();

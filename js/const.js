@@ -27,6 +27,11 @@ const AudioIndex = {
   MASTER_VOLUME: 23
 };
 
+const AudioConst = {
+  ENEMY_EXPLOSION_POOL_SIZE: 3,
+  PLAYER_PROJECTILE_POOL_SIZE: 3
+};
+
 const AudioPoolIndex = {
   PLAY: 0
 };
@@ -160,7 +165,9 @@ const LevelShipIndex = {
   PROJECTILE_PATH: 5,
   PROJECTILE_TIMES: 6,
   NEXT_PROJECTILE: 7,
-  BOUNDING_BOX: 8
+  BOUNDING_BOX: 8,
+  EXPLOSION_AUDIO_POOL: 9,
+  PROJECTILE_AUDIO_POOL: 10
 };
 
 // TODO: Remove?
