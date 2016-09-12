@@ -30,6 +30,7 @@ $.assign($, {
 	_activePlayerProjectileIndex: Array(1000).fill(0),
 	_activePlayerProjectileCount: 0,
 
+	nextRewindSoundTime: 0,
 	speedMultiplier: 1,
 
 	// first index of visible projectiles, for optimization purposes
@@ -504,6 +505,12 @@ $.assign($, {
 				// Use chrono bar and rewind time.
 				$.setTimeMultiplier(SpeedConst.REWIND);
 				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
+				// Play rewind sound.
+				if (!$.nextRewindSoundTime || $.levelGameTime > $.nextRewindSoundTime) {
+					let rewindSound = $.createRewindSound(Math.random);
+					$.playSound(rewindSound);
+					$.nextRewindSoundTime = (rewindSound[2]*1000) + AudioConst.REWIND_SOUND_DELAY;
+				}
 			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
 				// Restore to normal time if we're not holding spacebar.
 				$.setTimeMultiplier(SpeedConst.NORMAL)
