@@ -24,6 +24,7 @@ $.assign($, {
 	playerProjectiles: null,
 	playerChrono: PlayerConst.MAX_CHRONO_METER,
 	playerLaserSoundsTiming: [],
+	playerExplosionAudioPool: [],
 	playerProjectileAudioPool: [],
 	_activePlayerProjectilePositions: new Float32Array(Array(2000).fill(0)),
 	_activePlayerProjectileIndex: Array(1000).fill(0),
@@ -57,6 +58,8 @@ $.assign($, {
 				)) {
 				// "Destroy" the projectile.
 				projectiles[i][1] = $.levelGameTime;
+				// Play the sound.
+				$.playerExplosionAudioPool[AudioPoolIndex.PLAY]();
 				// Reduce player health.
 				let currHealth = $.playerHealth[$.playerHealth.length - 1][1],
 					projectileDamage = 1;
@@ -128,7 +131,7 @@ $.assign($, {
 
 			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE),
 
-			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_LASER_POOL_SIZE),
+			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_PROJECTILE_POOL_SIZE),
 
 			timeBetweenProjectiles = $.floor($.randBetween(bossR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25)),
 
@@ -188,7 +191,7 @@ $.assign($, {
 		for (i = 0; i < numWaves; i++) {
 			// Create the explosion/laser sounds for this wave of enemies.
 			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE)
-			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_LASER_POOL_SIZE)
+			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_PROJECTILE_POOL_SIZE)
 			// create the delay between this and the previous wave
 			delay += $.randBetween(r, idealMsBetweenWaves * 0.75, idealMsBetweenWaves*1.25);
 			// generate the path for the wave to follow
@@ -529,6 +532,7 @@ $.assign($, {
 			}
 		}
 
+		$.playerExplosionAudioPool = $.createAudioPool($.createExplosionSound($.getRandomNumberGenerator(4)), AudioConst.PLAYER_EXPLOSION_POOL_SIZE);
 		$.playerProjectileAudioPool = $.createAudioPool($.createLaserSound($.getRandomNumberGenerator(102)), AudioConst.PLAYER_PROJECTILE_POOL_SIZE);
 
 		console.log('initializing game');
