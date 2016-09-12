@@ -6,6 +6,9 @@ $.assign($, {
 	healthStatus: new Float32Array(StatusBarConst.HEALTH_SEGMENTS * 12),
 	chronoStatus: new Float32Array(StatusBarConst.CHRONO_SEGMENTS * 12),
 	bossStatus: new Float32Array(StatusBarConst.BOSS_SEGMENTS * 12),
+	healthPerSegment: 1 / StatusBarConst.HEALTH_SEGMENTS,
+	chronoPerSegment: 1 / StatusBarConst.CHRONO_SEGMENTS,
+	bossPerSegment: 1 / StatusBarConst.BOSS_SEGMENTS,
 
 	initializeStatusBar: (numSegments, yOffset, height, arr) => {
 		let padding = 2;
@@ -40,6 +43,8 @@ $.assign($, {
 	},
 
 	renderStatusBars: (gl, prog, width, height) => {
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		gl.uniform2f(gl.getUniformLocation(prog, 'u_offset'), 0., 0.);
 		$.renderHealth(gl, prog, width, height);
 		$.renderChrono(gl, prog, width, height);
@@ -48,22 +53,43 @@ $.assign($, {
 		}
 	},
 
+	renderBar: (gl, prog, percentage, percentagePerSegment, color, segments, numSegments) => {
+		if (percentage >= 1) {
+			// render full bar
+			gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...color, 1);
+	    gl.bufferData(gl.ARRAY_BUFFER, segments, gl.STATIC_DRAW);
+	    gl.drawArrays(gl.TRIANGLES, 0, numSegments * 6);
+		} else if (percentage > 0) {
+			let visibleSegments = Math.floor(percentage / percentagePerSegment);
+
+			if (visibleSegments > 0) {
+				gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...color, 1);
+		    gl.bufferData(gl.ARRAY_BUFFER, segments, gl.STATIC_DRAW);
+		    gl.drawArrays(gl.TRIANGLES, 0, visibleSegments * 6);
+			}
+
+			let lastColor = (percentage - (visibleSegments * percentagePerSegment)) / percentagePerSegment;
+			if (lastColor > 0) {
+				gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...color, lastColor);
+		    gl.bufferData(gl.ARRAY_BUFFER, segments, gl.STATIC_DRAW);
+		    gl.drawArrays(gl.TRIANGLES, visibleSegments * 6, 6);
+			}
+		}
+	},
+
 	renderHealth: (gl, prog, width, height) => {
-		gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(StatusBarConst.HEALTH_COLOR), 1);
-    gl.bufferData(gl.ARRAY_BUFFER, $.healthStatus, gl.STATIC_DRAW);
-    gl.drawArrays(gl.TRIANGLES, 0, StatusBarConst.HEALTH_SEGMENTS * 6);
+		$.renderBar(gl, prog, $.getCurrentPlayerHealth() / PlayerConst.MAX_HEALTH, $.healthPerSegment,
+			$.getShaderColor(StatusBarConst.HEALTH_COLOR), $.healthStatus, StatusBarConst.HEALTH_SEGMENTS);
 	},
 
 	renderChrono: (gl, prog, width, height) => {
-		gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(StatusBarConst.CHRONO_COLOR), 1);
-    gl.bufferData(gl.ARRAY_BUFFER, $.chronoStatus, gl.STATIC_DRAW);
-    gl.drawArrays(gl.TRIANGLES, 0, StatusBarConst.CHRONO_SEGMENTS * 6);
+		$.renderBar(gl, prog, $.playerChrono / PlayerConst.MAX_CHRONO, $.chronoPerSegment,
+			$.getShaderColor(StatusBarConst.CHRONO_COLOR), $.chronoStatus, StatusBarConst.CHRONO_SEGMENTS);
 	},
 
   renderBossHealth: (gl, prog, width, height) => {
-		gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(StatusBarConst.BOSS_COLOR), 1);
-    gl.bufferData(gl.ARRAY_BUFFER, $.bossStatus, gl.STATIC_DRAW);
-    gl.drawArrays(gl.TRIANGLES, 0, StatusBarConst.BOSS_SEGMENTS * 6);
+		$.renderBar(gl, prog, $.bossHealth / $.maxBossHealth, $.bossPerSegment,
+			$.getShaderColor(StatusBarConst.BOSS_COLOR), $.bossStatus, StatusBarConst.BOSS_SEGMENTS);
 	},
 
 	prepareCanvasForShapes: (gl, width, height) => {

@@ -106,7 +106,6 @@ const FragmentShaderConst = {
 
   void main() {
      gl_FragColor = u_color;
-     gl_FragColor.a = 1.;
   }
   `,
   PROJECTILES: `
@@ -276,7 +275,7 @@ const StatusBarConst = {
   HEALTH_HEIGHT: 6,
   HEALTH_COLOR: '#afa',
 
-  BOSS_SEGMENTS: 1,
+  BOSS_SEGMENTS: 40,
   BOSS_Y_OFFSET: 580,
   BOSS_HEIGHT: 10,
   BOSS_COLOR: '#f88',
