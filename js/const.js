@@ -29,7 +29,8 @@ const AudioIndex = {
 
 const AudioConst = {
   ENEMY_EXPLOSION_POOL_SIZE: 3,
-  PLAYER_PROJECTILE_POOL_SIZE: 3
+  PLAYER_PROJECTILE_POOL_SIZE: 3,
+  ENEMY_LASER_POOL_SIZE: 5
 };
 
 const AudioPoolIndex = {

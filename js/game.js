@@ -128,6 +128,8 @@ $.assign($, {
 
 			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE),
 
+			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_LASER_POOL_SIZE),
+
 			timeBetweenProjectiles = $.floor($.randBetween(bossR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25)),
 
 			// the projectile pattern to use
@@ -152,7 +154,7 @@ $.assign($, {
 			times.push([j, projectilePaths]);
 		}
 
-		waves.push([0, endTime, undefined, bossShapes, path, projectilePattern, times, 0, bossBoundingBox, explosionAudioPool])
+		waves.push([0, endTime, undefined, bossShapes, path, projectilePattern, times, 0, bossBoundingBox, explosionAudioPool, laserAudioPool])
 
 		$.levelEnemies = waves;
 	},
@@ -180,12 +182,13 @@ $.assign($, {
 
 		let r = $.getRandomNumberGenerator(seed),
 			i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
-			enamyShapes, enemyBoundingBox, enemyShapes, explosionAudioPool;
+			enamyShapes, enemyBoundingBox, enemyShapes, explosionAudioPool, laserAudioPool;
 
 	  // generate the timings and paths for each wave of enemies
 		for (i = 0; i < numWaves; i++) {
-			// Create the explosion sound for this wave of enemies.
+			// Create the explosion/laser sounds for this wave of enemies.
 			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE)
+			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_LASER_POOL_SIZE)
 			// create the delay between this and the previous wave
 			delay += $.randBetween(r, idealMsBetweenWaves * 0.75, idealMsBetweenWaves*1.25);
 			// generate the path for the wave to follow
@@ -221,7 +224,7 @@ $.assign($, {
 					).map(pp => [j, undefined, pp])
 					times.push([j, projectilePaths]);
 				}
-				waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0, enemyBoundingBox, explosionAudioPool])
+				waves.push([start, end, undefined, enemyShapes, p, projectilePattern, times, 0, enemyBoundingBox, explosionAudioPool, laserAudioPool])
 			})
 		}
 
@@ -362,6 +365,7 @@ $.assign($, {
 				let nextTime = enemy[LevelShipIndex.NEXT_PROJECTILE];
 				let path = enemy[LevelShipIndex.PROJECTILE_TIMES][nextTime];
 				if (path && path[0] <= $.levelGameTime) {
+					enemy[LevelShipIndex.PROJECTILE_AUDIO_POOL][AudioPoolIndex.PLAY]();
 					$.enemyProjectiles = $.enemyProjectiles.concat(
 						path[1]
 					)
