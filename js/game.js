@@ -22,7 +22,7 @@ $.assign($, {
 	playerHealth: [],
 	playerProjectilePath: null,
 	playerProjectiles: null,
-	playerChrono: PlayerConst.MAX_CHRONO_METER,
+	playerChrono: PlayerConst.STARTING_CHRONO,
 	playerLaserSoundsTiming: [],
 	playerExplosionAudioPool: [],
 	playerProjectileAudioPool: [],
@@ -539,8 +539,7 @@ $.assign($, {
 
 		console.log('initializing game');
 		$.initKeyboard();
-		$.initializeStarfield();
-		$.initializePlumes();
+		$.initializeRendering();
 		$.initializeGame()
 		$.advanceLevel();
 		requestAnimationFrame(gameLoop);

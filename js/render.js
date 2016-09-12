@@ -3,6 +3,68 @@ $.assign($, {
 	textures: Array(4),
 	stars: new Float32Array(BackgroundConst.NUM_STARS * 4),
 	plumes: new Float32Array(PlumeConst.MAX_PLUMES * 4),
+	healthStatus: new Float32Array(StatusBarConst.HEALTH_SEGMENTS * 12),
+	chronoStatus: new Float32Array(StatusBarConst.CHRONO_SEGMENTS * 12),
+	bossStatus: new Float32Array(StatusBarConst.BOSS_SEGMENTS * 12),
+
+	initializeStatusBar: (numSegments, yOffset, height, arr) => {
+		let padding = 2;
+		let widthPerSegment = Math.floor(GameConst.WIDTH / numSegments) - padding;
+		let totalWidth = widthPerSegment * numSegments + padding * (numSegments - 1);
+		let leftPadding = Math.floor((GameConst.WIDTH - totalWidth) / 2);
+
+		for (i = 0; i < numSegments; i++) {
+			let x = i * (widthPerSegment + padding) + leftPadding;
+			let y = yOffset;
+			let w = widthPerSegment;
+			let h = height;
+
+			[
+				x, y,
+				x+w, y,
+				x, y+h,
+
+				x+w, y,
+				x, y+h,
+				x+w, y+h
+			].forEach((v, idx) => {
+				arr[(i * 12) + idx] = v;
+			});
+		}
+	},
+
+	initializeStatusBars: () => {
+		$.initializeStatusBar(StatusBarConst.HEALTH_SEGMENTS, StatusBarConst.HEALTH_Y_OFFSET, StatusBarConst.HEALTH_HEIGHT, $.healthStatus);
+		$.initializeStatusBar(StatusBarConst.CHRONO_SEGMENTS, StatusBarConst.CHRONO_Y_OFFSET, StatusBarConst.CHRONO_HEIGHT, $.chronoStatus);
+		$.initializeStatusBar(StatusBarConst.BOSS_SEGMENTS, StatusBarConst.BOSS_Y_OFFSET, StatusBarConst.BOSS_HEIGHT, $.bossStatus);
+	},
+
+	renderStatusBars: (gl, prog, width, height) => {
+		gl.uniform2f(gl.getUniformLocation(prog, 'u_offset'), 0., 0.);
+		$.renderHealth(gl, prog, width, height);
+		$.renderChrono(gl, prog, width, height);
+		if ($.inBossLevel) {
+			$.renderBossHealth(gl, prog, width, height);
+		}
+	},
+
+	renderHealth: (gl, prog, width, height) => {
+		gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(StatusBarConst.HEALTH_COLOR), 1);
+    gl.bufferData(gl.ARRAY_BUFFER, $.healthStatus, gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLES, 0, StatusBarConst.HEALTH_SEGMENTS * 6);
+	},
+
+	renderChrono: (gl, prog, width, height) => {
+		gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(StatusBarConst.CHRONO_COLOR), 1);
+    gl.bufferData(gl.ARRAY_BUFFER, $.chronoStatus, gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLES, 0, StatusBarConst.CHRONO_SEGMENTS * 6);
+	},
+
+  renderBossHealth: (gl, prog, width, height) => {
+		gl.uniform4f(gl.getUniformLocation(prog, "u_color"), ...$.getShaderColor(StatusBarConst.BOSS_COLOR), 1);
+    gl.bufferData(gl.ARRAY_BUFFER, $.bossStatus, gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLES, 0, StatusBarConst.BOSS_SEGMENTS * 6);
+	},
 
 	prepareCanvasForShapes: (gl, width, height) => {
     let prog = $.get2DProgram(gl)
@@ -180,24 +242,6 @@ $.assign($, {
 		}
 	},
 
-	renderHealth: (gl, prog, width, height) => {
-		let x = 0, y = 0, w = $.getCurrentPlayerHealth() / PlayerConst.MAX_HEALTH * width, h = 6;
-		let shapes = [$.makeWebGLReady(['#afa',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
-		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
-	},
-
-  renderChrono: (gl, prog, width, height) => {
-		let x = 0, y = 10, w = $.playerChrono / PlayerConst.MAX_CHRONO * width, h = 6;
-		let shapes = [$.makeWebGLReady(['#aaf',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
-		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
-	},
-
-  renderBossHealth: (gl, prog, width, height) => {
-		let x = 0, y = GameConst.HEIGHT - 10, w = $.bossHealth / $.maxBossHealth * width, h = 6;
-		let shapes = [$.makeWebGLReady(['#f88',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
-		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
-	},
-
 	createTexture: (gl) => {
 		let texture = gl.createTexture(gl);
 		gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -286,14 +330,8 @@ $.assign($, {
 		$.renderPlayer(gl, shapeProg, playerPosition);
 
 		// render health bar
-		$.renderHealth(gl, shapeProg, canvas.width, canvas.height);
+		$.renderStatusBars(gl, shapeProg, canvas.width, canvas.height);
 
-		// render chrono bar
-		$.renderChrono(gl, shapeProg, canvas.width, canvas.height);
-
-		if ($.inBossLevel) {
-			$.renderBossHealth(gl, shapeProg, canvas.width, canvas.height);
-		}
 
 		// render projectiles
 		let pointProg = $.prepareCanvasForProjectiles(gl, canvas.width, canvas.height);
@@ -301,5 +339,11 @@ $.assign($, {
 		$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
 
 		gl.flush();
+	},
+
+	initializeRendering: () => {
+		$.initializeStarfield();
+		$.initializePlumes();
+		$.initializeStatusBars();
 	}
 })

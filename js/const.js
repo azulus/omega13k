@@ -215,7 +215,8 @@ const PlayerConst = {
   CHRONO_RECOVERY_PER_MS: 0.02,
   STARTING_HEALTH: 100,
   MAX_HEALTH: 100,
-  MAX_CHRONO: 1000
+  MAX_CHRONO: 1000,
+  STARTING_CHRONO: 500
 };
 
 const PlumeConst = {
@@ -262,6 +263,23 @@ const SpeedConst = {
   SLOW: 0.3,
   NORMAL: 1,
   FAST_FORWARD: 4
+};
+
+const StatusBarConst = {
+  CHRONO_SEGMENTS: 9,
+  CHRONO_Y_OFFSET: 16,
+  CHRONO_HEIGHT: 6,
+  CHRONO_COLOR: '#aaf',
+
+  HEALTH_SEGMENTS: 20,
+  HEALTH_Y_OFFSET: 5,
+  HEALTH_HEIGHT: 6,
+  HEALTH_COLOR: '#afa',
+
+  BOSS_SEGMENTS: 1,
+  BOSS_Y_OFFSET: 580,
+  BOSS_HEIGHT: 10,
+  BOSS_COLOR: '#f88',
 };
 
 const VectorShaderConst = {
