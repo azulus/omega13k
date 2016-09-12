@@ -8,7 +8,7 @@ var types = require('babel-types');
 
 const SHOULD_INLINE_CONSTS = true;
 const SHOULD_MERGE_CONSECUTIVE_DECLARATIONS = true;
-const SHOULD_MINIFY = false;
+const SHOULD_MINIFY = true;
 const SHOULD_RENAME_GLOBALS = true;
 const SHOULD_RENAME_LOCALS = true;
 const SHOULD_REMOVE_COMMENTS = true;
