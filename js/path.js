@@ -1,6 +1,4 @@
 $.assign($, {
-  DEGREES_TO_RADIANS: Math.PI / 180,
-
   generateBossPath: (r) => {
     let paths = [],
 

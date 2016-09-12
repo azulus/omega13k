@@ -6,11 +6,12 @@ var oid = require('oid');
 var path = require('path');
 var types = require('babel-types');
 
+const SHOULD_INLINE_CONSTS = true;
+const SHOULD_MINIFY = true;
+const SHOULD_RENAME_GLOBALS = true;
 const SHOULD_RENAME_LOCALS = true;
 const SHOULD_REMOVE_COMMENTS = true;
-const SHOULD_INLINE_CONSTS = true;
-const SHOULD_RENAME_GLOBALS = true;
-const SHOULD_MINIFY = true;
+const SHOULD_REMOVE_UNUSED_GLOBALS = true; // requires SHOULD_RENAME_GLOBALS
 
 var keyCounter = 0;
 var keySpace = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(
@@ -187,7 +188,7 @@ module.exports = function(src) {
             console.warn('Unable to inline ' + node.object.name + '.' + node.property.name);
             return;
           }
-          if (idx) {
+          if (typeof idx !== 'undefined') {
             parent[key][idx] = val;
           } else {
             parent[key] = val;
@@ -210,7 +211,7 @@ module.exports = function(src) {
               break;
             case 'TemplateLiteral':
               // template literals, no interpolation
-              currentIndex[node.key.name] = node.value.quasis.map(quasi => quasi.raw).join('');
+              currentIndex[node.key.name] = node.value.quasis.map(quasi => quasi.value.raw).join('');
               break;
             default:
               currentIndex[node.key.name] = node.value.value;
@@ -296,13 +297,21 @@ module.exports = function(src) {
       }
     });
 
-    // for (var key in refCount) {
-    //     if (refCount[key] === 1) {
-    //         console.warn(('$.' + key + ' is only used once, consider inlining').yellow);
-    //     } else if (refCount[key] === 0) {
-    //         console.warn(('$.' + key + ' is never used, consider removing').red);
-    //     }
-    // }
+    if (SHOULD_REMOVE_UNUSED_GLOBALS) {
+      var originalRemoveKeys = [];
+      var removeKeys = [];
+
+      // remove all globals on $ that are never used
+      for (var key in refCount) {
+        if (refCount[key] === 0) {
+          originalRemoveKeys.push(key);
+          removeKeys.push(globalKeyMap[key]);
+        }
+      }
+      console.warn('REMOVING UNUSED GLOBALS: ' + originalRemoveKeys.join(', '));
+      globalProperties.properties = globalProperties.properties.filter(prop => removeKeys.indexOf(prop.key.name) === -1)
+      // console.log('REMOVING',removeKeys);
+    }
   }
 
   if (SHOULD_RENAME_LOCALS) {
@@ -314,27 +323,29 @@ module.exports = function(src) {
 
     var functionStack = [{
       variables: {
-        'Infinity': 'Infinity',
-        'Float32Array': 'Float32Array',
-        'parseInt': 'parseInt',
+        'Array': 'Array',
+        'Audio': 'Audio',
+        'Date': 'Date',
         'Error': 'Error',
-        'requestAnimationFrame': 'requestAnimationFrame',
-        'alert': 'alert',
-        'location': 'location',
+        'Float32Array': 'Float32Array',
+        'Infinity': 'Infinity',
         'Math': 'Math',
         'Object': 'Object',
-        'Array': 'Array',
-        'document': 'document',
-        'parseFloat': 'parseFloat',
-        'Audio': 'Audio',
-        'jsfxr': 'jsfxr',
-        'setTimeout': 'setTimeout',
-        'setInterval': 'setInterval',
+
         'addEventListener': 'addEventListener',
+        'alert': 'alert',
+        'console': 'console',
+        'document': 'document',
+        'jsfxr': 'jsfxr',
+        'location': 'location',
+        'parseFloat': 'parseFloat',
+        'parseInt': 'parseInt',
         'removeEventListener': 'removeEventListener',
+        'requestAnimationFrame': 'requestAnimationFrame',
+        'setInterval': 'setInterval',
+        'setTimeout': 'setTimeout',
         'undefined': 'undefined',
-        'Date': 'Date',
-        'console': 'console'
+        'window': 'window'
       }
     }];
 

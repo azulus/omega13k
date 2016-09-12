@@ -247,6 +247,7 @@ $.assign($, {
 
 	initializeGame: () => {
 		$.levelStartTime = $.levelLastLoopTime = Date.now();
+		let seed = PlayerConst.SHAPE_SEED;
 		let r = $.getRandomNumberGenerator(PlayerConst.SHAPE_SEED);
 		$.playerShapes = $.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
 		$.playerBoundingBox = $.getContainingBoundingBox($.playerShapes);
@@ -535,6 +536,7 @@ $.assign($, {
 			}
 		}
 
+		console.log('initializing game');
 		$.initKeyboard();
 		$.initializeGame()
 		$.advanceLevel();

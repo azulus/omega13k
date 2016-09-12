@@ -39,14 +39,4 @@ $.assign($, {
       $.pow(1 - percentage, 2) * start[0] + 2 * (1 - percentage) * percentage * control[0] + $.pow(percentage, 2) * end[0],
       $.pow(1 - percentage, 2) * start[1] + 2 * (1 - percentage) * percentage * control[1] + $.pow(percentage, 2) * end[1]
   ],
-
-  /**
-   * Calculate the slope between 2 points
-   */
-  calculateSlope: (start, end) => {
-      let x = end[0] - start[0], y = end[1] - start[1]
-      if (x === 0) return undefined;
-      if (y === 0) return 0;
-      return ((end[1] - start[1]) / (end[0] - start[0]))
-  },
 });

@@ -4,9 +4,11 @@ $.assign($, {
   /**
    * Get a random number generator for a seed
    */
-  getRandomNumberGenerator: (s) => () => {
-      const rnd = Math.sin(s++) * 10000
-      return rnd - $.floor(rnd)
+  getRandomNumberGenerator: (s) => {
+    return () => {
+        const rnd = Math.sin(s++) * 10000
+        return rnd - $.floor(rnd)
+    }
   },
 
   /**

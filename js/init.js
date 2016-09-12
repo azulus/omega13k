@@ -6,12 +6,11 @@ const $ = {
   assign: Object.assign,
   abs: Math.abs,
   floor: Math.floor,
-  round: Math.round,
   pow: Math.pow,
   document: document,
   parseFloat: parseFloat,
 
-  radians: degrees => degrees * Math.PI / 180,
+  DEGREES_TO_RADIANS: Math.PI / 180,
 
   splitString: (s) => s.split(''),
 
