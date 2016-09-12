@@ -46,7 +46,12 @@ $.assign($, {
 		let count = 0;
 		const projectiles = $.enemyProjectiles;
 		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
+			let [start, end] = projectiles[i];
+			// Only process collisions for projectiles which have spawned.
+			if (start > $.levelGameTime || end !== undefined) continue;
+
 			let xIdx = count++, yIdx = count++;
+
 			const playerPosition = $.getCurrentPlayerPosition();
 			if ($.checkCollision(
 				$.playerShapes,
@@ -57,6 +62,7 @@ $.assign($, {
 				$._activeEnemyProjectilePositions[yIdx],
 				10 // Radius
 				)) {
+
 				// "Destroy" the projectile.
 				projectiles[i][1] = $.levelGameTime;
 				// Play the sound.

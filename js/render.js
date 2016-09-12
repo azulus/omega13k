@@ -22,7 +22,7 @@ $.assign($, {
 		$._activeEnemyProjectileCount = 0;
 		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
 			let [start, end, path] = projectiles[i];
-			if (start > $.levelGameTime) break;
+			if (start > $.levelGameTime) continue;
 			if (end !== undefined) {
 				if ($._firstEnemyProjectileIdx === i) $._firstEnemyProjectileIdx++;
 				continue
