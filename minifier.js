@@ -8,11 +8,12 @@ var types = require('babel-types');
 
 const SHOULD_INLINE_CONSTS = true;
 const SHOULD_MERGE_CONSECUTIVE_DECLARATIONS = true;
-const SHOULD_MINIFY = true;
+const SHOULD_MINIFY = false;
 const SHOULD_RENAME_GLOBALS = true;
 const SHOULD_RENAME_LOCALS = true;
 const SHOULD_REMOVE_COMMENTS = true;
 const SHOULD_REMOVE_UNUSED_GLOBALS = true; // requires SHOULD_RENAME_GLOBALS
+const SHOULD_WARN_ABOUT_SINGLE_USE_LOCALS = true;
 
 var keyCounter = 0;
 var keySpace = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(
@@ -49,6 +50,8 @@ module.exports = function(src) {
     }
     return lines.join('\n');
   }
+
+  var minimizeSource = (src) => src.replace(/[\n\s\t]/g, ' ').replace(/\s{2,}/g, ' ')
 
   var ast = babylon.parse(String(src), {
     sourceType: 'module',
@@ -160,6 +163,170 @@ module.exports = function(src) {
     } else {
       return null;
     }
+  }
+
+  if (SHOULD_RENAME_LOCALS) {
+    const VariableTypes = {
+      PARAM: 1,
+      GLOBAL: 2,
+      LOCAL: 3
+    };
+
+    var functionStack = [{
+      variables: {
+        'Array': 'Array',
+        'Audio': 'Audio',
+        'Date': 'Date',
+        'Error': 'Error',
+        'Float32Array': 'Float32Array',
+        'Infinity': 'Infinity',
+        'Math': 'Math',
+        'Object': 'Object',
+
+        'addEventListener': 'addEventListener',
+        'alert': 'alert',
+        'console': 'console',
+        'document': 'document',
+        'jsfxr': 'jsfxr',
+        'location': 'location',
+        'parseFloat': 'parseFloat',
+        'parseInt': 'parseInt',
+        'removeEventListener': 'removeEventListener',
+        'requestAnimationFrame': 'requestAnimationFrame',
+        'setInterval': 'setInterval',
+        'setTimeout': 'setTimeout',
+        'undefined': 'undefined',
+        'window': 'window'
+      },
+      count: {},
+      node: 'global'
+    }];
+
+    var addMapping = (v, refCount) => {
+      var key;
+      if (functionStack.length === 1) {
+        key = v;
+      } else {
+        var idx = 0;
+        key;
+        while (true) {
+          key = generateKey(idx);
+          if (!isMapped(key)) {
+            break;
+          }
+          idx++;
+        }
+      }
+      functionStack[functionStack.length - 1].variables[v] = key;
+      incrementCount(v, refCount);
+      return key;
+    }
+
+    var isMapped = (v) => {
+      for (var i = functionStack.length - 1; i >= 0; i--) {
+        var vars = functionStack[i].variables;
+        for (var j in vars) {
+          if (vars[j] === v) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    var incrementCount = (v, refCount) => {
+      refCount = refCount || 1;
+      for (var i = functionStack.length - 1; i >= 0; i--) {
+        if (functionStack[i].variables[v]) {
+          functionStack[i].count[v] = (functionStack[i].count[v] || 0) + refCount;
+        }
+      }
+    }
+
+    var getMapping = (v) => {
+      for (var i = functionStack.length - 1; i >= 0; i--) {
+        if (functionStack[i].variables[v]) {
+          return functionStack[i].variables[v];
+        }
+      }
+    }
+
+    var changedNodes = {};
+
+    // all references must be to $, _, a constant, or in a local let
+    // all params will be renamed
+    // all variables
+
+    var pushFunction = (node) => {
+      var curr = {
+        variables: {},
+        count: {},
+        node: node
+      };
+      functionStack.push(curr);
+      node.params.forEach(param => {
+        if (param.type === 'AssignmentPattern') {
+          addMapping(param.left.name, 2);
+        } else if (param.type === 'RestElement') {
+          addMapping(param.argument.name, 2);
+        } else {
+          addMapping(param.name, 2);
+        }
+      });
+    };
+
+    var popFunction = (node) => {
+      var removedStack = functionStack.pop();
+      for (var key in removedStack.count) {
+        if (SHOULD_WARN_ABOUT_SINGLE_USE_LOCALS && removedStack.count[key] <= 2) {
+          if (removedStack.node && parentOf(removedStack.node) && parentOf(removedStack.node).type === 'ObjectProperty') {
+            console.log(key + ' only referenced once in global property: ' + parentOf(removedStack.node).key.name);
+          } else {
+            console.log(key + ' only referenced once in unknown scope');
+          }
+        }
+      }
+    };
+
+    visit(ast, {
+      'Identifier': (node, key, idx) => {
+        if (key === 'key') return;
+        if (key === 'property' && parentOf(node).computed !== true) return;
+
+        var mapping = getMapping(node.name);
+        if (!mapping) {
+          console.log(
+            'VARIABLE ' + node.name + ' MUST BE DEFINED ON $ namespace or in a let/const',
+            getSource(parentOf(node)));
+        } else {
+          incrementCount(node.name);
+          if (node.name !== mapping){
+            node.name = mapping;
+          }
+        }
+      },
+
+      'VariableDeclarator': (node, key, idx) => {
+        if (node.id.type === 'Identifier') {
+          addMapping(node.id.name);
+        } else if (node.id.type === 'ArrayPattern') {
+          node.id.elements.forEach(el => {
+            if (el && el.name) addMapping(el.name);
+          });
+        } else if (node.id.type === 'ObjectPattern') {
+          node.id.properties.forEach(prop => {
+            addMapping(prop.key.name);
+          });
+        } else {
+          throw new Error('Unable to handle declaration of type: ' + node.id.type);
+        }
+      },
+
+      'FunctionExpression': pushFunction,
+      'FunctionExpression:exit': popFunction,
+      'ArrowFunctionExpression': pushFunction,
+      'ArrowFunctionExpression:exit': popFunction
+    });
   }
 
   /**
@@ -364,145 +531,6 @@ module.exports = function(src) {
         }
       } while (removeKeys.length > 0);
     }
-  }
-
-  if (SHOULD_RENAME_LOCALS) {
-    const VariableTypes = {
-      PARAM: 1,
-      GLOBAL: 2,
-      LOCAL: 3
-    };
-
-    var functionStack = [{
-      variables: {
-        'Array': 'Array',
-        'Audio': 'Audio',
-        'Date': 'Date',
-        'Error': 'Error',
-        'Float32Array': 'Float32Array',
-        'Infinity': 'Infinity',
-        'Math': 'Math',
-        'Object': 'Object',
-
-        'addEventListener': 'addEventListener',
-        'alert': 'alert',
-        'console': 'console',
-        'document': 'document',
-        'jsfxr': 'jsfxr',
-        'location': 'location',
-        'parseFloat': 'parseFloat',
-        'parseInt': 'parseInt',
-        'removeEventListener': 'removeEventListener',
-        'requestAnimationFrame': 'requestAnimationFrame',
-        'setInterval': 'setInterval',
-        'setTimeout': 'setTimeout',
-        'undefined': 'undefined',
-        'window': 'window'
-      }
-    }];
-
-    var addMapping = (v) => {
-      var key;
-      if (functionStack.length === 1) {
-        key = v;
-      } else {
-        var idx = 0;
-        key;
-        while (true) {
-          key = generateKey(idx);
-          if (!isMapped(key)) {
-            break;
-          }
-          idx++;
-        }
-      }
-      functionStack[functionStack.length - 1].variables[v] = key;
-
-      return key;
-    }
-
-    var isMapped = (v) => {
-      for (var i = functionStack.length - 1; i >= 0; i--) {
-        var vars = functionStack[i].variables;
-        for (var j in vars) {
-          if (vars[j] === v) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    var getMapping = (v) => {
-      for (var i = functionStack.length - 1; i >= 0; i--) {
-        if (functionStack[i].variables[v]) {
-          return functionStack[i].variables[v];
-        }
-      }
-    }
-
-    var changedNodes = {};
-
-    // all references must be to $, _, a constant, or in a local let
-    // all params will be renamed
-    // all variables
-
-    var pushFunction = (node) => {
-      var curr = {
-        variables: {}
-      };
-      functionStack.push(curr);
-      node.params.forEach(param => {
-        if (param.type === 'AssignmentPattern') {
-          addMapping(param.left.name);
-        } else if (param.type === 'RestElement') {
-          addMapping(param.argument.name);
-        } else {
-          addMapping(param.name);
-        }
-      });
-    };
-
-    var popFunction = (node) => {
-      functionStack.pop();
-    };
-
-    visit(ast, {
-      'Identifier': (node, key, idx) => {
-        if (key === 'key') return;
-        if (key === 'property' && parentOf(node).computed !== true) return;
-
-        var mapping = getMapping(node.name);
-        if (!mapping) {
-          console.log(
-            'VARIABLE ' + node.name + ' MUST BE DEFINED ON $ namespace or in a let/const',
-            getSource(parentOf(node)));
-        } else if (node.name !== mapping){
-          node.name = mapping;
-        }
-      },
-
-      'VariableDeclarator': (node, key, idx) => {
-        if (node.id.type === 'Identifier') {
-          addMapping(node.id.name);
-        } else if (node.id.type === 'ArrayPattern') {
-          node.id.elements.forEach(el => {
-            addMapping(el.name);
-          });
-        } else if (node.id.type === 'ObjectPattern') {
-          node.id.properties.forEach(prop => {
-            addMapping(prop.key.name);
-          });
-        } else {
-          throw new Error('Unable to handle declaration of type: ' + node.id.type);
-        }
-      },
-
-      'FunctionExpression': pushFunction,
-      'FunctionExpression:exit': popFunction,
-      'ArrowFunctionExpression': pushFunction,
-      'ArrowFunctionExpression:exit': popFunction
-    });
   }
 
   var transpiledSource = babel.transformFromAst(ast, src, {

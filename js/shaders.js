@@ -76,8 +76,7 @@ $.assign($, {
   getStarfieldAnimator: (canvas) => {
     let gl = $.get3DContext(canvas),
       prog = $.getStarfieldProgram(gl),
-      start = Date.now(),
-      texture = gl.createTexture()
+      start = Date.now()
 
     $.attributeSetFloats(gl, prog, 'pos', 2, $.STARFIELD_FLOAT_ARRAY);
     gl.useProgram(prog)

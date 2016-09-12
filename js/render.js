@@ -19,8 +19,6 @@ $.assign($, {
 			let posIdx = i * 2;
 			let enemy = $.levelEnemies[$._activeEnemyIndexes[i]];
 			let shapes = enemy[LevelShipIndex.SHAPES];
-			let paths = enemy[LevelShipIndex.PATH_DATA];
-			// let pos = $.getPositionAtTime(paths, $.levelGameTime);
 
 			$.drawShapesToCanvasGL(gl, prog, shapes, $._activeEnemyPositions[posIdx], $._activeEnemyPositions[posIdx+1]);
 		}
@@ -37,7 +35,7 @@ $.assign($, {
 				continue
 			};
 			let elapsedTime = $.levelGameTime - start;
-			let [x, y, xPerMs, yPerMs, startTime] = path;
+			let [x, y, xPerMs, yPerMs] = path;
 			let newX = x + (elapsedTime * xPerMs);
 			let newY = y + (elapsedTime * yPerMs)
 			if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
@@ -66,14 +64,14 @@ $.assign($, {
 		let count = 0;
 		$._activePlayerProjectileCount = 0;
 		for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
-			let [start, end, path, whatsThis] = projectiles[i];
+			let [start, end, path] = projectiles[i];
 			if (start > $.levelGameTime) break;
 			if (end !== undefined) {
 				if ($._firstPlayerProjectileIdx === i) $._firstPlayerProjectileIdx++;
 				continue
 			};
 			let elapsedTime = $.levelGameTime - start;
-			let [x, y, xPerMs, yPerMs, startTime] = path;
+			let [x, y, xPerMs, yPerMs] = path;
 
 			// projectiles may be spawned off screen, recenter them based on pos
 			if (x === -1) {
@@ -109,7 +107,7 @@ $.assign($, {
 	},
 
 	renderHealth: (gl, prog, width, height) => {
-		let x = 0, y = 0, w = $.getCurrentPlayerHealth() / PlayerConst.MAX_HEALTH * width, h = 6, i;
+		let x = 0, y = 0, w = $.getCurrentPlayerHealth() / PlayerConst.MAX_HEALTH * width, h = 6;
 		let shapes = [$.makeWebGLReady(['#afa',,[x,y,x+w,y,x+w,y+h,x,y+h]])];
 		$.drawShapesToCanvasGL(gl, prog, shapes, 0, 0);
 	},

@@ -77,7 +77,6 @@ $.assign($, {
 			for (let j = 0; j < $._activeEnemyCount; j++){
 				let posIdx = j * 2;
 				let enemy = $.levelEnemies[$._activeEnemyIndexes[j]];
-				let paths = enemy[LevelShipIndex.PATH_DATA];
 
 				if ($.checkCollision(
 					enemy[LevelShipIndex.SHAPES],
@@ -186,7 +185,7 @@ $.assign($, {
 
 		let r = $.getRandomNumberGenerator(seed),
 			i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
-			enamyShapes, enemyBoundingBox, enemyShapes, explosionAudioPool, laserAudioPool;
+			enemyBoundingBox, enemyShapes, explosionAudioPool, laserAudioPool;
 
 	  // generate the timings and paths for each wave of enemies
 		for (i = 0; i < numWaves; i++) {
@@ -263,7 +262,6 @@ $.assign($, {
 
 	initializeGame: () => {
 		$.levelStartTime = $.levelLastLoopTime = Date.now();
-		let seed = PlayerConst.SHAPE_SEED;
 		let r = $.getRandomNumberGenerator(PlayerConst.SHAPE_SEED);
 		$.playerShapes = $.getRandomShapes(r, GameConst.SHIP_WIDTH, GameConst.SHIP_HEIGHT, 'm');
 		$.playerBoundingBox = $.getContainingBoundingBox($.playerShapes);
@@ -335,7 +333,6 @@ $.assign($, {
 			$.playerProjectiles[$.playerProjectiles.length - 1][3];
 		let nextProjectileTime = lastProjectileTime + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES;
 		if ($.levelGameTime >= nextProjectileTime) {
-			let pos = $.getCurrentPlayerPosition();
 			$.playerProjectiles = $.playerProjectiles.concat(
 				$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => {
 					$.playerLaserSoundsTiming.push(p[ProjectilePathIndex.OFFSET_TIME]);
@@ -349,7 +346,7 @@ $.assign($, {
 
 	updateProjectileStates: (elapsedTime) => {
 		if (elapsedTime === 0) return;
-		let i, idx = 0, projectile;
+		let i;
 
 		if (elapsedTime < 0) {
 			$._rewindEnemyProjectileStates(elapsedTime);
@@ -465,8 +462,6 @@ $.assign($, {
 			let elapsedTime = actualElapsedTime * $.speedMultiplier;
 			let shouldResumeNormal = false;
 			$.levelLastLoopTime = currentTime;
-
-			let lastGameTime = $.levelGameTime;
 			$.levelGameTime += elapsedTime;
 
 			if ($.levelGameTime < 0) {

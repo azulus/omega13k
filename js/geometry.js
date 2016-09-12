@@ -116,17 +116,10 @@ $.assign($, {
     return shapes;
   },
 
-  isRectangle: (shape) => {
-    return shape[ShapeIndex.POINTS].length === 8
-  },
+  isRectangle: (shape) => shape[ShapeIndex.POINTS].length === 8,
+  isTriangle: (shape) => shape[ShapeIndex.POINTS].length === 6,
 
-  isTriangle: (shape) => {
-    return shape[ShapeIndex.POINTS].length === 6
-  },
-
-  isCircle: (shape) => {
-    return shape[ShapeIndex.POINTS].length === 2
-  },
+  isCircle: (shape) => shape[ShapeIndex.POINTS].length === 2,
 
   getTriangleSign: (x1, y1, x2, y2, x3, y3) => (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3),
 

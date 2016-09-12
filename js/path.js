@@ -105,8 +105,6 @@ $.assign($, {
       currentPoint = nextPoint;
     }
 
-    let {a,b,c} = {a:1,b:2,c:3};
-
     let paths = [];
     for (incr = 0; incr < numShips; incr++) {
       let offsetY = incr * GameConst.SHIP_HEIGHT;
@@ -195,7 +193,7 @@ $.assign($, {
     }
 
     path[PathIndex.LAST_KNOWN_SEGMENT] = idx;
-    let [start, endTime, duration, percentPerMs, startPoint, endPoint, controlPoint] = segment;
+    let [start, /* endTime */, /* duration */, percentPerMs, startPoint, endPoint, controlPoint] = segment;
     let percentage = (time - start) * percentPerMs;
     let pt;
 
