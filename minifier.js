@@ -7,6 +7,7 @@ var path = require('path');
 var types = require('babel-types');
 
 const SHOULD_INLINE_CONSTS = true;
+const SHOULD_MERGE_CONSECUTIVE_DECLARATIONS = true;
 const SHOULD_MINIFY = true;
 const SHOULD_RENAME_GLOBALS = true;
 const SHOULD_RENAME_LOCALS = true;
@@ -230,6 +231,36 @@ module.exports = function(src) {
 
   var globalProperties = null;
   var refCount = {};
+
+  if (SHOULD_MERGE_CONSECUTIVE_DECLARATIONS) {
+    visit(ast, {
+      'VariableDeclaration': (node, key, idx) => {
+        if (typeof idx === 'undefined' || idx === 0) return;
+        var parent = parentOf(node);
+
+        var currIdx = idx;
+        while (true) {
+          if (currIdx > 0 && parent[key][currIdx - 1].type === 'VariableDeclaration') {
+            currIdx--
+          } else break;
+        }
+
+        if (currIdx === idx) return;
+        parent[key][currIdx].declarations = parent[key][currIdx].declarations.concat(node.declarations);
+        node.declarations = [];
+      },
+
+      'BlockStatement:exit': (node, key, idx) => {
+          node.body = node.body.filter(n => n.type !== 'VariableDeclaration' ||
+            n.declarations.length > 0);
+      },
+
+      'Program:exit': (node, key, idx) => {
+          node.body = node.body.filter(n => n.type !== 'VariableDeclaration' ||
+            n.declarations.length > 0);
+      }
+    });
+  }
 
   /**
    * Phase 2
