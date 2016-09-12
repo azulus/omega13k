@@ -451,6 +451,7 @@ $.assign($, {
 		$.getElementById('slow').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
 		$.getElementById('normal').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
 		$.getElementById('fast').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
+
 		$.getElementById('close').addEventListener('click', (e) => {
 			e.preventDefault();
 			e.target.parentNode.parentNode.style.display = 'none'
@@ -507,7 +508,7 @@ $.assign($, {
 					$.playSound(rewindSound);
 					$.nextRewindSoundTime = $.levelGameTime - rewindSound[2] * 1000 + AudioConst.REWIND_SOUND_DELAY;
 				}
-			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
+			} else if ($.speedMultiplier === SpeedConst.REWIND) {
 				// Restore to normal time if we're not holding spacebar.
 				$.setTimeMultiplier(SpeedConst.NORMAL)
 				$.nextRewindSoundTime = 0;
