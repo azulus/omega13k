@@ -217,7 +217,6 @@ module.exports = function(src) {
             default:
               currentIndex[node.key.name] = node.value.value;
               if (currentIndex[node.key.name] === undefined) {
-                console.log(node.value);
                 throw new Error();
               }
               break;
@@ -230,7 +229,6 @@ module.exports = function(src) {
   }
 
   var globalProperties = null;
-  var refCount = {};
 
   if (SHOULD_MERGE_CONSECUTIVE_DECLARATIONS) {
     visit(ast, {
@@ -297,12 +295,13 @@ module.exports = function(src) {
     });
 
     var globalKeyMap = {};
+    var globalReverseKeyMap = {};
 
     globalProperties.properties.forEach(prop => {
       var oldKey = prop.key.name;
       var newKey = generateKey(keyCounter++);
       globalKeyMap[oldKey] = newKey;
-      refCount[oldKey] = 0;
+      globalReverseKeyMap[newKey] = oldKey;
       prop.key.name = newKey;
     });
 
@@ -323,26 +322,47 @@ module.exports = function(src) {
           if (typeof newKey !== 'string') {
             throw new Error('Unable to rename: ' + node.property.name);
           }
-          refCount[node.property.name] = (refCount[node.property.name] || 0) + 1
           node.property.name = newKey;
         }
       }
     });
 
     if (SHOULD_REMOVE_UNUSED_GLOBALS) {
-      var originalRemoveKeys = [];
-      var removeKeys = [];
+      do {
+        var refCount = {};
+        var originalRemoveKeys = [];
+        var removeKeys = [];
 
-      // remove all globals on $ that are never used
-      for (var key in refCount) {
-        if (refCount[key] === 0) {
-          originalRemoveKeys.push(key);
-          removeKeys.push(globalKeyMap[key]);
+        globalProperties.properties.forEach(prop => {
+          var oldKey = prop.key.name;
+          refCount[oldKey] = 0;
+        });
+
+        /**
+         * Phase 3
+         *   rename any referenced global properties
+         */
+        visit(ast, {
+          'MemberExpression': (node, key, idx) => {
+            if (node.object.type === 'Identifier' &&
+              node.object.name === '$') {
+              refCount[node.property.name] = (refCount[node.property.name] || 0) + 1
+            }
+          }
+        });
+
+        // remove all globals on $ that are never used
+        for (var key in refCount) {
+          if (refCount[key] === 0) {
+            removeKeys.push(key);
+            originalRemoveKeys.push(globalReverseKeyMap[key]);
+          }
         }
-      }
-      console.warn('REMOVING UNUSED GLOBALS: ' + originalRemoveKeys.join(', '));
-      globalProperties.properties = globalProperties.properties.filter(prop => removeKeys.indexOf(prop.key.name) === -1)
-      // console.log('REMOVING',removeKeys);
+        if (removeKeys.length > 0) {
+          console.warn('REMOVING UNUSED GLOBALS: ' + originalRemoveKeys.join(', '));
+          globalProperties.properties = globalProperties.properties.filter(prop => removeKeys.indexOf(prop.key.name) === -1)
+        }
+      } while (removeKeys.length > 0);
     }
   }
 
