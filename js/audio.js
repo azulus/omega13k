@@ -134,6 +134,28 @@ $.assign($, {
 
   formatSound: (sound) => sound.map((el, idx) => idx === 0 ? el : $.to4DP(el)),
 
+  createAudioPool: (sound, size) => {
+    let currentPoolIdx = 0,
+      pool = [],
+      player;
+
+    for (i = 0; i < size; i++) {
+      player = new Audio();
+      player.src = jsfxr(sound);
+      pool.push(player);
+    }
+
+    return [
+      () => {
+        pool[currentPoolIdx].play();
+        currentPoolIdx++;
+        if (currentPoolIdx >= size) {
+          currentPoolIdx = 0;
+        }
+      }
+    ];
+  },
+
   playSound: (sound) => {
     var player = new Audio();
     player.src = jsfxr(sound);

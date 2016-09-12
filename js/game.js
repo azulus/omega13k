@@ -23,6 +23,8 @@ $.assign($, {
 	playerProjectilePath: null,
 	playerProjectiles: null,
 	playerChrono: PlayerConst.MAX_CHRONO_METER,
+	playerLaserSoundsTiming: [],
+	playerProjectileAudioPool: [],
 	_activePlayerProjectilePositions: new Float32Array(Array(2000).fill(0)),
 	_activePlayerProjectileIndex: Array(1000).fill(0),
 	_activePlayerProjectileCount: 0,
@@ -321,9 +323,12 @@ $.assign($, {
 		if ($.levelGameTime >= nextProjectileTime) {
 			let pos = $.getCurrentPlayerPosition();
 			$.playerProjectiles = $.playerProjectiles.concat(
-				$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => [
-					p[ProjectilePathIndex.OFFSET_TIME], undefined, p, p[ProjectilePathIndex.OFFSET_TIME] + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES
-				])
+				$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => {
+					$.playerLaserSoundsTiming.push(p[ProjectilePathIndex.OFFSET_TIME]);
+					return [
+						p[ProjectilePathIndex.OFFSET_TIME], undefined, p, p[ProjectilePathIndex.OFFSET_TIME] + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES
+					];
+				})
 			);
 		}
 	},
@@ -472,6 +477,12 @@ $.assign($, {
 
 			$.renderGame();
 
+			// Fire player projectile sounds
+			if ($.playerLaserSoundsTiming[0] < $.levelGameTime) {
+				$.playerLaserSoundsTiming.shift();
+				$.playerProjectileAudioPool[AudioPoolIndex.PLAY]();
+			}
+
 			// apply effects based on current speed
 
 			// update time multiplier and chrono bar
@@ -506,6 +517,8 @@ $.assign($, {
 				requestAnimationFrame(gameLoop);
 			}
 		}
+
+		$.playerProjectileAudioPool = $.createAudioPool($.createLaserSound($.getRandomNumberGenerator(102)), 6);
 
 		console.log('initializing game');
 		$.initKeyboard();

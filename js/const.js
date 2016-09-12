@@ -27,6 +27,10 @@ const AudioIndex = {
   MASTER_VOLUME: 23
 };
 
+const AudioPoolIndex = {
+  PLAY: 0
+};
+
 const BoundingBoxIndex = {
   POSITION_X: 0,
   POSITION_Y: 1,
@@ -201,7 +205,7 @@ const PlayerConst = {
   SOUND_SEED: 102,
   SHAPE_SEED: 1037,
   PROJECTILE_SEED: 54,
-  MS_BETWEEN_PROJECTILE_WAVES: 400,
+  MS_BETWEEN_PROJECTILE_WAVES: 700,
   MAX_CHRONO_METER: 1000,
   CHRONO_USE_PER_MS: 0.1,
   CHRONO_RECOVERY_PER_MS: 0.02,
