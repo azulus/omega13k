@@ -141,6 +141,8 @@ const FramebufferIndex = {
 const GameConst = {
   WIDTH: 800,
   HEIGHT: 600,
+  STARFIELD_WIDTH: 128,
+  STARFIELD_HEIGHT: 128,
   SHIP_WIDTH: 50,
   SHIP_HEIGHT: 50
 };

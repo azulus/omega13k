@@ -1,12 +1,4 @@
 $.assign($, {
-	SCREEN_VERTICES: new Float32Array([
-		1, 1,
-		-1, 1,
-		-1, -1,
-		1, 1,
-		-1, -1,
-		1, -1
-	]),
 	framebuffers: Array(4),
 	textures: Array(4),
 
@@ -136,7 +128,7 @@ $.assign($, {
 		return texture;
 	},
 
-	loadTexture: (gl, fbIdx) => {
+	loadTexture: (gl, fbIdx, width, height) => {
 		if ($.textures[fbIdx] === undefined) {
 			$.textures[fbIdx] = gl.createTexture();
 		}
@@ -145,7 +137,7 @@ $.assign($, {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, GameConst.WIDTH, GameConst.HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 		return $.textures[fbIdx];
 	},
 
@@ -158,6 +150,24 @@ $.assign($, {
 		return $.framebuffers[fbIdx];
 	},
 
+	renderStarfield: (gl, width, height) => {
+		let tex = $.loadTexture(gl, FramebufferIndex.BACKGROUND, GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT);
+		let fb = $.loadFramebuffer(gl, FramebufferIndex.BACKGROUND, tex);
+    let prog = $.getStarfieldProgram(gl);
+
+    $.attributeSetFloats(gl, prog, 'pos', 2, $.SCREEN_VERTICES);
+
+    gl.useProgram(prog)
+
+    gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT, 1)
+    gl.uniform1f(gl.getUniformLocation(prog, 'globalTime'), $.levelGameTime / 100)
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
+
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		return tex;
+  },
+
 	renderGame: () => {
 		// initialize the canvas
 		let canvas = $.getCanvas();
@@ -165,13 +175,14 @@ $.assign($, {
 		$.clear3DCanvas(gl);
 
 		// draw the background
-		// $.renderStarfield(gl, gameTime, canvas.width, canvas.height);
+		let bgTexture = $.renderStarfield(gl, canvas.width, canvas.height);
 
 		// render shapes
 		// let shipTexture = $.loadTexture(gl, FramebufferIndex.SHIPS);
 		// let shipFb = $.loadFramebuffer(gl, FramebufferIndex.SHIPS, shipTexture);
 
 		let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
+
 		$.renderEnemies(gl, shapeProg);
 		let playerPosition = $.getCurrentPlayerPosition();
 		$.renderPlayer(gl, shapeProg, playerPosition);

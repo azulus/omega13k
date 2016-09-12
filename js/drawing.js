@@ -58,6 +58,15 @@ $.assign($, {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   },
 
+  SCREEN_VERTICES: new Float32Array([
+		1, 1,
+		-1, 1,
+		-1, -1,
+		1, 1,
+		-1, -1,
+		1, -1
+	]),
+
   prepareCanvasForShapes: (gl, width, height) => {
     let prog = $.get2DProgram(gl)
 
@@ -68,14 +77,7 @@ $.assign($, {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(
     	gl.ARRAY_BUFFER,
-      new Float32Array([
-          -1.0, -1.0,
-           1.0, -1.0,
-          -1.0,  1.0,
-          -1.0,  1.0,
-           1.0, -1.0,
-           1.0,  1.0
-      ]),
+      $.SCREEN_VERTICES,
       gl.STATIC_DRAW
     );
     gl.enableVertexAttribArray(posLocation);
