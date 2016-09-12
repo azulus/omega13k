@@ -480,6 +480,7 @@ $.assign($, {
 
 			// spawn and update projectile positions
 			$.updateProjectileStates(elapsedTime);
+			$.updateStarfield(elapsedTime);
 
 			// check for collision between player and enemy projectiles (if non-negative time)
 			$.checkEnemyProjectileCollisions();
@@ -540,6 +541,7 @@ $.assign($, {
 
 		console.log('initializing game');
 		$.initKeyboard();
+		$.initializeStarfield();
 		$.initializeGame()
 		$.advanceLevel();
 		requestAnimationFrame(gameLoop);

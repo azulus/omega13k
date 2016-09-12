@@ -27,6 +27,7 @@ const AudioIndex = {
   MASTER_VOLUME: 23
 };
 
+<<<<<<< 5ecfc020c68ed5142024e1f58f2d1fb17ea03f48
 const AudioConst = {
   ENEMY_PROJECTILE_POOL_SIZE: 5,
   ENEMY_EXPLOSION_POOL_SIZE: 3,
@@ -37,6 +38,15 @@ const AudioConst = {
 
 const AudioPoolIndex = {
   PLAY: 0
+=======
+const BackgroundConst = {
+  SEED: 123,
+  NUM_STARS: 500,
+  MIN_BRIGHTNESS: 0.2,
+  MAX_BRIGHTNESS: 0.8,
+  MIN_VELOCITY: 0.01, // takes 10 minutes to cross screen = 10 * 60 * 1000 = 600000 ms to move 800
+  MAX_VELOCITY: 0.2 // crosses screen in 10 seconds
+>>>>>>> new starfield
 };
 
 const BoundingBoxIndex = {
@@ -72,43 +82,11 @@ const EnemyConfigIndex = {
 
 const FragmentShaderConst = {
   STARFIELD: `
-    precision mediump float;
-    uniform vec3 resolution;
-    uniform float globalTime;
-
-    void main()
-    {
-      vec2 uv=gl_FragCoord.xy/resolution.xy-.5;
-      uv.y*=resolution.y/resolution.x;
-
-      vec3 dir=vec3(uv*0.8,1.);
-      float time=globalTime*0.0005+.25;
-
-      vec3 from=vec3(1.,-1.,0.);
-      from+=vec3(time*2.,0.,0.);
-
-      float s=0.1,fade=1.;
-      vec3 v=vec3(0.);
-      for (int r=0; r<20; r++) {
-        vec3 p=from+s*dir*.5;
-        p = abs(vec3(0.85)-mod(p,vec3(0.85*2.)));
-        float pa,a=pa=0.;
-        for (int i=0; i<18; i++) {
-          p=abs(p)/dot(p,p)-0.53;
-          a+=abs(length(p)-pa);
-          pa=length(p);
-        }
-        float dm=max(0.,0.3-a*a*.001);
-        a*=a*a;
-        if (r>6) fade*=1.-dm;
-        v+=fade;
-        v+=vec3(s,s*s,s*s*s*s)*a*0.0015*fade;
-        fade*=0.68;
-        s+=0.1;
-      }
-      v=mix(vec3(length(v)),v,0.85);
-      gl_FragColor = vec4(v*.01,1.);
-    }
+  precision mediump float;
+  varying float vBrightness;
+  void main(void) {
+    gl_FragColor = vec4(1.) * vBrightness;
+  }
   `,
   TWO_DIMENSION: `
   precision mediump float;
@@ -270,10 +248,21 @@ const SpeedConst = {
 
 const VectorShaderConst = {
   STARFIELD: `
-    attribute vec2 pos;
-    void main() {
-      gl_Position = vec4(pos, 0, 1);
-    }
+  attribute vec4 aStar;
+  uniform vec2 u_resolution;
+  varying float vBrightness;
+
+  void main() {
+    vec2 point = vec2(aStar[0], aStar[1]);
+    vec2 zeroToOne = point / u_resolution;
+    vec2 zeroToTwo = zeroToOne * 2.0;
+    vec2 clipSpace = zeroToTwo - 1.0;
+
+    gl_Position = vec4(clipSpace * vec2(1, -1), 0., 1.);
+
+    gl_PointSize=1.;
+    vBrightness = aStar[2];
+  }
   `,
   TWO_DIMENSION: `
   attribute vec2 a_position;

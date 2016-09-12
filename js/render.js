@@ -1,6 +1,7 @@
 $.assign($, {
 	framebuffers: Array(4),
 	textures: Array(4),
+	stars: new Float32Array(BackgroundConst.NUM_STARS * 4),
 
 	renderPlayer: (gl, prog, position) => {
 		$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...position)
@@ -150,22 +151,55 @@ $.assign($, {
 		return $.framebuffers[fbIdx];
 	},
 
+	initializeStarfield: () => {
+		let r = $.getRandomNumberGenerator(BackgroundConst.SEED);
+		// create a few hundred stars
+		for (i = 0; i < BackgroundConst.NUM_STARS; ++i) {
+			// init x, init y, brightness, velocity
+			$.stars[(i*4) + 0] = $.randBetween(r, 0, GameConst.WIDTH);
+			$.stars[(i*4) + 1] = $.randBetween(r, 0, GameConst.HEIGHT);
+			$.stars[(i*4) + 2] = $.randBetweenFloat(r, BackgroundConst.MIN_BRIGHTNESS, BackgroundConst.MAX_BRIGHTNESS);
+			$.stars[(i*4) + 3] = $.randBetweenFloat(r, BackgroundConst.MIN_VELOCITY, BackgroundConst.MAX_VELOCITY);
+		}
+	},
+
+	updateStarfield: (elapsedTime) => {
+		for (i = 0; i < BackgroundConst.NUM_STARS; ++i) {
+			$.stars[(i*4) + 0] = ($.stars[(i*4) + 0] - (elapsedTime * $.stars[(i*4) + 3]) + GameConst.WIDTH) % GameConst.WIDTH;
+		}
+	},
+
 	renderStarfield: (gl, width, height) => {
-		let tex = $.loadTexture(gl, FramebufferIndex.BACKGROUND, GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT);
-		let fb = $.loadFramebuffer(gl, FramebufferIndex.BACKGROUND, tex);
-    let prog = $.getStarfieldProgram(gl);
+		let prog = $.getStarfieldProgram(gl);
+		gl.useProgram(prog)
 
-    $.attributeSetFloats(gl, prog, 'pos', 2, $.SCREEN_VERTICES);
+		let pointsLoc = gl.getAttribLocation(prog, 'aStar');
+		let resolutionLoc = gl.getUniformLocation(prog, 'u_resolution');
+		gl.uniform2f(resolutionLoc, GameConst.WIDTH, GameConst.HEIGHT);
 
-    gl.useProgram(prog)
+		gl.enableVertexAttribArray(pointsLoc);
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+		gl.bufferData(gl.ARRAY_BUFFER, $.stars, gl.STATIC_DRAW);
+		gl.vertexAttribPointer(resolutionLoc, 4, gl.FLOAT, false, 0, 0);
 
-    gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT, 1)
-    gl.uniform1f(gl.getUniformLocation(prog, 'globalTime'), $.levelGameTime / 100)
+		gl.drawArrays(gl.POINTS, 0, BackgroundConst.NUM_STARS);
 
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
 
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		return tex;
+		// let tex = $.loadTexture(gl, FramebufferIndex.BACKGROUND, GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT);
+		// let fb = $.loadFramebuffer(gl, FramebufferIndex.BACKGROUND, tex);
+    // let prog = $.getStarfieldProgram(gl);
+		//
+    // $.attributeSetFloats(gl, prog, 'pos', 2, $.SCREEN_VERTICES);
+		//
+    // gl.useProgram(prog)
+		//
+    // gl.uniform3f(gl.getUniformLocation(prog, 'resolution'), GameConst.STARFIELD_WIDTH, GameConst.STARFIELD_HEIGHT, 1)
+    // gl.uniform1f(gl.getUniformLocation(prog, 'globalTime'), $.levelGameTime / 100)
+		//
+    // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
+		//
+		// gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		// return tex;
   },
 
 	renderGame: () => {
@@ -175,7 +209,7 @@ $.assign($, {
 		$.clear3DCanvas(gl);
 
 		// draw the background
-		let bgTexture = $.renderStarfield(gl, canvas.width, canvas.height);
+		$.renderStarfield(gl, canvas.width, canvas.height);
 
 		// render shapes
 		// let shipTexture = $.loadTexture(gl, FramebufferIndex.SHIPS);

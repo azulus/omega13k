@@ -14,7 +14,12 @@ $.assign($, {
   /**
    * Get a random int between a and b
    */
-  randBetween: (r, a, b) => $.floor(r() * $.abs(a - b) + Math.min(a, b)),
+  randBetween: (r, a, b) => $.floor($.randBetweenFloat(r, a, b)),
+
+  /**
+   * Get a random float between a and b
+   */
+  randBetweenFloat: (r, a, b) => r() * $.abs(a - b) + Math.min(a, b),
 
   /**
    * Get a random element from an array
