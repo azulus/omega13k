@@ -506,14 +506,15 @@ $.assign($, {
 				$.setTimeMultiplier(SpeedConst.REWIND);
 				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
 				// Play rewind sound.
-				if (!$.nextRewindSoundTime || $.levelGameTime > $.nextRewindSoundTime) {
+				if (!$.nextRewindSoundTime || $.levelGameTime < $.nextRewindSoundTime) {
 					let rewindSound = $.createRewindSound(Math.random);
 					$.playSound(rewindSound);
-					$.nextRewindSoundTime = (rewindSound[2]*1000) + AudioConst.REWIND_SOUND_DELAY;
+					$.nextRewindSoundTime = $.levelGameTime - rewindSound[2] * 1000 + AudioConst.REWIND_SOUND_DELAY;
 				}
 			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
 				// Restore to normal time if we're not holding spacebar.
 				$.setTimeMultiplier(SpeedConst.NORMAL)
+				$.nextRewindSoundTime = 0;
 			} else if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) {
 				// Recover chrono.
 				$.playerChrono += elapsedTime * PlayerConst.CHRONO_RECOVERY_PER_MS;
