@@ -6,9 +6,10 @@ var oid = require('oid');
 var path = require('path');
 var types = require('babel-types');
 
+const SHOULD_INLINE_BLOCK_STATEMENTS = false; // DOES NOT WORK CORRECTLY
 const SHOULD_INLINE_CONSTS = true;
 const SHOULD_MERGE_CONSECUTIVE_DECLARATIONS = true;
-const SHOULD_MINIFY = false;
+const SHOULD_MINIFY = true;
 const SHOULD_RENAME_GLOBALS = true;
 const SHOULD_RENAME_LOCALS = true;
 const SHOULD_REMOVE_COMMENTS = true;
@@ -54,6 +55,26 @@ module.exports = function(src) {
   var minimizeSource = (src) => src.replace(/[\n\s\t]/g, ' ').replace(/\s{2,}/g, ' ')
 
   var ast = babylon.parse(String(src), {
+    sourceType: 'module',
+    plugins: [
+      'jsx',
+      'flow',
+      'asyncFunctions',
+      'classConstructorCall',
+      'doExpressions',
+      'trailingFunctionCommas',
+      'objectRestSpread',
+      'decorators',
+      'classProperties',
+      'exportExtensions',
+      'exponentiationOperator',
+      'asyncGenerators',
+      'functionBind',
+      'functionSent'
+    ]
+  });
+
+  var testAst = babylon.parse(String('for (let i =0; i < 10; i++) if (i === 0) break;'), {
     sourceType: 'module',
     plugins: [
       'jsx',
@@ -531,6 +552,37 @@ module.exports = function(src) {
         }
       } while (removeKeys.length > 0);
     }
+  }
+
+  if (SHOULD_INLINE_BLOCK_STATEMENTS) {
+    visit(ast, {
+      'BlockStatement:exit': (node, key, idx) => {
+        if (node.body && node.body.length === 1) {
+          var child = node.body[0];
+          var parent = parentOf(node);
+
+          if (child.type === 'ExpressionStatement' &&
+            (
+              (parent.type === 'IfStatement' && key === 'consequent')
+              || (parent.type === 'WhileStatement' && key === 'body')
+              || (parent.type === 'WhileStatement' && key === 'consequent')
+              || (parent.type === 'IfStatement' && key === 'body')
+              || (parent.type === 'IfStatement' && key === 'alternate')
+              || (parent.type === 'ForStatement' && key === 'body')
+              || (parent.type === 'ArrowFunctionExpression' && key === 'body')
+            )) {
+            // var es = types.expressionStatement();
+            // console.log(es);
+            parent[key] = child;
+          } else if (['ContinueStatement', 'ReturnStatement', 'ThrowStatement', 'BreakStatement'].indexOf(child.type) !== -1 &&
+              ['IfStatement'].indexOf(parent.type) !== -1) {
+            parent[key] = child;
+          } else if (child.type === 'ReturnStatement') {
+            parent[key] = child.argument;
+          }
+        }
+      }
+    });
   }
 
   var transpiledSource = babel.transformFromAst(ast, src, {
