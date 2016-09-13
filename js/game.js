@@ -174,7 +174,7 @@ $.assign($, {
 
 			bossHeight = GameConst.SHIP_HEIGHT * 2,
 
-			boss = $.getRandomFromArray(r, $.enemySpec),
+			boss = $.getRandomFromArray(Math.random, $.enemySpec),
 
 			bossR = $.getRandomNumberGenerator(boss[ObjectIndex.SEED]),
 
