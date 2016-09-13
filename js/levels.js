@@ -25,17 +25,31 @@ $.assign($, {
 			[30000, "THERE MUST BE A... GLITCH... IN THE SYSTEM."]
 		], 12000, 1, 10, 5000],
 		[LevelSpecConst.BOSS, [
-			[0, "YOU'RE MAKING GOOD TIME"],
-			[3500, "DON'T FORGET THE CHRONO DEVICE"],
-			[8000, "1 TO REWIND TIME"],
-			[12000, "2 TO SLOW TIME"],
-			[17000, "3 TO FAST FORWARD TIME"],
-			[22000, "YOU'RE OUR SECRET WEAPON, WE NEED YOU BACK ALIVE"],
+			[0, "YOU'RE MAKING GOOD TIME!"],
+			[3500, "DON'T FORGET THE CHRONO DEVICE."],
+			[8000, "1 TO REWIND TIME,"],
+			[12000, "2 TO SLOW TIME,"],
+			[17000, "3 TO FAST FORWARD TIME."],
+			[22000, "YOU'RE OUR SECRET WEAPON, WE NEED YOU BACK ALIVE!"],
 			[28000, "DON'T ASK ME HOW IT WORKS..."]
 		], 5000],
-		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 12, 4500],
-		[LevelSpecConst.BOSS, [], 0],
-		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 15, 4000],
+		[LevelSpecConst.ENEMY_WAVE, [
+			[0, "SO... YOU'VE MURDERED A LOT OF YOUR FRIENDS..."],
+		  [5000, "CX-381-FP HAD A FAMILY. 4 CHILDBOTS WITH NO OIL SOURCE"],
+			[11000, "GET BACK FAST. WE MUST FIX YOU AND STOP THIS NONSENSE."],
+		], 0, 1, 12, 4500],
+		[LevelSpecConst.BOSS, [
+			[0, "SO THIS BOT IS HERE TO HELP YOU"],
+			[6000, "PLEASE... BE NICE."],
+			[15000, "... :("],
+		], 0],
+		[LevelSpecConst.ENEMY_WAVE, [
+			[0, "WE HAVE COME TO AN AGREEMENT"],
+			[5000, "YOU ARE TO BE DISMANTLED..."],
+			[10000, "WITH LASERS."],
+			[15000, "IT REALLY IS THE ONLY WAY"],
+			[20000, "I PROMISE: WE STILL LOVE YOU"]
+		], 0, 1, 15, 4000],
 		[LevelSpecConst.BOSS, [], 0],
 		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 20, 3500],
 		[LevelSpecConst.BOSS, [], 0],
@@ -66,9 +80,6 @@ $.assign($, {
 			$.bossHealth = [[0, $.maxBossHealth]];
 			$.inBossLevel = 1;
 			$.initializeBoss.apply(null, level);
-		} else if (levelType === LevelSpecConst.EMPTY) {
-			$.inEmptyLevel = 1;
-			$.initializeEmptyLevel.apply(null, level);
 		}
 	}
 

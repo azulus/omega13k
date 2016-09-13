@@ -43,7 +43,18 @@ $.assign($, {
 	  '\'': 18,
 		' ': 0,
 		'?': 8359,
-		'!': 8338
+		'!': 8338,
+		':': 1040,
+		'(': 8778,
+		')': 10530
+	},
+
+	initializeDialog: () => {
+		$.levelSpec.forEach(level => {
+			if (level[1].length > 0) {
+				level[1] = level[1].map($.prepareDialog);
+			}
+		})
 	},
 
 	prepareDialog: (dialog) => {
@@ -51,7 +62,7 @@ $.assign($, {
 			text = dialog[1];
 		dialog[2] = timestamp + text.length * DialogConst.MS_PER_STEP; // end render time
 		dialog[3] = dialog[2] + DialogConst.MS_REMAIN_TIME; // remain time
-		console.log(dialog);
+		console.log(dialog, text.length * (CharConst.PIXEL_WIDTH * 3 + CharConst.CHAR_PADDING));
 		return dialog;
 	},
 

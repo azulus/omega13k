@@ -144,7 +144,7 @@ $.assign($, {
 	initializeBoss: (dialog=[], delay=0, seed=1, idealProjectileWaves=3,
 			idealProjectilePaths=8, idealTimeBetweenProjectiles=1000,
 			projectileSpeed=100) => {
-		$.levelDialog = dialog.map($.prepareDialog);
+		$.levelDialog = dialog;
 
 		let r = $.getRandomNumberGenerator(seed),
 			waves = [],
@@ -187,7 +187,7 @@ $.assign($, {
 	initializeLevel: (dialog=[], delay=0, seed=1, numWaves=10, idealMsBetweenWaves=5000,
 			idealProjectileWaves=3, idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
 			projectileSpeed=200) => {
-		$.levelDialog = dialog.map($.prepareDialog);
+		$.levelDialog = dialog;
 		let r = $.getRandomNumberGenerator(seed),
 			i, waves = [], path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
 			enemyBoundingBox, enemyShapes, explosionAudioPool, laserAudioPool;
@@ -590,6 +590,7 @@ $.assign($, {
 		$.playerProjectileAudioPool = $.createAudioPool($.createLaserSound($.getRandomNumberGenerator(102)), AudioConst.PLAYER_PROJECTILE_POOL_SIZE);
 
 		$.initKeyboard();
+		$.initializeDialog();
 		$.initializeRendering();
 		$.initializeGame()
 		$.advanceLevel();
