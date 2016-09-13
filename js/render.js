@@ -286,24 +286,7 @@ $.assign($, {
 	},
 
 	renderEnemyProjectiles: (gl, prog, projectiles) => {
-		let count = 0;
-		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
-			let [start, end, path] = projectiles[i];
-			if (start > $.levelGameTime) continue;
-			if (end !== undefined) {
-				if ($._firstEnemyProjectileIdx === i) $._firstEnemyProjectileIdx++;
-				continue
-			};
-			let elapsedTime = $.levelGameTime - start;
-			let [x, y, xPerMs, yPerMs] = path;
-			let newX = x + (elapsedTime * xPerMs);
-			let newY = y + (elapsedTime * yPerMs)
-			if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
-			$._activeEnemyProjectilePositions[count++] = newX;
-			$._activeEnemyProjectilePositions[count++] = newY;
-		}
-
-		if (count > 0) {
+		if ($._activeEnemyProjectileCount > 0) {
 			let prog = $.prepareCanvasForProjectiles(gl, GameConst.WIDTH, GameConst.HEIGHT);
 
 			let pointsLoc = gl.getAttribLocation(prog, 'aPoint');
@@ -315,7 +298,7 @@ $.assign($, {
 		  gl.bufferData(gl.ARRAY_BUFFER, $._activeEnemyProjectilePositions, gl.STATIC_DRAW);
 		  gl.vertexAttribPointer(pointsLoc, 2, gl.FLOAT, false, 0, 0);
 
-			gl.drawArrays(gl.POINTS, 0, count / 2);
+			gl.drawArrays(gl.POINTS, 0, $._activeEnemyProjectileCount / 2);
 		}
 	},
 

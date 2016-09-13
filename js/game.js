@@ -56,17 +56,40 @@ $.assign($, {
 		return 1
 	},
 
+	getProjectilePosition: (start, path) => {
+		let elapsedTime = $.levelGameTime - start;
+		let [x, y, xPerMs, yPerMs] = path;
+		let newX = x + (elapsedTime * xPerMs);
+		let newY = y + (elapsedTime * yPerMs)
+		if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) return;
+		return [newX, newY];
+	},
+
 	checkEnemyProjectileCollisions: () => {
 		if ($.gameState === GameStateConst.LOST) return;
+
+		$._activeEnemyProjectileCount = 0;
 		let health = $.getCurrentPlayerHealth(), newHealth = health;
-		let count = 0;
+		let count = 0, pos;
 		const projectiles = $.enemyProjectiles;
 		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
-			let [start, end] = projectiles[i];
-			// Only process collisions for projectiles which have spawned.
-			if (start > $.levelGameTime || end !== undefined) continue;
+			let [start, end, path] = projectiles[i];
 
-			let xIdx = count++, yIdx = count++;
+			// Only process collisions for projectiles which have spawned.
+			if (start > $.levelGameTime || end <= $.levelGameTime) continue;
+
+			pos = $.getProjectilePosition(start, path);
+
+			if (!pos) {
+				console.log('.');
+				end = $.levelGameTime;
+				continue;
+			}
+
+			console.log('.');
+			$._activeEnemyProjectilePositions[count++] = pos[0];
+			$._activeEnemyProjectilePositions[count++] = pos[1];
+			$._activeEnemyProjectileCount++;
 
 			const playerPosition = $.getCurrentPlayerPosition();
 			if ($.checkCollision(
@@ -74,8 +97,8 @@ $.assign($, {
 				$.playerBoundingBox,
 				playerPosition[0],
 				playerPosition[1],
-				$._activeEnemyProjectilePositions[xIdx],
-				$._activeEnemyProjectilePositions[yIdx],
+				pos[0],
+				pos[1],
 				10 // Radius
 				)) {
 
