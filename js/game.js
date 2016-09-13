@@ -81,12 +81,10 @@ $.assign($, {
 			pos = $.getProjectilePosition(start, path);
 
 			if (!pos) {
-				console.log('.');
 				end = $.levelGameTime;
 				continue;
 			}
 
-			console.log('.');
 			$._activeEnemyProjectilePositions[count++] = pos[0];
 			$._activeEnemyProjectilePositions[count++] = pos[1];
 			$._activeEnemyProjectileCount++;
