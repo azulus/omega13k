@@ -49,6 +49,14 @@ $.assign($, {
 		')': 10530
 	},
 
+	loadEndGameDialog: () => {
+		$.levelDialog = [$.prepareDialog([
+			$.levelGameTime,
+			"FORCIBLE DISMANTLING COMPLETE. PRESS 'SPACE' FOR ANOTHER FEEBLE ATTEMPT."
+		])];
+		$.levelDialog[0][3] += 999999;
+	},
+
 	initializeDialog: () => {
 		$.levelSpec.forEach(level => {
 			if (level[1].length > 0) {
@@ -62,7 +70,7 @@ $.assign($, {
 			text = dialog[1];
 		dialog[2] = timestamp + text.length * DialogConst.MS_PER_STEP; // end render time
 		dialog[3] = dialog[2] + DialogConst.MS_REMAIN_TIME; // remain time
-		console.log(dialog, text.length * (CharConst.PIXEL_WIDTH * 3 + CharConst.CHAR_PADDING));
+
 		return dialog;
 	},
 
