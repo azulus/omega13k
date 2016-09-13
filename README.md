@@ -10,4 +10,4 @@ Build compiled output: `gulp build`
 
 View output: `open dist/index.html`
 
-Made by: [https://github.com/kevingrandon]Kevin Grandon and [https://github.com/azulus]Jeremy Stanley for [http://js13kgames.com/]
+Made by: [Kevin Grandon]https://github.com/kevingrandon and [Jeremy Stanley]https://github.com/azulus for [js13kgames]http://js13kgames.com/
