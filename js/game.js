@@ -570,7 +570,8 @@ $.assign($, {
 			if (
 				// Normal wave
 				wave[LevelShipIndex.END_TIME] <= $.levelGameTime ||
-				$.inBossLevel && $._activeEnemyCount === 0) {
+				// Or we're in a boss level, we've seen the boss, and he's dead.
+				($.inBossLevel && $._activeEnemyCount === 0 && $.levelEnemies[0][0] < $.levelGameTime)) {
 				$.advanceLevel();
 			}
 
