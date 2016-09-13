@@ -112,7 +112,7 @@ $.assign($, {
 		}
 	},
 
-	initializeBoss: (seed=1, idealProjectileWaves=3, idealProjectilesPerPath=8,
+	initializeBoss: (seed=1, idealProjectileWaves=3,
 			idealProjectilePaths=8, idealTimeBetweenProjectiles=1000,
 			projectileSpeed=100) => {
 
@@ -146,7 +146,7 @@ $.assign($, {
 				bossR,
 				ProjectilePathDirectionConst.LEFT,
 				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
-				idealProjectilesPerPath-1, idealProjectilesPerPath+1,
+				1 /* minProjectilesPerWave */, 1 /* maxProjectilesPerWave */,
 				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed),
 
 			times = [];
@@ -169,8 +169,7 @@ $.assign($, {
 	},
 
 	initializeLevel: (seed=1, numWaves=10, idealMsBetweenWaves=5000,
-			idealProjectileWaves=3, idealProjectilesPerPath=3,
-			idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
+			idealProjectileWaves=3, idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
 			projectileSpeed=200) => {
 		$.levelEnemies =
 		$.levelStartTime = $.levelLastLoopTime = Date.now();
@@ -217,7 +216,7 @@ $.assign($, {
 				enemyR,
 				ProjectilePathDirectionConst.LEFT,
 				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
-			 idealProjectilesPerPath-1, idealProjectilesPerPath+1,
+			 1 /* minProjectilesPerWave */, 1 /* maxProjectilesPerWave */,
 			 idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed)
 			// time between volleys of projectiles
 			timeBetweenProjectiles = $.floor($.randBetween(enemyR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25))
