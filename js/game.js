@@ -9,7 +9,9 @@ $.assign($, {
 	_activeEnemyPositions: Array(GameLoopConst.ACTIVE_ENEMY_MAX * 2).fill(0),
 	_activeEnemyCount: 0,
 	// projectile data
-	bossProjectilePath: null,
+	bossIdx: 0,
+	bossProjectilePathIdx: 0,
+	bossProjectilePaths: null,
 	enemyProjectiles: null,
 	_activeEnemyProjectilePositions: new Float32Array(Array(GameLoopConst.ACTIVE_PROJECTILE_MAX * 2).fill(0)),
 	_activeEnemyProjectileIndex: Array(GameLoopConst.ACTIVE_PROJECTILE_MAX).fill(0),
@@ -155,18 +157,20 @@ $.assign($, {
 			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE),
 
 			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_PROJECTILE_POOL_SIZE)
-			
-			// the projectile pattern to use
-			$.bossProjectilePath = $.generateProjectilePaths(
+
+			// the projectile patbossProjectilePathIdxtern to use
+			$.bossProjectilePathIdx = 0;
+			$.bossProjectilePaths = Array(5).fill(0).map(() => $.generateProjectilePaths(
 				bossR,
 				ProjectilePathDirectionConst.LEFT,
 				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
 				1 /* minProjectilesPerWave */, 1 /* maxProjectilesPerWave */,
-				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed);
+				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed));
 
 		waves.push([0, endTime, undefined, bossShapes, path, [], [], 0, bossBoundingBox, explosionAudioPool, laserAudioPool])
 
 		$.levelEnemies = waves;
+		$.bossIdx = $.levelEnemies.length - 1 ;
 	},
 
 	initializeLevel: (seed=1, numWaves=10, idealMsBetweenWaves=5000,
@@ -262,7 +266,7 @@ $.assign($, {
 			ProjectilePathDirectionConst.RIGHT,
 			0, 0, 0)
 		$.playerProjectiles = [];
-		$.bossProjectilePath = null;
+		$.bossProjectilePaths = null;
 	},
 
 	updateEnemyStates: () => {
@@ -336,18 +340,15 @@ $.assign($, {
 
 	_spawnBossProjectiles: (elapsedTime) => {
 		// // spawn player projectiles if needed
-		let lastProjectileTime = $.playerProjectiles.length === 0 ? 0 :
-			$.playerProjectiles[$.playerProjectiles.length - 1][ProjectilePathIndex.OFFSET_TIME];
+		let lastProjectileTime = $.enemyProjectiles.length === 0 ? 0 :
+			$.enemyProjectiles[$.enemyProjectiles.length - 1][0];
 
-		let nextProjectileTime = lastProjectileTime + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES;
+		let nextProjectileTime = lastProjectileTime + 3000; // should be time between boss waves
 		if ($.levelGameTime >= nextProjectileTime) {
-			$.playerProjectiles = $.playerProjectiles.concat(
-				$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => {
-					$.playerLaserSoundsTiming.push(p[ProjectilePathIndex.OFFSET_TIME]);
-					return [
-						p[ProjectilePathIndex.OFFSET_TIME], undefined, p, p[ProjectilePathIndex.OFFSET_TIME] + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES
-					];
-				})
+			$.bossProjectilePathIdx = ($.bossProjectilePathIdx + 1) % $.bossProjectilePaths.length;
+			let pos = $.getPositionAtTime($.levelEnemies[$.bossIdx][LevelShipIndex.PATH_DATA], $.levelGameTime);
+			$.enemyProjectiles = $.enemyProjectiles.concat(
+				$.offsetProjectilePaths($.bossProjectilePaths[$.bossProjectilePathIdx], pos[0] + GameConst.SHIP_WIDTH, pos[1] + GameConst.SHIP_HEIGHT, nextProjectileTime).map(pp => [pp[ProjectilePathIndex.OFFSET_TIME], undefined, pp])
 			);
 		}
 	},
