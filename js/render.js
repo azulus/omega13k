@@ -89,7 +89,7 @@ $.assign($, {
 	},
 
   renderBossHealth: (gl, prog, width, height) => {
-		$.renderBar(gl, prog, $.bossHealth / $.maxBossHealth, $.bossPerSegment,
+		$.renderBar(gl, prog, $.getCurrentBossHealth() / $.maxBossHealth, $.bossPerSegment,
 			$.getShaderColor(StatusBarConst.BOSS_COLOR), $.bossStatus, StatusBarConst.BOSS_SEGMENTS);
 	},
 

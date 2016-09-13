@@ -13,7 +13,7 @@ $.assign($, {
 
 	*/
 	levelSpec: [
-		[LevelSpecConst.ENEMY_WAVE, 1, 10, 5000],
+		// [LevelSpecConst.ENEMY_WAVE, 1, 10, 5000],
 		[LevelSpecConst.BOSS],
 		[LevelSpecConst.ENEMY_WAVE, 1, 12, 4700],
 		[LevelSpecConst.BOSS],
@@ -24,11 +24,6 @@ $.assign($, {
 		[LevelSpecConst.ENEMY_WAVE, 1, 25, 3500],
 		[LevelSpecConst.BOSS],
 	],
-
-	// Temporary boss health variable.
-	// May consider allowing for rewinding this.
-	maxBossHealth: 0,
-	bossHealth: 0,
 
 	advanceLevel() {
 		$.inBossLevel = 0;
@@ -46,7 +41,8 @@ $.assign($, {
 		if (levelType === LevelSpecConst.ENEMY_WAVE) {
 			$.initializeLevel.apply(null, level);
 		} else if (levelType === LevelSpecConst.BOSS) {
-			$.maxBossHealth = $.bossHealth = ($.currentLevelIndex + 1) * ($.currentLevelIndex + 1)* 50;
+			$.maxBossHealth = ($.currentLevelIndex + 1) * ($.currentLevelIndex + 1)* 50;
+			$.bossHealth = [[0, $.maxBossHealth]];
 			$.inBossLevel = 1;
 			$.initializeBoss.apply(null, level);
 		}

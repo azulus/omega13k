@@ -8,10 +8,16 @@ $.assign($, {
 	_activeEnemyIndexes: Array(GameLoopConst.ACTIVE_ENEMY_MAX).fill(0),
 	_activeEnemyPositions: Array(GameLoopConst.ACTIVE_ENEMY_MAX * 2).fill(0),
 	_activeEnemyCount: 0,
-	// projectile data
+	// boss data
+  // projectile data
+	// Temporary boss health variable.
+	// May consider allowing for rewinding this.
+	maxBossHealth: 0,
+	bossHealth: [],
 	bossIdx: 0,
 	bossProjectilePathIdx: 0,
 	bossProjectilePaths: null,
+	// projectile data
 	enemyProjectiles: null,
 	_activeEnemyProjectilePositions: new Float32Array(Array(GameLoopConst.ACTIVE_PROJECTILE_MAX * 2).fill(0)),
 	_activeEnemyProjectileIndex: Array(GameLoopConst.ACTIVE_PROJECTILE_MAX).fill(0),
@@ -88,8 +94,8 @@ $.assign($, {
 		for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
 			let xIdx = count++, yIdx = count++;
 			for (let j = 0; j < $._activeEnemyCount; j++){
-				let posIdx = j * 2;
-				let enemy = $.levelEnemies[$._activeEnemyIndexes[j]];
+				let posIdx = j * 2, enemyIdx = $._activeEnemyIndexes[j];
+				let enemy = $.levelEnemies[enemyIdx];
 
 				if ($.checkCollision(
 					enemy[LevelShipIndex.SHAPES],
@@ -106,9 +112,10 @@ $.assign($, {
 					// Play the enemy explosion audio.
 					enemy[LevelShipIndex.EXPLOSION_AUDIO_POOL][AudioPoolIndex.PLAY]();
 
-					if ($.inBossLevel) {
+					if ($.inBossLevel && enemyIdx === $.bossIdx) {
 						// Currently special casing boss levels.
-						if ($.bossHealth > 0) $.bossHealth--;
+						let bossHealth = $.getCurrentBossHealth();
+						if (bossHealth > 0) $.setBossHealth(bossHealth - 1);
 						else enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					} else {
 						// Destroy the ship.
@@ -232,7 +239,9 @@ $.assign($, {
 		$.levelEnemies = waves;
 	},
 
+	getCurrentBossHealth: () => $.bossHealth[$.bossHealth.length - 1][1],
 	getCurrentPlayerHealth: () => $.playerHealth[$.playerHealth.length - 1][1],
+
 	getCurrentPlayerPosition: () => {
 		let curr = $.playerPosition[$.playerPosition.length - 1];
 		return [curr[1], curr[2]];
@@ -247,6 +256,15 @@ $.assign($, {
 		}
 	},
 
+	setBossHealth: (newHealth) => {
+		let curr = $.bossHealth[$.bossHealth.length - 1];
+		if (curr[0] === $.levelGameTime) {
+			curr[1] = newHealth;
+		} else {
+			$.bossHealth.push([$.levelGameTime, newHealth]);
+		}
+	},
+
 	restorePlayerHealth: () => {
 		let idx = $.playerHealth.length - 1;
 		while (idx > 0 && $.playerHealth[idx][0] > $.levelGameTime) {
@@ -254,6 +272,16 @@ $.assign($, {
 		}
 		if (idx !== $.playerHealth.length - 1) {
 			$.playerHealth = $.playerHealth.slice(0, idx + 1);
+		}
+	},
+
+	restoreBossHealth: () => {
+		let idx = $.bossHealth.length - 1;
+		while (idx > 0 && $.bossHealth[idx][0] > $.levelGameTime) {
+			idx--;
+		}
+		if (idx !== $.bossHealth.length - 1) {
+			$.bossHealth = $.bossHealth.slice(0, idx + 1);
 		}
 	},
 
@@ -482,7 +510,10 @@ $.assign($, {
 			$.updatePlayerPosition(elapsedTime, actualElapsedTime);
 
 			// update player health (if negative time, done automatically during collision tests normally)
-			if (elapsedTime < 0) $.restorePlayerHealth();
+			if (elapsedTime < 0) {
+				$.restorePlayerHealth();
+				$.restoreBossHealth();
+			}
 
 			// spawn and update projectile positions
 			$.updateProjectileStates(elapsedTime);
