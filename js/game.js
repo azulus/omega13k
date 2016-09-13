@@ -42,8 +42,8 @@ $.assign($, {
 	speedMultiplier: 1,
 
 	// first index of visible projectiles, for optimization purposes
-	_firstEnemyProjectileIdx: 0,
-	_firstPlayerProjectileIdx: 0,
+	// _firstEnemyProjectileIdx: 0,
+	// _firstPlayerProjectileIdx: 0,
 
 	// Game state
 	gameState: null,
@@ -61,7 +61,7 @@ $.assign($, {
 		let [x, y, xPerMs, yPerMs] = path;
 		let newX = x + (elapsedTime * xPerMs);
 		let newY = y + (elapsedTime * yPerMs)
-		if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) return;
+		if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH) return;
 		return [newX, newY];
 	},
 
@@ -72,7 +72,7 @@ $.assign($, {
 		let health = $.getCurrentPlayerHealth(), newHealth = health;
 		let count = 0, pos;
 		const projectiles = $.enemyProjectiles;
-		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
+		for (let i = 0; i < projectiles.length; i++){
 			let [start, end, path] = projectiles[i];
 
 			// Only process collisions for projectiles which have spawned.
@@ -121,10 +121,27 @@ $.assign($, {
 
 	checkPlayerProjectileCollisions: () => {
 		let count = 0;
+		$._activePlayerProjectileCount = 0;
 		let health = $.getCurrentPlayerHealth(), newHealth = health;
 		const projectiles = $.playerProjectiles;
-		for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
-			let xIdx = count++, yIdx = count++;
+		for (let i = 0; i < projectiles.length; i++){
+			let [start, end, path] = projectiles[i];
+
+			// Only process collisions for projectiles which have spawned.
+			if (start > $.levelGameTime || end <= $.levelGameTime) continue;
+
+
+			pos = $.getProjectilePosition(start, path);
+
+			if (!pos) {
+				end = $.levelGameTime;
+				continue;
+			}
+
+			$._activePlayerProjectilePositions[count++] = pos[0];
+			$._activePlayerProjectilePositions[count++] = pos[1];
+			$._activePlayerProjectileCount++;
+
 			for (let j = 0; j < $._activeEnemyCount; j++){
 				let posIdx = j * 2, enemyIdx = $._activeEnemyIndexes[j];
 				let enemy = $.levelEnemies[enemyIdx];
@@ -134,8 +151,8 @@ $.assign($, {
 					enemy[LevelShipIndex.BOUNDING_BOX],
 					$._activeEnemyPositions[posIdx],
 					$._activeEnemyPositions[posIdx+1],
-					$._activePlayerProjectilePositions[xIdx],
-					$._activePlayerProjectilePositions[yIdx],
+					pos[0],
+					pos[1],
 					10 // Radius
 					)) {
 					// "Destroy" the projectile.
@@ -154,6 +171,7 @@ $.assign($, {
 						newHealth += PlayerConst.HEALTH_GAIN_ON_KILL;
 						enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					}
+					break;
 				}
 			}
 		}
@@ -172,8 +190,8 @@ $.assign($, {
 		$.enemyProjectiles = [];
 		$.playerProjectiles = [];
 		$.levelGameTime = 0;
-		$._firstEnemyProjectileIdx = 0;
-		$._firstPlayerProjectileIdx = 0;
+		// $._firstEnemyProjectileIdx = 0;
+		// $._firstPlayerProjectileIdx = 0;
 		$._activeEnemyCount = 0;
 		$._activeEnemyProjectileCount = 0;
 		$._activePlayerProjectileCount = 0;
@@ -274,7 +292,7 @@ $.assign($, {
 			})
 		}
 
-		$._firstPlayerProjectileIdx = $._firstEnemyProjectileIdx = 0;
+		// $._firstPlayerProjectileIdx = $._firstEnemyProjectileIdx = 0;
 		$.levelEnemies = waves;
 	},
 
@@ -373,7 +391,7 @@ $.assign($, {
 		for (i = 0; i < $.enemyProjectiles.length; i++) {
 			projectile = $.enemyProjectiles[i];
 			if (projectile[1] && projectile[1] > $.levelGameTime) {
-				if (i < $._firstEnemyProjectileIdx) $._firstEnemyProjectileIdx = i;
+				// if (i < $._firstEnemyProjectileIdx) $._firstEnemyProjectileIdx = i;
 				projectile[1] = undefined;
 			}
 			if (projectile[0] > $.levelGameTime) shouldDelete = true;
@@ -385,7 +403,7 @@ $.assign($, {
 		for (i = 0; i < $.playerProjectiles.length; i++) {
 			projectile = $.playerProjectiles[i];
 			if (projectile[1] && projectile[1] > $.levelGameTime) {
-				if (i < $._firstPlayerProjectileIdx) $._firstPlayerProjectileIdx = i;
+				// if (i < $._firstPlayerProjectileIdx) $._firstPlayerProjectileIdx = i;
 				projectile[1] = undefined;
 			}
 			if (projectile[0] > $.levelGameTime) shouldDelete = true;
@@ -407,6 +425,15 @@ $.assign($, {
 					];
 				})
 			);
+		}
+
+		let playerPos = $.getCurrentPlayerPosition();
+		for (let i = 0; i < $.playerProjectiles.length; i++) {
+			let projectile = $.playerProjectiles[i];
+			if (projectile[0] > $.levelGameTime - elapsedTime) {
+				projectile[2][0] = playerPos[0] + GameConst.SHIP_WIDTH;
+				projectile[2][1] = playerPos[1] + GameConst.HALF_SHIP_HEIGHT;
+			}
 		}
 	},
 

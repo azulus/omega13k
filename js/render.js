@@ -303,46 +303,19 @@ $.assign($, {
 	},
 
 	renderPlayerProjectiles: (gl, prog, projectiles, pos) => {
-		let count = 0;
-		for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
-			let [start, end, path] = projectiles[i];
-			if (start > $.levelGameTime) break;
-			if (end !== undefined) {
-				if ($._firstPlayerProjectileIdx === i) $._firstPlayerProjectileIdx++;
-				continue
-			};
-			let elapsedTime = $.levelGameTime - start;
-			let [x, y, xPerMs, yPerMs] = path;
-
-			// projectiles may be spawned off screen, recenter them based on pos
-			if (x === -1) {
-				[x, y] = pos;
-				x += GameConst.SHIP_WIDTH / 2;
-				y += GameConst.SHIP_HEIGHT / 2;
-				path[0] = x;
-				path[1] = y;
-			}
-
-			let newX = x + (elapsedTime * xPerMs);
-			let newY = y + (elapsedTime * yPerMs)
-			if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH) projectiles[i][1] = $.levelGameTime;
-			$._activePlayerProjectilePositions[count++] = newX;
-			$._activePlayerProjectilePositions[count++] = newY;
-		}
-
-		if (count > 0) {
+		if ($._activePlayerProjectileCount > 0) {
 			let prog = $.prepareCanvasForProjectiles(gl, GameConst.WIDTH, GameConst.HEIGHT);
 
 			let pointsLoc = gl.getAttribLocation(prog, 'aPoint');
 			let colorLoc = gl.getUniformLocation(prog, 'u_color');
-			gl.uniform3f(colorLoc, 0.6, 0.6, 1.);
+			gl.uniform3f(colorLoc, 0.4, 0.4, 0.8);
 
 			gl.enableVertexAttribArray(pointsLoc);
 		  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
 		  gl.bufferData(gl.ARRAY_BUFFER, $._activePlayerProjectilePositions, gl.STATIC_DRAW);
 		  gl.vertexAttribPointer(pointsLoc, 2, gl.FLOAT, false, 0, 0);
 
-			gl.drawArrays(gl.POINTS, 0, count / 2);
+			gl.drawArrays(gl.POINTS, 0, $._activePlayerProjectileCount);
 		}
 	},
 
