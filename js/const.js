@@ -150,7 +150,7 @@ const GameStateConst = {
 
 const GameConst = {
   WIDTH: 800,
-  FLYABLE_WIDTH: 500,
+  FLYABLE_WIDTH: 460,
   HEIGHT: 600,
   STARFIELD_WIDTH: 128,
   STARFIELD_HEIGHT: 128,
