@@ -124,9 +124,9 @@ $.assign($, {
           segment[1],
           segment[2],
           segment[3],
-          $.invertPoints(segment[4], GameConst.HEIGHT),
-          $.invertPoints(segment[5], GameConst.HEIGHT),
-          segment[6] ? $.invertPoints(segment[6], GameConst.HEIGHT) : null
+          $.invertPoints(segment[4], (GameConst.HEIGHT - GameConst.SHIP_HEIGHT)),
+          $.invertPoints(segment[5], (GameConst.HEIGHT - GameConst.SHIP_HEIGHT)),
+          segment[6] ? $.invertPoints(segment[6], (GameConst.HEIGHT - GameConst.SHIP_HEIGHT)) : null
         ])])
       }
     }
