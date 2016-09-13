@@ -66,10 +66,9 @@ $.assign($, {
 	},
 
 	checkEnemyProjectileCollisions: () => {
-		if ($.gameState === GameStateConst.LOST) return;
-
 		$._activeEnemyProjectileCount = 0;
 		let health = $.getCurrentPlayerHealth(), newHealth = health;
+		const playerPosition = $.getCurrentPlayerPosition();
 		let count = 0, pos;
 		const projectiles = $.enemyProjectiles;
 		for (let i = 0; i < projectiles.length; i++){
@@ -89,7 +88,8 @@ $.assign($, {
 			$._activeEnemyProjectilePositions[count++] = pos[1];
 			$._activeEnemyProjectileCount++;
 
-			const playerPosition = $.getCurrentPlayerPosition();
+			if ($.gameState === GameStateConst.LOST) continue;
+
 			if ($.checkCollision(
 				$.playerShapes,
 				$.playerBoundingBox,
