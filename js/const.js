@@ -80,7 +80,8 @@ const DialogIndex = {
 };
 
 const DialogConst = {
-  MS_PER_STEP: 150
+  MS_PER_STEP: 150,
+  MS_REMAIN_TIME: 2000
 };
 
 const EnemyConfigIndex = {
@@ -188,7 +189,7 @@ const LevelShipIndex = {
 const LevelSpecConst = {
   ENEMY_WAVE: 0,
   BOSS: 1,
-  DIALOG: 2,
+  EMPTY: 2,
   END_SCREEN: 3,
 };
 

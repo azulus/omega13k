@@ -44,6 +44,32 @@ $.assign($, {
 		' ': 0
 	},
 
+	prepareDialog: (dialog) => {
+		let timestamp = dialog[0],
+			text = dialog[1];
+		dialog[2] = text.length * DialogConst.MS_PER_STEP; // end render time
+		dialog[3] = dialog[2] + DialogConst.MS_REMAIN_TIME; // remain time
+		return dialog;
+	},
+
+	currentDialog: () => {
+		let i, dialogIdx = -1, dialog, timestamp;
+		for (i = 0; i < $.levelDialog.length; i++) {
+			dialog = $.levelDialog[i];
+			timestamp = dialog[0];
+			if (timestamp < $.levelGameTime) {
+				dialogIdx = i;
+			} else {
+				break;
+			}
+		}
+		if (dialogIdx >= 0 && $.levelDialog[3] >= $.levelGameTime) {
+			if ($.levelDialog[2] <= $.levelGameTime) return text;
+			let numChars = $.floor(($.levelGameTime - $.levelDialog[0]) / DialogConst.MS_PER_STEP);
+			returntext.substr(0, numChars);
+		}
+	},
+
 	dialogStrings: [
 		'Attention all robot ships, begin your mission to destroy the Earth.',
 		'Mothership to Robot 41734 - We are detecting a problem with your transponder. We\'re sending out a repair ship, but in the meantime friendlies may fire on you.',

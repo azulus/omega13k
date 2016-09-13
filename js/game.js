@@ -36,6 +36,7 @@ $.assign($, {
 	playerProjectileAudioPool: [],
 	_activePlayerProjectilePositions: new Float32Array(Array(GameLoopConst.ACTIVE_PROJECTILE_MAX * 2).fill(0)),
 	_activePlayerProjectileCount: 0,
+	levelDialog: [],
 
 	nextRewindSoundTime: 0,
 	speedMultiplier: 1,
@@ -140,9 +141,10 @@ $.assign($, {
 		$._activePlayerProjectileCount = 0;
 	},
 
-	initializeBoss: (seed=1, idealProjectileWaves=3,
+	initializeBoss: (dialog=[], seed=1, idealProjectileWaves=3,
 			idealProjectilePaths=8, idealTimeBetweenProjectiles=1000,
 			projectileSpeed=100) => {
+		$.levelDialog = dialog;
 
 		let r = $.getRandomNumberGenerator(seed),
 			waves = [],
@@ -182,9 +184,10 @@ $.assign($, {
 		$.bossIdx = $.levelEnemies.length - 1 ;
 	},
 
-	initializeLevel: (seed=1, numWaves=10, idealMsBetweenWaves=5000,
+	initializeLevel: (dialog=[], seed=1, numWaves=10, idealMsBetweenWaves=5000,
 			idealProjectileWaves=3, idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
 			projectileSpeed=200) => {
+		$.levelDialog = dialog;
 		let r = $.getRandomNumberGenerator(seed),
 			i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
 			enemyBoundingBox, enemyShapes, explosionAudioPool, laserAudioPool;
