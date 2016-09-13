@@ -424,7 +424,7 @@ $.assign($, {
 			let curr = $.playerPosition[$.playerPosition.length - 1];
 			let posData = [
 				$.levelGameTime,
-				$.clamp(curr[1] + $.playerXVelocity * actualElapsedTime, 0, GameConst.WIDTH - GameConst.SHIP_WIDTH),
+				$.clamp(curr[1] + $.playerXVelocity * actualElapsedTime, 0, GameConst.FLYABLE_WIDTH - GameConst.SHIP_WIDTH),
 				$.clamp(curr[2] + $.playerYVelocity * actualElapsedTime, 0, GameConst.HEIGHT - GameConst.SHIP_HEIGHT)
 			];
 
