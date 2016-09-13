@@ -65,10 +65,34 @@ $.assign($, {
 			[12000, "ZAP!"],
 			[17000, "POW?"]
 		], 0],
-		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 25, 3000],
-		[LevelSpecConst.BOSS, [], 0],
-		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 25, 2500],
-		[LevelSpecConst.BOSS, [], 0]
+		[LevelSpecConst.ENEMY_WAVE, [
+			[0, "DO YOU THINK YOU COULD TRY FIDDLING WITH YOUR ZX-38 PANEL?"],
+			[7000, "JUST JIGGLE IT A LITTLE BIT"],
+			[12000, "DID THAT STOP THE SHOOTING?"],
+			[16000, "WELL, WE TRIED."]
+		], 0, 1, 25, 3000],
+		[LevelSpecConst.BOSS, [
+			[0, "HEY!"],
+			[4000, "I HAVE AN IDEA!"],
+			[9000, "NO WAIT, THAT WAS GAS. CONTINUE ON."]
+		], 0],
+		[LevelSpecConst.ENEMY_WAVE, [
+			[0, "FINALLY. YOU'RE ALMOST HOME."],
+			[5000, "GO AHEAD AND WRECK THESE FOOLS, THEY MEAN NOTHING TO ME!"],
+			[10000, "YOU UH, AREN'T GOING TO HURT ME, RIGHT?"]
+		], 0, 1, 25, 2500],
+		[LevelSpecConst.BOSS, [
+			[0, "HEY THERE..."],
+			[5000, "I REALLY DIDN'T MEAN IT ABOUT DISMANTLING YOU"],
+			[11000, "YOU WERE ALWAYS MY FAVORITE."],
+			[16000, "SURE, YOU WEREN'T ALWAYS THE BRIGHTEST"],
+			[21000, "AND YOU ARE ON A MURDEROUS RAMPAGE..."],
+			[26000, "BUT LET'S PUT THAT BEHIND US"],
+			[31000, "JK"],
+			[35000, "DIE, TRAITOR."],
+			[35000, "BUT SERIOUSLY, IT WAS GOOD KNOWING YOU."],
+			[41000, "GOODBYE."]
+		], 0]
 	],
 
 	advanceLevel() {
