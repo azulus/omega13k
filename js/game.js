@@ -41,7 +41,7 @@ $.assign($, {
 	_firstPlayerProjectileIdx: 0,
 
 	// Game state
-	gameWon: false,
+	gameState: null,
 
 	setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
 
@@ -72,8 +72,12 @@ $.assign($, {
 				$.playerExplosionAudioPool[AudioPoolIndex.PLAY]();
 				// Reduce player health.
 				let currHealth = $.playerHealth[$.playerHealth.length - 1][1],
-					projectileDamage = 1;
-				$.setPlayerHealth(currHealth - projectileDamage);
+					projectileDamage = 10,
+					newHealth = currHealth - projectileDamage;
+				$.setPlayerHealth(newHealth);
+				if (newHealth <= 0) {
+					$.gameState = GameStateConst.LOST;
+				}
 			}
 		}
 	},
@@ -531,17 +535,19 @@ $.assign($, {
 				$.setTimeMultiplier(1);
 			}
 
-			if ($.gameWon) {
-				console.log('game won.');
+			if ($.gameState === GameStateConst.WON) {
+				document.body.classList.add('i');
+			} else if ($.gameState === GameStateConst.LOST) {
+				document.body.classList.add('o');
 			} else {
 				requestAnimationFrame(gameLoop);
 			}
 		}
 
+		$.gameState = GameStateConst.PLAYING;
 		$.playerExplosionAudioPool = $.createAudioPool($.createExplosionSound($.getRandomNumberGenerator(4)), AudioConst.PLAYER_EXPLOSION_POOL_SIZE);
 		$.playerProjectileAudioPool = $.createAudioPool($.createLaserSound($.getRandomNumberGenerator(102)), AudioConst.PLAYER_PROJECTILE_POOL_SIZE);
 
-		console.log('initializing game');
 		$.initKeyboard();
 		$.initializeRendering();
 		$.initializeGame()

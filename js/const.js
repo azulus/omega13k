@@ -129,6 +129,12 @@ const FramebufferIndex = {
   STATUS: 3
 };
 
+const GameStateConst = {
+  PLAYING: 0,
+  WON: 1,
+  LOST: 2
+};
+
 const GameConst = {
   WIDTH: 800,
   FLYABLE_WIDTH: 500,

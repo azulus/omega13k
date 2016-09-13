@@ -24,6 +24,22 @@ body {
 }
 
 /**
+ * Win(i)/Lose(o) screens
+ */
+#i,
+#o,
+.i #f,
+.o #f {
+	display: none;
+}
+
+.i #i,
+.o #o {
+	display: block;
+	color: #fff;
+}
+
+/**
  * Starfield
  */
 #f {

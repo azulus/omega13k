@@ -36,8 +36,8 @@ $.assign($, {
 		const level = $.levelSpec[$.currentLevelIndex];
 
 		if (!level) {
-			$.gameWon = 1
-			return
+			$.gameState = GameStateConst.WON;
+			return;
 		}
 
 		$.resetLevel();
