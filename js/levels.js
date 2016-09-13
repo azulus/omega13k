@@ -13,8 +13,8 @@ $.assign($, {
 		]
 
 	*/
-//Entity Type               Dialog	Delay	seed	#waves  waveTiming
 	levelSpec: [
+	[LevelSpecConst.BOSS, [
 		[LevelSpecConst.ENEMY_WAVE, [
 			[0, "OMEGA-324, WHERE HAVE YOU BEEN?"],
 			[5000, "WHY ARE YOU HEADING TO HQ?"],
@@ -112,7 +112,7 @@ $.assign($, {
 		if (levelType === LevelSpecConst.ENEMY_WAVE) {
 			$.initializeLevel.apply(null, level);
 		} else if (levelType === LevelSpecConst.BOSS) {
-			$.maxBossHealth = ($.currentLevelIndex + 1) * ($.currentLevelIndex + 1)* 50;
+			$.maxBossHealth = 50 + ($.currentLevelIndex * 20);
 			$.bossHealth = [[0, $.maxBossHealth]];
 			$.inBossLevel = 1;
 			$.initializeBoss.apply(null, level);
