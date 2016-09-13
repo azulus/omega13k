@@ -94,9 +94,10 @@ const FragmentShaderConst = {
   `,
   STARFIELD: `
   precision mediump float;
+  varying vec4 vColor;
   varying float vBrightness;
   void main(void) {
-    gl_FragColor = vec4(1.) * vBrightness;
+    gl_FragColor = vColor;
   }
   `,
   TWO_DIMENSION: `
@@ -291,7 +292,7 @@ const VectorShaderConst = {
   STARFIELD: `
   attribute vec4 aStar;
   uniform vec2 u_resolution;
-  varying float vBrightness;
+  varying vec4 vColor;
 
   void main() {
     vec2 point = vec2(aStar[0], aStar[1]);
@@ -301,8 +302,8 @@ const VectorShaderConst = {
 
     gl_Position = vec4(clipSpace * vec2(1, -1), 0., 1.);
 
-    gl_PointSize=1.;
-    vBrightness = aStar[2];
+    gl_PointSize=aStar[2]*1.2;
+    vColor = vec4(1., 1., 1., aStar[2]);
   }
   `,
   PLUMES: `

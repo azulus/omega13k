@@ -9,6 +9,7 @@ $.assign($, {
 	_activeEnemyPositions: Array(GameLoopConst.ACTIVE_ENEMY_MAX * 2).fill(0),
 	_activeEnemyCount: 0,
 	// projectile data
+	bossProjectilePath: null,
 	enemyProjectiles: null,
 	_activeEnemyProjectilePositions: new Float32Array(Array(GameLoopConst.ACTIVE_PROJECTILE_MAX * 2).fill(0)),
 	_activeEnemyProjectileIndex: Array(GameLoopConst.ACTIVE_PROJECTILE_MAX).fill(0),
@@ -123,8 +124,6 @@ $.assign($, {
 		$.levelGameTime = 0;
 		$._firstEnemyProjectileIdx = 0;
 		$._firstPlayerProjectileIdx = 0;
-		$.enemyProjectiles = [];
-		$.playerProjectiles = [];
 		$._activeEnemyCount = 0;
 		$._activeEnemyProjectileCount = 0;
 		$._activePlayerProjectileCount = 0;
@@ -157,31 +156,31 @@ $.assign($, {
 
 			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_PROJECTILE_POOL_SIZE),
 
-			timeBetweenProjectiles = $.floor($.randBetween(bossR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25)),
+			timeBetweenProjectiles = $.floor($.randBetween(bossR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25))
 
 			// the projectile pattern to use
-			projectilePattern = $.generateProjectilePaths(
+			$.bossProjectilePath = $.generateProjectilePaths(
 				bossR,
 				ProjectilePathDirectionConst.LEFT,
 				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
 				1 /* minProjectilesPerWave */, 1 /* maxProjectilesPerWave */,
-				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed),
+				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed);
 
-			times = [];
+		// 	times = [];
+		//
+		// // For bosses, push a single projectile path, and replay it.
+		// for (var j = timeBetweenProjectiles; j < timeBetweenProjectiles + 10000; j += 200) {
+		// 	let pos = $.getPositionAtTime(path, j);
+		// 	let projectilePaths = $.offsetProjectilePaths(
+		// 		projectilePattern,
+		// 		pos[0] + bossWidth / 2,
+		// 		pos[1] + bossHeight / 2,
+		// 		j
+		// 	).map(pp => [j, undefined, pp])
+		// 	times.push([j, projectilePaths]);
+		// }
 
-		// For bosses, push a single projectile path, and replay it.
-		for (var j = timeBetweenProjectiles; j < timeBetweenProjectiles + 10000; j += 200) {
-			let pos = $.getPositionAtTime(path, j);
-			let projectilePaths = $.offsetProjectilePaths(
-				projectilePattern,
-				pos[0] + bossWidth / 2,
-				pos[1] + bossHeight / 2,
-				j
-			).map(pp => [j, undefined, pp])
-			times.push([j, projectilePaths]);
-		}
-
-		waves.push([0, endTime, undefined, bossShapes, path, projectilePattern, times, 0, bossBoundingBox, explosionAudioPool, laserAudioPool])
+		waves.push([0, endTime, undefined, bossShapes, path, [], [], 0, bossBoundingBox, explosionAudioPool, laserAudioPool])
 
 		$.levelEnemies = waves;
 	},
@@ -279,6 +278,7 @@ $.assign($, {
 			ProjectilePathDirectionConst.RIGHT,
 			0, 0, 0)
 		$.playerProjectiles = [];
+		$.bossProjectilePath = null;
 	},
 
 	updateEnemyStates: () => {
@@ -306,7 +306,7 @@ $.assign($, {
 		$._activeEnemyCount = count;
 	},
 
-	_rewindEnemyProjectileStates: (elapsedTime) => {
+	_rewindProjectileStates: (elapsedTime) => {
 		let i, projectile;
 		// enemy projectiles
 		let shouldDelete = false;
@@ -350,12 +350,30 @@ $.assign($, {
 		}
 	},
 
+	_spawnBossProjectiles: (elapsedTime) => {
+		// // spawn player projectiles if needed
+		let lastProjectileTime = $.playerProjectiles.length === 0 ? 0 :
+			$.playerProjectiles[$.playerProjectiles.length - 1][ProjectilePathIndex.OFFSET_TIME];
+
+		let nextProjectileTime = lastProjectileTime + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES;
+		if ($.levelGameTime >= nextProjectileTime) {
+			$.playerProjectiles = $.playerProjectiles.concat(
+				$.offsetProjectilePaths($.playerProjectilePath, -1, -1, nextProjectileTime).map(p => {
+					$.playerLaserSoundsTiming.push(p[ProjectilePathIndex.OFFSET_TIME]);
+					return [
+						p[ProjectilePathIndex.OFFSET_TIME], undefined, p, p[ProjectilePathIndex.OFFSET_TIME] + PlayerConst.MS_BETWEEN_PROJECTILE_WAVES
+					];
+				})
+			);
+		}
+	},
+
 	updateProjectileStates: (elapsedTime) => {
 		if (elapsedTime === 0) return;
 		let i;
 
 		if (elapsedTime < 0) {
-			$._rewindEnemyProjectileStates(elapsedTime);
+			$._rewindProjectileStates(elapsedTime);
 		}
 
 		for (i = 0; i < $._activeEnemyCount; i++) {
@@ -383,6 +401,7 @@ $.assign($, {
 
 		if (elapsedTime > 0) {
 			$._spawnPlayerProjectiles(elapsedTime);
+			if ($.inBossLevel)	$._spawnBossProjectiles(elapsedTime);
 		}
 	},
 

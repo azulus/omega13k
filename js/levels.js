@@ -13,7 +13,7 @@ $.assign($, {
 
 	*/
 	levelSpec: [
-		[LevelSpecConst.ENEMY_WAVE, 1, 10, 5000],
+		// [LevelSpecConst.ENEMY_WAVE, 1, 10, 5000],
 		[LevelSpecConst.BOSS],
 		[LevelSpecConst.ENEMY_WAVE, 1, 12, 4700],
 		[LevelSpecConst.BOSS],
