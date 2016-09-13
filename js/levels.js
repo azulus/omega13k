@@ -112,7 +112,7 @@ $.assign($, {
 		if (levelType === LevelSpecConst.ENEMY_WAVE) {
 			$.initializeLevel.apply(null, level);
 		} else if (levelType === LevelSpecConst.BOSS) {
-			$.maxBossHealth = ($.currentLevelIndex + 1) * ($.currentLevelIndex + 1)* 50;
+			$.maxBossHealth = 50 + ($.currentLevelIndex * 20);
 			$.bossHealth = [[0, $.maxBossHealth]];
 			$.inBossLevel = 1;
 			$.initializeBoss.apply(null, level);
