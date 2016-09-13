@@ -1,6 +1,9 @@
 $.assign($, {
 	framebuffers: Array(4),
 	textures: Array(4),
+	charTriangles: Array(15 * 12),
+	charTriangleMap: {},
+	charBits: Array(15),
 	stars: new Float32Array(BackgroundConst.NUM_STARS * 4),
 	plumes: new Float32Array(PlumeConst.MAX_PLUMES * 4),
 	healthStatus: new Float32Array(StatusBarConst.HEALTH_SEGMENTS * 12),
@@ -10,11 +13,83 @@ $.assign($, {
 	chronoPerSegment: 1 / StatusBarConst.CHRONO_SEGMENTS,
 	bossPerSegment: 1 / StatusBarConst.BOSS_SEGMENTS,
 
+	initializeCharacters: () => {
+		let row, col, i;
+
+		// set up bits and vertices for the individual pixels in a character
+		for (row = 0; row < 5; row++) {
+			for (col = 0; col < 3; col++) {
+				i = row*3 + col;
+				$.charBits[i] = Math.pow(2, i);
+
+				let x = col * CharConst.PIXEL_WIDTH,
+					y = row * CharConst.PIXEL_HEIGHT,
+					w = CharConst.PIXEL_WIDTH,
+					h = CharConst.PIXEL_HEIGHT;
+
+					[
+						x, y,
+						x+w, y,
+						x, y+h,
+
+						x+w, y,
+						x+w, y+h,
+						x, y+h
+					].forEach((v, idx) => {
+						$.charTriangles[(i * 12) + idx] = v;
+					});
+			}
+		}
+
+		// set up the triangles
+		for (var key in $.charCodes) {
+			$.charTriangleMap[key] = $.getTrianglesForChar(key);
+		}
+	},
+
+	getTrianglesForChar: (char) => {
+		let bits = $.charCodes[char];
+		let triangles = [];
+		for (var i = 0; i < $.charBits.length; i++) {
+			if (bits & $.charBits[i]) {
+				triangles = triangles.concat($.charTriangles.slice(i * 12, (i + 1) * 12));
+			}
+		}
+		return new Float32Array(triangles);
+	},
+
+	renderDialog: (gl, prog, text) => {
+		let col = 0, line = 0, i;
+
+		for ( i = 0; i < text.length; i++) {
+			let char = text[i],
+			  triangles = $.charTriangleMap[char],
+				x = CharConst.TEXT_OFFSET_X + col * (CharConst.PIXEL_WIDTH * 3 + CharConst.CHAR_PADDING),
+				y = CharConst.TEXT_OFFSET_Y + line * (CharConst.PIXEL_HEIGHT * 5 + CharConst.CHAR_PADDING);
+
+			if (typeof triangles === 'undefined') {
+				throw new Error('Unable to render: "' + char + '"');
+			}
+
+			gl.uniform2f(gl.getUniformLocation(prog, 'u_offset'), x, y);
+			gl.uniform4f(gl.getUniformLocation(prog, 'u_color'), 1., 1., 1., 1.);
+			gl.bufferData(gl.ARRAY_BUFFER, triangles, gl.STATIC_DRAW);
+			gl.drawArrays(gl.TRIANGLES, 0, triangles.length / 2);
+
+			if (char === '\n') {
+				line++;
+				col = 0;
+			} else {
+				col++;
+			}
+		}
+	},
+
 	initializeStatusBar: (numSegments, yOffset, height, arr) => {
 		let padding = 2;
 		let widthPerSegment = Math.floor(GameConst.WIDTH / numSegments) - padding;
 		let totalWidth = widthPerSegment * numSegments + padding * (numSegments - 1);
-		let leftPadding = Math.floor((GameConst.WIDTH - totalWidth) / 2);
+		let leftPadding = Math.floor((GameConst.WIDTH - totalWidth) / 3);
 		let i;
 
 		for (i = 0; i < numSegments; i++) {
@@ -382,6 +457,9 @@ $.assign($, {
 		$.renderEnemyProjectiles(gl, pointProg, $.enemyProjectiles);
 		$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
 
+		gl.useProgram(shapeProg);
+		$.renderDialog(gl, shapeProg, $.dialogStrings[0]);
+
 		gl.flush();
 	},
 
@@ -389,5 +467,6 @@ $.assign($, {
 		$.initializeStarfield();
 		$.initializePlumes();
 		$.initializeStatusBars();
+		$.initializeCharacters();
 	}
 })

@@ -147,7 +147,7 @@ $.assign($, {
 
     return [
       () => {
-        pool[currentPoolIdx].play();
+        // pool[currentPoolIdx].play();
         currentPoolIdx++;
         if (currentPoolIdx >= size) {
           currentPoolIdx = 0;
@@ -159,6 +159,6 @@ $.assign($, {
   playSound: (sound) => {
     var player = new Audio();
     player.src = jsfxr(sound);
-    player.play();
+    // player.play();
   }
 });

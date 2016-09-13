@@ -1,11 +1,56 @@
 $.assign($, {
+	charCodes: {
+		'0': 31599,
+	  '1': 9362,
+	  '2': 29671,
+	  '3': 31207,
+	  '4': 18925,
+	  '5': 31183,
+	  '6': 31695,
+	  '7': 18727,
+	  '8': 31727,
+	  '9': 18927,
+
+	  'A': 23535,
+	  'B': 15339,
+	  'C': 25166,
+	  'D': 15211,
+	  'E': 29647,
+	  'F': 5071,
+	  'G': 31567,
+	  'H': 23533,
+	  'I': 29847,
+	  'J': 11044,
+	  'K': 23277,
+	  'L': 29257,
+	  'M': 23549,
+	  'N': 24573,
+	  'O': 31599,
+	  'P': 4843,
+	  'Q': 28523,
+	  'R': 22511,
+	  'S': 31183,
+	  'T': 9367,
+	  'U': 27501,
+	  'V': 9581,
+	  'W': 24557,
+	  'X': 23213,
+	  'Y': 9389,
+	  'Z': 29351,
+	  '.': 9216,
+	  '-': 448,
+	  ',': 5120,
+	  '\'': 18,
+		' ': 0
+	},
+
 	dialogStrings: [
 		'Attention all robot ships, begin your mission to destroy the Earth.',
 		'Mothership to Robot 41734 - We are detecting a problem with your transponder. We\'re sending out a repair ship, but in the meantime friendlies may fire on you.',
 		'Just hang in there until the repair ship arrives!',
 		'We appear to have lost the repair ship. We\'re sending another one out right away.',
 		'Please stop destroying our ships, those are expensive!'
-	],
+	].map(s => s.toUpperCase()),
 
 	getDialog: (index) => {
 		return [

@@ -62,6 +62,14 @@ const CachedProgramIndex = {
   PLUMES: 3
 };
 
+const CharConst = {
+  TEXT_OFFSET_X: 20,
+  TEXT_OFFSET_Y: 550,
+  PIXEL_WIDTH: 3,
+  PIXEL_HEIGHT: 3,
+  CHAR_PADDING: 2
+};
+
 const CircleConst = {
   COMPONENT_TRIANGLES: 24
 };
@@ -79,6 +87,10 @@ const EnemyConfigIndex = {
   SEED: 0,
   SEED_SHAPE_STR: 1
 };
+
+const FontConst = {
+  // 25 bits
+}
 
 const FragmentShaderConst = {
   PLUMES: `
