@@ -161,7 +161,7 @@ $.assign($, {
            xPerMs = Math.cos(angle) * projectileSpeedMultiplier;
            yPerMs = Math.sin(angle) * projectileSpeedMultiplier;
 
-           if (!xPerMs)  {
+           if (!xPerMs && xPerMs !== 0)  {
              xPerMs = projectileSpeedMultiplier;
              yPerMs = 0;
              if (angle === ProjectilePathDirectionConst.LEFT) xPerMs *= -1;
