@@ -480,10 +480,9 @@ $.assign($, {
 	},
 
 	startGame: () => {
+		/*
 		$.getElementById('pause').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
-		$.getElementById('slow').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.SLOW) && e.preventDefault())
-		$.getElementById('normal').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.NORMAL) && e.preventDefault())
-		$.getElementById('fast').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.FAST_FORWARD) && e.preventDefault())
+		*/
 
 		$.getElementById('close').addEventListener('click', (e) => {
 			e.preventDefault();
@@ -534,7 +533,7 @@ $.assign($, {
 			// apply effects based on current speed
 
 			// update time multiplier and chrono bar
-			if ($.downKeys[' '] && $.playerChrono > 0) {
+			if (($.downKeys['1'] || $.downKeys[' ']) && $.playerChrono > 0) {
 				// Use chrono bar and rewind time.
 				$.setTimeMultiplier(SpeedConst.REWIND);
 				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
@@ -544,7 +543,14 @@ $.assign($, {
 					$.playSound(rewindSound);
 					$.nextRewindSoundTime = $.levelGameTime - rewindSound[2] * 1000 + AudioConst.REWIND_SOUND_DELAY;
 				}
-			} else if ($.speedMultiplier === SpeedConst.REWIND) {
+			} else if ($.downKeys['2'] && $.playerChrono > 0) {
+				$.setTimeMultiplier(SpeedConst.SLOW);
+				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS / 2);
+			} else if ($.downKeys['3'] && $.playerChrono > 0) {
+				$.setTimeMultiplier(SpeedConst.FAST_FORWARD);
+				// Increase chrono when fast forwarding.
+				if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) $.playerChrono += Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
+			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
 				// Restore to normal time if we're not holding spacebar.
 				$.setTimeMultiplier(SpeedConst.NORMAL)
 				$.nextRewindSoundTime = 0;
