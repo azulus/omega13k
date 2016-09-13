@@ -480,6 +480,35 @@ $.assign($, {
 		}
 	},
 
+	applyTime: (elapsedTime) => {
+		// update time multiplier and chrono bar
+		if (($.downKeys['1'] || $.downKeys[' ']) && $.playerChrono > 0) {
+			// Use chrono bar and rewind time.
+			$.setTimeMultiplier(SpeedConst.REWIND);
+			$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
+			// Play rewind sound.
+			if (!$.nextRewindSoundTime || $.levelGameTime < $.nextRewindSoundTime) {
+				let rewindSound = $.createRewindSound(Math.random);
+				$.playSound(rewindSound);
+				$.nextRewindSoundTime = $.levelGameTime - rewindSound[2] * 1000 + AudioConst.REWIND_SOUND_DELAY;
+			}
+		} else if ($.downKeys['2'] && $.playerChrono > 0) {
+			$.setTimeMultiplier(SpeedConst.SLOW);
+			$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS / 2);
+		} else if ($.downKeys['3'] && $.playerChrono > 0) {
+			$.setTimeMultiplier(SpeedConst.FAST_FORWARD);
+			// Increase chrono when fast forwarding.
+			if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) $.playerChrono += Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS / 4);
+		} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
+			// Restore to normal time if we're not holding spacebar.
+			$.setTimeMultiplier(SpeedConst.NORMAL)
+			$.nextRewindSoundTime = 0;
+		} else if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) {
+			// Recover chrono.
+			$.playerChrono += elapsedTime * PlayerConst.CHRONO_RECOVERY_PER_MS;
+		}
+	},
+
 	startGame: () => {
 		/*
 		$.getElementById('pause').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
@@ -503,25 +532,27 @@ $.assign($, {
 				shouldResumeNormal = true;
 			}
 
-			// spawn enemies and update their positions
-			$.updateEnemyStates();
+			if ($.gameState !== GameStateConst.LOST) {
+				// spawn enemies and update their positions
+				$.updateEnemyStates();
 
-			// update player position (by player controls if non-negative, by replay if negative)
-			$.updatePlayerPosition(elapsedTime, actualElapsedTime);
+				// update player position (by player controls if non-negative, by replay if negative)
+				$.updatePlayerPosition(elapsedTime, actualElapsedTime);
 
-			// update player health (if negative time, done automatically during collision tests normally)
-			if (elapsedTime < 0) {
-				$.restorePlayerHealth();
-				$.restoreBossHealth();
+				// update player health (if negative time, done automatically during collision tests normally)
+				if (elapsedTime < 0) {
+					$.restorePlayerHealth();
+					$.restoreBossHealth();
+				}
+
+				// spawn and update projectile positions
+				$.updateProjectileStates(elapsedTime);
+				$.updateStarfield(elapsedTime);
+
+				// check for collision between player and enemy projectiles (if non-negative time)
+				$.checkEnemyProjectileCollisions();
+				$.checkPlayerProjectileCollisions();
 			}
-
-			// spawn and update projectile positions
-			$.updateProjectileStates(elapsedTime);
-			$.updateStarfield(elapsedTime);
-
-			// check for collision between player and enemy projectiles (if non-negative time)
-			$.checkEnemyProjectileCollisions();
-			$.checkPlayerProjectileCollisions();
 
 			$.renderGame()
 
@@ -532,33 +563,7 @@ $.assign($, {
 			}
 
 			// apply effects based on current speed
-
-			// update time multiplier and chrono bar
-			if (($.downKeys['1'] || $.downKeys[' ']) && $.playerChrono > 0) {
-				// Use chrono bar and rewind time.
-				$.setTimeMultiplier(SpeedConst.REWIND);
-				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
-				// Play rewind sound.
-				if (!$.nextRewindSoundTime || $.levelGameTime < $.nextRewindSoundTime) {
-					let rewindSound = $.createRewindSound(Math.random);
-					$.playSound(rewindSound);
-					$.nextRewindSoundTime = $.levelGameTime - rewindSound[2] * 1000 + AudioConst.REWIND_SOUND_DELAY;
-				}
-			} else if ($.downKeys['2'] && $.playerChrono > 0) {
-				$.setTimeMultiplier(SpeedConst.SLOW);
-				$.playerChrono -= Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS / 2);
-			} else if ($.downKeys['3'] && $.playerChrono > 0) {
-				$.setTimeMultiplier(SpeedConst.FAST_FORWARD);
-				// Increase chrono when fast forwarding.
-				if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) $.playerChrono += Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS / 4);
-			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
-				// Restore to normal time if we're not holding spacebar.
-				$.setTimeMultiplier(SpeedConst.NORMAL)
-				$.nextRewindSoundTime = 0;
-			} else if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) {
-				// Recover chrono.
-				$.playerChrono += elapsedTime * PlayerConst.CHRONO_RECOVERY_PER_MS;
-			}
+			$.applyTime(elapsedTime);
 
 			// Handle level change.
 			let wave = $.levelEnemies[$.levelEnemies.length - 1];
@@ -576,7 +581,8 @@ $.assign($, {
 			if ($.gameState === GameStateConst.WON) {
 				document.body.classList.add('i');
 			} else if ($.gameState === GameStateConst.LOST) {
-				document.body.classList.add('o');
+				// document.body.classList.add('o');
+				$.setTimeMultiplier(SpeedConst.PAUSE);
 				addEventListener('keydown', e => {
 					if (e.key === ' ') location.reload();
 				});
