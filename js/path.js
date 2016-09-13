@@ -141,6 +141,7 @@ $.assign($, {
    minProjectilesPerWave=1, maxProjectilesPerWave=5,
    minPaths=1, maxPaths=6, maxFireTime=2000, projectileSpeed=200) => {
      let numAngles = $.randBetween(r, minPaths, maxPaths),
+      projectileSpeedMultiplier = projectileSpeed / 1000,
        minAngle = 10,
        maxAngle = numAngles <= 2 ? 90 : 90 / (numAngles - 1),
        angleBetween = $.randBetween(r, minAngle, maxAngle),
@@ -157,8 +158,14 @@ $.assign($, {
          for (j = 0; j < numAngles; j++) {
            offset = j - midPoint;
            angle =( (dir + (offset * angleBetween) + 360 + (interleaveAngleBetween * (i === 0 ? 0 : i % interleaveTimes))) % 360) * $.DEGREES_TO_RADIANS;
-           xPerMs = Math.cos(angle) * projectileSpeed / 1000;
-           yPerMs = Math.sin(angle) * projectileSpeed / 1000;
+           xPerMs = Math.cos(angle) * projectileSpeedMultiplier;
+           yPerMs = Math.sin(angle) * projectileSpeedMultiplier;
+
+           if (!xPerMs)  {
+             xPerMs = projectileSpeedMultiplier;
+             yPerMs = 0;
+             if (angle === ProjectilePathDirectionConst.LEFT) xPerMs *= -1;
+           }
 
            for (k = 0; k < projectilesPerWave; k++) {
              paths.push([x, y, xPerMs, yPerMs, offsetTime]);
