@@ -89,7 +89,7 @@ $.assign($, {
 		}
 
 		if (newHealth !== health) {
-			$.setPlayerHealth($.clamp(newHealth, 0, PlayerConst.MAX_HEALTH));
+			$.setPlayerHealth(newHealth);
 			if (newHealth <= 0) {
 				$.setTimeMultiplier(SpeedConst.NORMAL);
 				$.gameState = GameStateConst.LOST;
@@ -138,7 +138,7 @@ $.assign($, {
 		}
 
 		if (newHealth !== health) {
-			$.setPlayerHealth($.clamp(newHealth, 0, PlayerConst.MAX_HEALTH));
+			$.setPlayerHealth(newHealth);
 		}
 	},
 
@@ -266,6 +266,7 @@ $.assign($, {
 	},
 
 	setPlayerHealth: (newHealth) => {
+		newHealth = $.clamp(newHealth, 0, PlayerConst.MAX_HEALTH);
 		let curr = $.playerHealth[$.playerHealth.length - 1];
 		if (curr[0] === $.levelGameTime) {
 			curr[1] = newHealth;
@@ -526,6 +527,12 @@ $.assign($, {
 		}
 	},
 
+	boostPlayerHealth: (elapsedTime) => {
+		let health = $.getCurrentPlayerHealth();
+		health += elapsedTime * PlayerConst.HEALTH_GAIN_PER_MS_FAST_FORWARD;
+		$.setPlayerHealth(health);
+	},
+
 	startGame: () => {
 		let gameLoop = () => {
 			let currentTime = Date.now();
@@ -550,6 +557,8 @@ $.assign($, {
 			if (elapsedTime < 0) {
 				$.restorePlayerHealth();
 				$.restoreBossHealth();
+			} else if ($.speedMultiplier === SpeedConst.FAST_FORWARD) {
+				$.boostPlayerHealth(elapsedTime);
 			}
 
 			// spawn and update projectile positions
