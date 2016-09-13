@@ -163,8 +163,7 @@ $.assign($, {
 		gl.uniform1f(gl.getUniformLocation(prog, 'uDirection'), -0.5);
 
 		let originLoc = gl.getUniformLocation(prog, 'uOrigin'),
-			posLoc = gl.getAttribLocation(prog, 'aPos'),
-			posIdx, i;
+			posLoc = gl.getAttribLocation(prog, 'aPos');
 
 		gl.enableVertexAttribArray( posLoc );
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());

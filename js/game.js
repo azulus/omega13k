@@ -154,10 +154,8 @@ $.assign($, {
 
 			explosionAudioPool = $.createAudioPool($.createExplosionSound(Math.random), AudioConst.ENEMY_EXPLOSION_POOL_SIZE),
 
-			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_PROJECTILE_POOL_SIZE),
-
-			timeBetweenProjectiles = $.floor($.randBetween(bossR, idealTimeBetweenProjectiles*.75, idealTimeBetweenProjectiles*1.25))
-
+			laserAudioPool = $.createAudioPool($.createLaserSound(Math.random), AudioConst.ENEMY_PROJECTILE_POOL_SIZE)
+			
 			// the projectile pattern to use
 			$.bossProjectilePath = $.generateProjectilePaths(
 				bossR,
@@ -165,20 +163,6 @@ $.assign($, {
 				0, 0, 0, idealProjectileWaves-1, idealProjectileWaves+1,
 				1 /* minProjectilesPerWave */, 1 /* maxProjectilesPerWave */,
 				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed);
-
-		// 	times = [];
-		//
-		// // For bosses, push a single projectile path, and replay it.
-		// for (var j = timeBetweenProjectiles; j < timeBetweenProjectiles + 10000; j += 200) {
-		// 	let pos = $.getPositionAtTime(path, j);
-		// 	let projectilePaths = $.offsetProjectilePaths(
-		// 		projectilePattern,
-		// 		pos[0] + bossWidth / 2,
-		// 		pos[1] + bossHeight / 2,
-		// 		j
-		// 	).map(pp => [j, undefined, pp])
-		// 	times.push([j, projectilePaths]);
-		// }
 
 		waves.push([0, endTime, undefined, bossShapes, path, [], [], 0, bossBoundingBox, explosionAudioPool, laserAudioPool])
 
