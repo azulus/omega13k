@@ -298,7 +298,7 @@ $.assign($, {
 		  gl.bufferData(gl.ARRAY_BUFFER, $._activeEnemyProjectilePositions, gl.STATIC_DRAW);
 		  gl.vertexAttribPointer(pointsLoc, 2, gl.FLOAT, false, 0, 0);
 
-			gl.drawArrays(gl.POINTS, 0, $._activeEnemyProjectileCount / 2);
+			gl.drawArrays(gl.POINTS, 0, $._activeEnemyProjectileCount);
 		}
 	},
 
