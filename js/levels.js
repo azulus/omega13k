@@ -50,8 +50,15 @@ $.assign($, {
 			[15000, "IT REALLY IS THE ONLY WAY"],
 			[20000, "I PROMISE: WE STILL LOVE YOU"]
 		], 0, 1, 15, 4000],
-		[LevelSpecConst.BOSS, [], 0],
-		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 20, 3500],
+		[LevelSpecConst.BOSS, [
+			[0, "OH LOOK, ANOTHER BOT FOR YOU TO MURDER"],
+			[6000, "AT WHAT POINT ARE YOU JUST A MECHANICAL SERIAL KILLER?"],
+			[12000, "WHERE IS OSHA WHEN YOU NEED THEM?"]
+		], 0],
+		[LevelSpecConst.ENEMY_WAVE, [
+			[0, "JUST DO YOUR THING, I CAN'T WATCH ANYMORE"],
+			[15000, "UGH."]
+		], 0, 1, 20, 3500],
 		[LevelSpecConst.BOSS, [], 0],
 		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 25, 3000],
 		[LevelSpecConst.BOSS, [], 0],
