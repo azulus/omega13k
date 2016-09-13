@@ -67,7 +67,7 @@ $.assign($, {
 	},
 
 	currentDialog: () => {
-		let i, foundDialog = false, start, end, removeTimestamp;
+		let i, foundDialog = false, text, start, end, removeTimestamp;
 		for (i = 0; !foundDialog && i < $.levelDialog.length; i++) {
 			[start, text, end, removeTimestamp] = $.levelDialog[i];
 
