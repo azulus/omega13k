@@ -520,15 +520,6 @@ $.assign($, {
 	},
 
 	startGame: () => {
-		/*
-		$.getElementById('pause').addEventListener('click', (e) => $.setTimeMultiplier(SpeedConst.PAUSE) && e.preventDefault())
-		*/
-
-		$.getElementById('close').addEventListener('click', (e) => {
-			e.preventDefault();
-			e.target.parentNode.parentNode.style.display = 'none'
-		})
-
 		let gameLoop = () => {
 			let currentTime = Date.now();
 			let actualElapsedTime = (currentTime - $.levelLastLoopTime)
