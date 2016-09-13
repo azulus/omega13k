@@ -549,7 +549,7 @@ $.assign($, {
 			} else if ($.downKeys['3'] && $.playerChrono > 0) {
 				$.setTimeMultiplier(SpeedConst.FAST_FORWARD);
 				// Increase chrono when fast forwarding.
-				if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) $.playerChrono += Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS);
+				if ($.playerChrono < PlayerConst.MAX_CHRONO_METER) $.playerChrono += Math.abs(elapsedTime * PlayerConst.CHRONO_USE_PER_MS / 4);
 			} else if ($.speedMultiplier !== SpeedConst.NORMAL) {
 				// Restore to normal time if we're not holding spacebar.
 				$.setTimeMultiplier(SpeedConst.NORMAL)
