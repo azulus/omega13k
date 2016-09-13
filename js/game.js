@@ -77,7 +77,7 @@ $.assign($, {
 			// Only process collisions for projectiles which have spawned.
 			if (start > $.levelGameTime || end <= $.levelGameTime) continue;
 
-			pos = $.getProjectilePosition(start, path);
+			let pos = $.getProjectilePosition(start, path);
 
 			if (!pos) {
 				end = $.levelGameTime;
@@ -131,7 +131,7 @@ $.assign($, {
 			if (start > $.levelGameTime || end <= $.levelGameTime) continue;
 
 
-			pos = $.getProjectilePosition(start, path);
+			let pos = $.getProjectilePosition(start, path);
 
 			if (!pos) {
 				end = $.levelGameTime;
