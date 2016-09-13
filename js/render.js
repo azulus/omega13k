@@ -158,6 +158,26 @@ $.assign($, {
    }
 	},
 
+	renderPlayerPlumes: (gl, prog, position) => {
+		gl.uniform3f(gl.getUniformLocation(prog, 'uColor'), 0.4, 0.4, 0.8);
+		gl.uniform1f(gl.getUniformLocation(prog, 'uDirection'), -0.5);
+
+		let originLoc = gl.getUniformLocation(prog, 'uOrigin'),
+			posLoc = gl.getAttribLocation(prog, 'aPos'),
+			posIdx, i;
+
+		gl.enableVertexAttribArray( posLoc );
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+		gl.bufferData(gl.ARRAY_BUFFER, $.plumes, gl.STATIC_DRAW);
+		gl.vertexAttribPointer( posLoc, 4, gl.FLOAT, false, 0, 0);
+
+		gl.uniform3f(originLoc, position[0], position[1] + 11, 0)
+		gl.drawArrays(gl.POINTS, 0, PlumeConst.MAX_PLUMES);
+
+		gl.uniform3f(originLoc, position[0], position[1] + GameConst.SHIP_HEIGHT - 11, 0)
+		gl.drawArrays(gl.POINTS, 0, PlumeConst.MAX_PLUMES);
+	},
+
 	renderEnemyPlumes: (gl, prog) => {
 		gl.uniform3f(gl.getUniformLocation(prog, 'uColor'), 0.8, 0.4, 0.4);
 		gl.uniform1f(gl.getUniformLocation(prog, 'uDirection'), 0.5);
@@ -342,6 +362,7 @@ $.assign($, {
 		// initialize the canvas
 		let canvas = $.getCanvas();
 		let gl = $.get3DContext(canvas);
+		let playerPosition = $.getCurrentPlayerPosition();
 		$.clear3DCanvas(gl);
 
 		// draw the background
@@ -350,11 +371,11 @@ $.assign($, {
 		// render engine plumes
 		let plumeProg = $.prepareCanvasForPlumes(gl, canvas.width, canvas.height);
 		$.renderEnemyPlumes(gl, plumeProg);
+		$.renderPlayerPlumes(gl, plumeProg, playerPosition);
 
 		// render shapes
 		let shapeProg = $.prepareCanvasForShapes(gl, canvas.width, canvas.height);
 		$.renderEnemies(gl, shapeProg);
-		let playerPosition = $.getCurrentPlayerPosition();
 		$.renderPlayer(gl, shapeProg, playerPosition);
 
 		// render health bar

@@ -323,7 +323,7 @@ const VectorShaderConst = {
       vec2 clipSpace = zeroToTwo - 1.0;
       gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
 
-      vLifetime = 4.*ti*(1. - ti)*uDirection;
+      vLifetime = 4.*ti*(1. - ti)*abs(uDirection);
       vColor = uColor;
       gl_PointSize = 5.;
     }
