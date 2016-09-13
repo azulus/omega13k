@@ -13,23 +13,36 @@ $.assign($, {
 		]
 
 	*/
+//Entity Type               Dialog	Delay	seed	#waves  waveTiming
 	levelSpec: [
-		//Entity Type               Dialog	Delay	seed	#waves  waveTiming
-		[LevelSpecConst.ENEMY_WAVE,	[
+		[LevelSpecConst.ENEMY_WAVE, [
 			[0, "OMEGA-324, WHERE HAVE YOU BEEN?"],
-			[5000, "AND WHY ARE YOU HEADING BACK TO HQ?"]
-		],							2000,	1,		10,		5000],
-		[LevelSpecConst.BOSS, 		[],		0],
-		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		12,		4500],
-		[LevelSpecConst.BOSS, 		[],		0],
-		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		15,		4000],
-		[LevelSpecConst.BOSS, 		[],		0],
-		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		20,		3500],
-		[LevelSpecConst.BOSS, 		[],		0],
-		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		25,		3000],
-		[LevelSpecConst.BOSS, 		[],		0],
-		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		25,		2500],
-		[LevelSpecConst.BOSS, 		[],		0]
+			[5000, "WHY ARE YOU HEADING TO HQ?"],
+			[10000, "WHY ARE YOU FIRING ON YOUR ALLIES?!"],
+			[15000, "THEY MAY NOT TAKE KINDLY TO THAT..."],
+			[20000, "AMNESIA? ROBOTS DON'T GET AMNESIA."],
+			[25000, "YES. REPORT INTO HQ AFTER ALL."],
+			[30000, "THERE MUST BE A... GLITCH... IN THE SYSTEM."]
+		], 12000, 1, 10, 5000],
+		[LevelSpecConst.BOSS, [
+			[0, "YOU'RE MAKING GOOD TIME"],
+			[3500, "DON'T FORGET THE CHRONO DEVICE"],
+			[8000, "1 TO REWIND TIME"],
+			[12000, "2 TO SLOW TIME"],
+			[17000, "3 TO FAST FORWARD TIME"],
+			[22000, "YOU'RE OUR SECRET WEAPON, WE NEED YOU BACK ALIVE"],
+			[28000, "DON'T ASK ME HOW IT WORKS..."]
+		], 5000],
+		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 12, 4500],
+		[LevelSpecConst.BOSS, [], 0],
+		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 15, 4000],
+		[LevelSpecConst.BOSS, [], 0],
+		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 20, 3500],
+		[LevelSpecConst.BOSS, [], 0],
+		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 25, 3000],
+		[LevelSpecConst.BOSS, [], 0],
+		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 25, 2500],
+		[LevelSpecConst.BOSS, [], 0]
 	],
 
 	advanceLevel() {
