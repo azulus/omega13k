@@ -130,7 +130,7 @@ $.assign($, {
 						else enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					} else {
 						// Destroy the ship.
-						// newHealth += PlayerConst.HEALTH_GAIN_ON_KILL;
+						newHealth += PlayerConst.HEALTH_GAIN_ON_KILL;
 						enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					}
 				}
