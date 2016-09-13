@@ -160,6 +160,7 @@ $.assign($, {
 
 	renderEnemyPlumes: (gl, prog) => {
 		gl.uniform3f(gl.getUniformLocation(prog, 'uColor'), 0.8, 0.4, 0.4);
+		gl.uniform1f(gl.getUniformLocation(prog, 'uDirection'), 0.5);
 
 		let originLoc = gl.getUniformLocation(prog, 'uOrigin'),
 			posLoc = gl.getAttribLocation(prog, 'aPos'),

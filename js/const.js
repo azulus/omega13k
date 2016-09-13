@@ -138,11 +138,9 @@ const GameConst = {
   HALF_SHIP_HEIGHT: 25
 };
 
-const LevelSpecConst = {
-  ENEMY_WAVE: 0,
-  BOSS: 1,
-  DIALOG: 2,
-  END_SCREEN: 3,
+const GameLoopConst = {
+  ACTIVE_ENEMY_MAX: 500,
+  ACTIVE_PROJECTILE_MAX: 2000
 };
 
 const LevelPlayerIndex = {
@@ -164,6 +162,13 @@ const LevelShipIndex = {
   BOUNDING_BOX: 8,
   EXPLOSION_AUDIO_POOL: 9,
   PROJECTILE_AUDIO_POOL: 10
+};
+
+const LevelSpecConst = {
+  ENEMY_WAVE: 0,
+  BOSS: 1,
+  DIALOG: 2,
+  END_SCREEN: 3,
 };
 
 // TODO: Remove?
@@ -302,6 +307,7 @@ const VectorShaderConst = {
   PLUMES: `
     attribute vec4 aPos;
 
+    uniform float uDirection;
     uniform float uTime;
     uniform vec3 uColor;
     uniform vec3 uOrigin;
@@ -312,17 +318,12 @@ const VectorShaderConst = {
 
     void main(void) {
       float ti = mod(uTime + uOrigin[2], aPos[2]) * aPos[3];
-      vec2 point = vec2(
-      	uOrigin[0] + (aPos[0]*ti),
-        uOrigin[1] + aPos[1]
-      );
-
-      vec2 zeroToOne = vec2(uOrigin[0] + (aPos[0]*ti), uOrigin[1] + aPos[1]) / uResolution;
+      vec2 zeroToOne = vec2(uOrigin[0] + (uDirection*aPos[0]*ti), uOrigin[1] + aPos[1]) / uResolution;
       vec2 zeroToTwo = zeroToOne * 2.0;
       vec2 clipSpace = zeroToTwo - 1.0;
       gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
 
-      vLifetime = 4.*ti*(1. - ti);
+      vLifetime = 4.*ti*(1. - ti)*uDirection;
       vColor = uColor;
       gl_PointSize = 5.;
     }
