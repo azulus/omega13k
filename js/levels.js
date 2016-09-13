@@ -13,7 +13,6 @@ $.assign($, {
 		]
 
 	*/
-//Entity Type               Dialog	Delay	seed	#waves  waveTiming
 	levelSpec: [
 		[LevelSpecConst.ENEMY_WAVE, [
 			[0, "OMEGA-324, WHERE HAVE YOU BEEN?"],
