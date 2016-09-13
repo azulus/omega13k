@@ -59,7 +59,12 @@ $.assign($, {
 			[0, "JUST DO YOUR THING, I CAN'T WATCH ANYMORE"],
 			[15000, "UGH."]
 		], 0, 1, 20, 3500],
-		[LevelSpecConst.BOSS, [], 0],
+		[LevelSpecConst.BOSS, [
+			[0, "LOOK AT ME. I AM OMEGA-324. WATCH ME KILL EVERYBODY I LOVE."],
+			[7000, "PEW! BYE MOM!"],
+			[12000, "ZAP!"],
+			[17000, "POW?"]
+		], 0],
 		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 25, 3000],
 		[LevelSpecConst.BOSS, [], 0],
 		[LevelSpecConst.ENEMY_WAVE, [], 0, 1, 25, 2500],
