@@ -209,7 +209,6 @@ $.assign($, {
 
 	renderEnemyProjectiles: (gl, prog, projectiles) => {
 		let count = 0;
-		$._activeEnemyProjectileCount = 0;
 		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
 			let [start, end, path] = projectiles[i];
 			if (start > $.levelGameTime) continue;
@@ -224,7 +223,6 @@ $.assign($, {
 			if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT) projectiles[i][1] = $.levelGameTime;
 			$._activeEnemyProjectilePositions[count++] = newX;
 			$._activeEnemyProjectilePositions[count++] = newY;
-			$._activeEnemyProjectileIndex[$._activeEnemyProjectileCount++] = i;
 		}
 
 		if (count > 0) {
@@ -245,7 +243,6 @@ $.assign($, {
 
 	renderPlayerProjectiles: (gl, prog, projectiles, pos) => {
 		let count = 0;
-		$._activePlayerProjectileCount = 0;
 		for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
 			let [start, end, path] = projectiles[i];
 			if (start > $.levelGameTime) break;
@@ -270,7 +267,6 @@ $.assign($, {
 			if (newX < 0 || newY < 0 || newY > GameConst.HEIGHT || newX > GameConst.WIDTH) projectiles[i][1] = $.levelGameTime;
 			$._activePlayerProjectilePositions[count++] = newX;
 			$._activePlayerProjectilePositions[count++] = newY;
-			$._activePlayerProjectileIndex[$._activePlayerProjectileCount++] = i;
 		}
 
 		if (count > 0) {

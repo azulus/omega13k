@@ -20,7 +20,6 @@ $.assign($, {
 	// projectile data
 	enemyProjectiles: null,
 	_activeEnemyProjectilePositions: new Float32Array(Array(GameLoopConst.ACTIVE_PROJECTILE_MAX * 2).fill(0)),
-	_activeEnemyProjectileIndex: Array(GameLoopConst.ACTIVE_PROJECTILE_MAX).fill(0),
 	_activeEnemyProjectileCount: 0,
 	// player data
 	playerXVelocity: 0,
@@ -36,7 +35,6 @@ $.assign($, {
 	playerExplosionAudioPool: [],
 	playerProjectileAudioPool: [],
 	_activePlayerProjectilePositions: new Float32Array(Array(GameLoopConst.ACTIVE_PROJECTILE_MAX * 2).fill(0)),
-	_activePlayerProjectileIndex: Array(GameLoopConst.ACTIVE_PROJECTILE_MAX).fill(0),
 	_activePlayerProjectileCount: 0,
 
 	nextRewindSoundTime: 0,
