@@ -574,6 +574,9 @@ $.assign($, {
 				document.body.classList.add('i');
 			} else if ($.gameState === GameStateConst.LOST) {
 				document.body.classList.add('o');
+				addEventListener('keydown', e => {
+					if (e.key === ' ') location.reload();
+				});
 			} else {
 				requestAnimationFrame(gameLoop);
 			}
