@@ -15,7 +15,7 @@ $.assign($, {
 	*/
 	levelSpec: [
 		[LevelSpecConst.ENEMY_WAVE, [
-			[0, "OMEGA-324, WHERE HAVE YOU BEEN?"],
+			[0, "OMEGA-13K, WHERE HAVE YOU BEEN?"],
 			[5000, "WHY ARE YOU HEADING TO HQ?"],
 			[10000, "WHY ARE YOU FIRING ON YOUR ALLIES?!"],
 			[15000, "THEY MAY NOT TAKE KINDLY TO THAT..."],
@@ -59,7 +59,7 @@ $.assign($, {
 			[15000, "UGH."]
 		], 0, 1, 20, 3500],
 		[LevelSpecConst.BOSS, [
-			[0, "LOOK AT ME. I AM OMEGA-324. WATCH ME KILL EVERYBODY I LOVE."],
+			[0, "LOOK AT ME. I AM OMEGA-13K. WATCH ME KILL EVERYBODY I LOVE."],
 			[7000, "PEW! BYE MOM!"],
 			[12000, "ZAP!"],
 			[17000, "POW?"]
