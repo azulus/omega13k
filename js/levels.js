@@ -15,7 +15,8 @@ $.assign($, {
 	*/
 	levelSpec: [
 		[LevelSpecConst.ENEMY_WAVE, [
-			[0, "OMEGA-324, WHERE HAVE YOU BEEN?"]
+			[0, "OMEGA-324, WHERE HAVE YOU BEEN?"],
+			[5000, "AND WHY ARE YOU HEADING BACK TO HQ?"]
 		], 1, 10, 5000],
 		[LevelSpecConst.BOSS, []],
 		[LevelSpecConst.ENEMY_WAVE, [], 1, 12, 4500],

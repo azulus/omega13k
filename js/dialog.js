@@ -49,26 +49,25 @@ $.assign($, {
 	prepareDialog: (dialog) => {
 		let timestamp = dialog[0],
 			text = dialog[1];
-		dialog[2] = text.length * DialogConst.MS_PER_STEP; // end render time
+		dialog[2] = timestamp + text.length * DialogConst.MS_PER_STEP; // end render time
 		dialog[3] = dialog[2] + DialogConst.MS_REMAIN_TIME; // remain time
+		console.log(dialog);
 		return dialog;
 	},
 
 	currentDialog: () => {
-		let i, dialogIdx = -1, dialog, timestamp, text;
-		for (i = 0; i < $.levelDialog.length; i++) {
-			dialog = $.levelDialog[i];
-			timestamp = dialog[0];
-			if (timestamp < $.levelGameTime) {
-				dialogIdx = i;
-			} else {
-				break;
+		let i, foundDialog = false, start, end, removeTimestamp;
+		for (i = 0; !foundDialog && i < $.levelDialog.length; i++) {
+			[start, text, end, removeTimestamp] = $.levelDialog[i];
+
+			if (start <= $.levelGameTime && removeTimestamp >= $.levelGameTime) {
+				foundDialog = true;
 			}
 		}
-		if (dialogIdx >= 0 && dialog[3] >= $.levelGameTime) {
-			text = dialog[1]
-			if (dialog[2] <= $.levelGameTime) return text;
-			let numChars = $.floor(($.levelGameTime - dialog[0]) / DialogConst.MS_PER_STEP);
+
+		if (foundDialog) {
+			if (end <= $.levelGameTime) return text;
+			let numChars = $.floor(($.levelGameTime - start) / DialogConst.MS_PER_STEP);
 			return text.substr(0, numChars);
 		}
 	},
