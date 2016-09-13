@@ -137,7 +137,7 @@ $.assign($, {
   createAudioPool: (sound, size) => {
     let currentPoolIdx = 0,
       pool = [],
-      player;
+      player, i;
 
     for (i = 0; i < size; i++) {
       player = new Audio();

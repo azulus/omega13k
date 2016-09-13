@@ -15,6 +15,7 @@ $.assign($, {
 		let widthPerSegment = Math.floor(GameConst.WIDTH / numSegments) - padding;
 		let totalWidth = widthPerSegment * numSegments + padding * (numSegments - 1);
 		let leftPadding = Math.floor((GameConst.WIDTH - totalWidth) / 2);
+		let i;
 
 		for (i = 0; i < numSegments; i++) {
 			let x = i * (widthPerSegment + padding) + leftPadding;
@@ -303,7 +304,7 @@ $.assign($, {
 	},
 
 	initializeStarfield: () => {
-		let r = $.getRandomNumberGenerator(BackgroundConst.SEED);
+		let r = $.getRandomNumberGenerator(BackgroundConst.SEED), i;
 		// create a few hundred stars
 		for (i = 0; i < BackgroundConst.NUM_STARS; ++i) {
 			// init x, init y, brightness, velocity
@@ -315,7 +316,7 @@ $.assign($, {
 	},
 
 	updateStarfield: (elapsedTime) => {
-		for (i = 0; i < BackgroundConst.NUM_STARS; ++i) {
+		for (let i = 0; i < BackgroundConst.NUM_STARS; ++i) {
 			$.stars[(i*4) + 0] = ($.stars[(i*4) + 0] - (elapsedTime * $.stars[(i*4) + 3]) + GameConst.WIDTH) % GameConst.WIDTH;
 		}
 	},
