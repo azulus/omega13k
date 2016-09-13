@@ -80,7 +80,7 @@ const DialogIndex = {
 };
 
 const DialogConst = {
-  MS_PER_STEP: 150,
+  MS_PER_STEP: 50,
   MS_REMAIN_TIME: 2000
 };
 

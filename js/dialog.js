@@ -41,7 +41,9 @@ $.assign($, {
 	  '-': 448,
 	  ',': 5120,
 	  '\'': 18,
-		' ': 0
+		' ': 0,
+		'?': 8359,
+		'!': 8338
 	},
 
 	prepareDialog: (dialog) => {
@@ -53,7 +55,7 @@ $.assign($, {
 	},
 
 	currentDialog: () => {
-		let i, dialogIdx = -1, dialog, timestamp;
+		let i, dialogIdx = -1, dialog, timestamp, text;
 		for (i = 0; i < $.levelDialog.length; i++) {
 			dialog = $.levelDialog[i];
 			timestamp = dialog[0];
@@ -63,9 +65,10 @@ $.assign($, {
 				break;
 			}
 		}
-		if (dialogIdx >= 0 && $.levelDialog[3] >= $.levelGameTime) {
-			if ($.levelDialog[2] <= $.levelGameTime) return text;
-			let numChars = $.floor(($.levelGameTime - $.levelDialog[0]) / DialogConst.MS_PER_STEP);
+		if (dialogIdx >= 0 && dialog[3] >= $.levelGameTime) {
+			text = dialog[1]
+			if (dialog[2] <= $.levelGameTime) return text;
+			let numChars = $.floor(($.levelGameTime - dialog[0]) / DialogConst.MS_PER_STEP);
 			return text.substr(0, numChars);
 		}
 	},

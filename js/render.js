@@ -458,7 +458,10 @@ $.assign($, {
 		$.renderPlayerProjectiles(gl, pointProg, $.playerProjectiles, playerPosition);
 
 		gl.useProgram(shapeProg);
-		$.renderDialog(gl, shapeProg, $.dialogStrings[0]);
+		let dialog = $.currentDialog();
+		if (dialog !== undefined && dialog.length) {
+			$.renderDialog(gl, shapeProg, dialog);
+		}
 
 		gl.flush();
 	},
