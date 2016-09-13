@@ -89,6 +89,7 @@ $.assign($, {
 					newHealth = currHealth - projectileDamage;
 				$.setPlayerHealth(newHealth);
 				if (newHealth <= 0) {
+					$.setTimeMultiplier(SpeedConst.NORMAL);
 					$.gameState = GameStateConst.LOST;
 					$.loadEndGameDialog();
 				}

@@ -99,6 +99,7 @@ $.assign($, {
 		const level = $.levelSpec[$.currentLevelIndex];
 
 		if (!level) {
+			$.setTimeMultiplier(SpeedConst.NORMAL);
 			$.gameState = GameStateConst.WON;
 			$.loadWinDialog();
 			return;
