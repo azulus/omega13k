@@ -141,7 +141,7 @@ $.assign($, {
 		$._activePlayerProjectileCount = 0;
 	},
 
-	initializeBoss: (dialog=[], seed=1, idealProjectileWaves=3,
+	initializeBoss: (dialog=[], delay=0, seed=1, idealProjectileWaves=3,
 			idealProjectilePaths=8, idealTimeBetweenProjectiles=1000,
 			projectileSpeed=100) => {
 		$.levelDialog = dialog.map($.prepareDialog);
@@ -178,18 +178,18 @@ $.assign($, {
 				1 /* minProjectilesPerWave */, 1 /* maxProjectilesPerWave */,
 				idealProjectilePaths-1, idealProjectilePaths+1, 2000, projectileSpeed));
 
-		waves.push([0, endTime, undefined, bossShapes, path, [], [], 0, bossBoundingBox, explosionAudioPool, laserAudioPool])
+		waves.push([delay, endTime, undefined, bossShapes, path, [], [], 0, bossBoundingBox, explosionAudioPool, laserAudioPool])
 
 		$.levelEnemies = waves;
 		$.bossIdx = $.levelEnemies.length - 1 ;
 	},
 
-	initializeLevel: (dialog=[], seed=1, numWaves=10, idealMsBetweenWaves=5000,
+	initializeLevel: (dialog=[], delay=0, seed=1, numWaves=10, idealMsBetweenWaves=5000,
 			idealProjectileWaves=3, idealProjectilePaths=4, idealTimeBetweenProjectiles=3000,
 			projectileSpeed=200) => {
 		$.levelDialog = dialog.map($.prepareDialog);
 		let r = $.getRandomNumberGenerator(seed),
-			i, waves = [], delay=0, path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
+			i, waves = [], path, enemy, projectilePattern, start, end, enemyR, timeBetweenProjectiles,
 			enemyBoundingBox, enemyShapes, explosionAudioPool, laserAudioPool;
 
 	  // generate the timings and paths for each wave of enemies
@@ -523,7 +523,7 @@ $.assign($, {
 			$.checkEnemyProjectileCollisions();
 			$.checkPlayerProjectileCollisions();
 
-			$.renderGame();
+			$.renderGame()
 
 			// Fire player projectile sounds
 			if ($.playerLaserSoundsTiming[0] < $.levelGameTime) {

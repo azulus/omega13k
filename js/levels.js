@@ -14,21 +14,22 @@ $.assign($, {
 
 	*/
 	levelSpec: [
-		[LevelSpecConst.ENEMY_WAVE, [
+		//Entity Type               Dialog	Delay	seed	#waves  waveTiming
+		[LevelSpecConst.ENEMY_WAVE,	[
 			[0, "OMEGA-324, WHERE HAVE YOU BEEN?"],
 			[5000, "AND WHY ARE YOU HEADING BACK TO HQ?"]
-		], 1, 10, 5000],
-		[LevelSpecConst.BOSS, []],
-		[LevelSpecConst.ENEMY_WAVE, [], 1, 12, 4500],
-		[LevelSpecConst.BOSS, []],
-		[LevelSpecConst.ENEMY_WAVE, [], 1, 15, 4000],
-		[LevelSpecConst.BOSS, []],
-		[LevelSpecConst.ENEMY_WAVE, [], 1, 20, 3500],
-		[LevelSpecConst.BOSS, []],
-		[LevelSpecConst.ENEMY_WAVE, [], 1, 25, 3000],
-		[LevelSpecConst.BOSS, []],
-		[LevelSpecConst.ENEMY_WAVE, [], 1, 25, 2500],
-		[LevelSpecConst.BOSS, []]
+		],							2000,	1,		10,		5000],
+		[LevelSpecConst.BOSS, 		[],		0],
+		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		12,		4500],
+		[LevelSpecConst.BOSS, 		[],		0],
+		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		15,		4000],
+		[LevelSpecConst.BOSS, 		[],		0],
+		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		20,		3500],
+		[LevelSpecConst.BOSS, 		[],		0],
+		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		25,		3000],
+		[LevelSpecConst.BOSS, 		[],		0],
+		[LevelSpecConst.ENEMY_WAVE, [],		0,		1,		25,		2500],
+		[LevelSpecConst.BOSS, 		[],		0]
 	],
 
 	advanceLevel() {
@@ -44,6 +45,7 @@ $.assign($, {
 		$.resetLevel();
 
 		const levelType = level.shift();
+
 		if (levelType === LevelSpecConst.ENEMY_WAVE) {
 			$.initializeLevel.apply(null, level);
 		} else if (levelType === LevelSpecConst.BOSS) {
