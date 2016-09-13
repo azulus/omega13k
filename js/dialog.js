@@ -66,7 +66,7 @@ $.assign($, {
 		if (dialogIdx >= 0 && $.levelDialog[3] >= $.levelGameTime) {
 			if ($.levelDialog[2] <= $.levelGameTime) return text;
 			let numChars = $.floor(($.levelGameTime - $.levelDialog[0]) / DialogConst.MS_PER_STEP);
-			returntext.substr(0, numChars);
+			return text.substr(0, numChars);
 		}
 	},
 
