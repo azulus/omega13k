@@ -58,7 +58,7 @@ $.assign($, {
 
 	checkEnemyProjectileCollisions: () => {
 		if ($.gameState === GameStateConst.LOST) return;
-
+		let health = $.getCurrentPlayerHealth(), newHealth = health;
 		let count = 0;
 		const projectiles = $.enemyProjectiles;
 		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
@@ -84,21 +84,23 @@ $.assign($, {
 				// Play the sound.
 				$.playerExplosionAudioPool[AudioPoolIndex.PLAY]();
 				// Reduce player health.
-				let currHealth = $.playerHealth[$.playerHealth.length - 1][1],
-					projectileDamage = 10,
-					newHealth = currHealth - projectileDamage;
-				$.setPlayerHealth(newHealth);
-				if (newHealth <= 0) {
-					$.setTimeMultiplier(SpeedConst.NORMAL);
-					$.gameState = GameStateConst.LOST;
-					$.loadEndGameDialog();
-				}
+				newHealth -= PlayerConst.HEALTH_LOST_ON_HIT;
+			}
+		}
+
+		if (newHealth !== health) {
+			$.setPlayerHealth($.clamp(newHealth, 0, PlayerConst.MAX_HEALTH));
+			if (newHealth <= 0) {
+				$.setTimeMultiplier(SpeedConst.NORMAL);
+				$.gameState = GameStateConst.LOST;
+				$.loadEndGameDialog();
 			}
 		}
 	},
 
 	checkPlayerProjectileCollisions: () => {
 		let count = 0;
+		let health = $.getCurrentPlayerHealth(), newHealth = health;
 		const projectiles = $.playerProjectiles;
 		for (let i = $._firstPlayerProjectileIdx; i < projectiles.length; i++){
 			let xIdx = count++, yIdx = count++;
@@ -117,6 +119,7 @@ $.assign($, {
 					)) {
 					// "Destroy" the projectile.
 					projectiles[i][1] = $.levelGameTime;
+					newHealth += PlayerConst.HEALTH_GAIN_ON_KILL;
 
 					// Play the enemy explosion audio.
 					enemy[LevelShipIndex.EXPLOSION_AUDIO_POOL][AudioPoolIndex.PLAY]();
@@ -132,6 +135,10 @@ $.assign($, {
 					}
 				}
 			}
+		}
+
+		if (newHealth !== health) {
+			$.setPlayerHealth($.clamp(newHealth, 0, PlayerConst.MAX_HEALTH));
 		}
 	},
 
