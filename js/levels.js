@@ -40,6 +40,8 @@ $.assign($, {
 			return
 		}
 
+		$.resetLevel();
+
 		const levelType = level.shift();
 		if (levelType === LevelSpecConst.ENEMY_WAVE) {
 			$.initializeLevel.apply(null, level);
