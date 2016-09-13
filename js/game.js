@@ -119,7 +119,6 @@ $.assign($, {
 					)) {
 					// "Destroy" the projectile.
 					projectiles[i][1] = $.levelGameTime;
-					newHealth += PlayerConst.HEALTH_GAIN_ON_KILL;
 
 					// Play the enemy explosion audio.
 					enemy[LevelShipIndex.EXPLOSION_AUDIO_POOL][AudioPoolIndex.PLAY]();
@@ -131,6 +130,7 @@ $.assign($, {
 						else enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					} else {
 						// Destroy the ship.
+						// newHealth += PlayerConst.HEALTH_GAIN_ON_KILL;
 						enemy[LevelShipIndex.KILL_TIME] = $.levelGameTime;
 					}
 				}
