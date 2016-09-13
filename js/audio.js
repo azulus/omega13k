@@ -13,7 +13,7 @@ $.assign($, {
 
   getBaseSound: () => $.setArrayVals(
     Array(24).fill(0),
-    AudioIndex.MASTER_VOLUME, 0.5,
+    AudioIndex.MASTER_VOLUME, 0.25,
     AudioIndex.START_FREQUENCY, 0.3,
     AudioIndex.SUSTAIN_TIME, 0.3,
     AudioIndex.DECAY_TIME, 0.4,
@@ -29,7 +29,7 @@ $.assign($, {
       AudioIndex.DECAY_TIME, 0,
       AudioIndex.SLIDE, $.randBetween(r, 74, 94) / 100,
       AudioIndex.LP_FILTER_CUTOFF, $.randBetween(r, 0, 100) / 100,
-      AudioIndex.MASTER_VOLUME, 0.79
+      AudioIndex.MASTER_VOLUME, 0.5
     ))
   },
 
@@ -147,7 +147,7 @@ $.assign($, {
 
     return [
       () => {
-        // pool[currentPoolIdx].play();
+        pool[currentPoolIdx].play();
         currentPoolIdx++;
         if (currentPoolIdx >= size) {
           currentPoolIdx = 0;
@@ -159,6 +159,6 @@ $.assign($, {
   playSound: (sound) => {
     var player = new Audio();
     player.src = jsfxr(sound);
-    // player.play();
+    player.play();
   }
 });
