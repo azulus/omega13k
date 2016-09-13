@@ -174,7 +174,7 @@ $.assign($, {
 		gl.uniform3f(originLoc, position[0], position[1] + 11, 0)
 		gl.drawArrays(gl.POINTS, 0, PlumeConst.MAX_PLUMES);
 
-		gl.uniform3f(originLoc, position[0], position[1] + GameConst.SHIP_HEIGHT - 11, 0)
+		gl.uniform3f(originLoc, position[0], position[1] + GameConst.SHIP_HEIGHT - 11, 1)
 		gl.drawArrays(gl.POINTS, 0, PlumeConst.MAX_PLUMES);
 	},
 
