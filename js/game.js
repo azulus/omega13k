@@ -48,9 +48,17 @@ $.assign($, {
 	// Game state
 	gameState: null,
 
-	setTimeMultiplier: (tm) => {$.speedMultiplier = tm; return 1},
+	setTimeMultiplier: (tm) => {
+		if ($.gameState !== GameStateConst.LOST && $.gameState !== GameStateConst.WON) {
+				$.speedMultiplier = tm;
+		}
+
+		return 1
+	},
 
 	checkEnemyProjectileCollisions: () => {
+		if ($.gameState === GameStateConst.LOST) return;
+
 		let count = 0;
 		const projectiles = $.enemyProjectiles;
 		for (let i = $._firstEnemyProjectileIdx; i < projectiles.length; i++){
@@ -82,6 +90,7 @@ $.assign($, {
 				$.setPlayerHealth(newHealth);
 				if (newHealth <= 0) {
 					$.gameState = GameStateConst.LOST;
+					$.loadEndGameDialog();
 				}
 			}
 		}
@@ -417,7 +426,7 @@ $.assign($, {
 			}
 		}
 
-		if (elapsedTime > 0) {
+		if (elapsedTime > 0 && $.gameState !== GameStateConst.LOST) {
 			$._spawnPlayerProjectiles(elapsedTime);
 			if ($.inBossLevel)	$._spawnBossProjectiles(elapsedTime);
 		}
@@ -532,27 +541,25 @@ $.assign($, {
 				shouldResumeNormal = true;
 			}
 
-			if ($.gameState !== GameStateConst.LOST) {
-				// spawn enemies and update their positions
-				$.updateEnemyStates();
+			// spawn enemies and update their positions
+			$.updateEnemyStates();
 
-				// update player position (by player controls if non-negative, by replay if negative)
-				$.updatePlayerPosition(elapsedTime, actualElapsedTime);
+			// update player position (by player controls if non-negative, by replay if negative)
+			$.updatePlayerPosition(elapsedTime, actualElapsedTime);
 
-				// update player health (if negative time, done automatically during collision tests normally)
-				if (elapsedTime < 0) {
-					$.restorePlayerHealth();
-					$.restoreBossHealth();
-				}
-
-				// spawn and update projectile positions
-				$.updateProjectileStates(elapsedTime);
-				$.updateStarfield(elapsedTime);
-
-				// check for collision between player and enemy projectiles (if non-negative time)
-				$.checkEnemyProjectileCollisions();
-				$.checkPlayerProjectileCollisions();
+			// update player health (if negative time, done automatically during collision tests normally)
+			if (elapsedTime < 0) {
+				$.restorePlayerHealth();
+				$.restoreBossHealth();
 			}
+
+			// spawn and update projectile positions
+			$.updateProjectileStates(elapsedTime);
+			$.updateStarfield(elapsedTime);
+
+			// check for collision between player and enemy projectiles (if non-negative time)
+			$.checkEnemyProjectileCollisions();
+			$.checkPlayerProjectileCollisions();
 
 			$.renderGame()
 
@@ -565,31 +572,33 @@ $.assign($, {
 			// apply effects based on current speed
 			$.applyTime(elapsedTime);
 
-			// Handle level change.
-			let wave = $.levelEnemies[$.levelEnemies.length - 1];
-			if (
-				// Normal wave
-				wave[LevelShipIndex.END_TIME] <= $.levelGameTime ||
-				// Or we're in a boss level, we've seen the boss, and he's dead.
-				($.inBossLevel && $._activeEnemyCount === 0 && $.levelEnemies[0][0] < $.levelGameTime)) {
-				$.advanceLevel();
-			}
+			if ($.gameState !== GameStateConst.LOST && $.gameState !== GameStateConst.WON) {
+				// Handle level change.
+				let wave = $.levelEnemies[$.levelEnemies.length - 1];
+				if (
+					// Normal wave
+					wave[LevelShipIndex.END_TIME] <= $.levelGameTime ||
+					// Or we're in a boss level, we've seen the boss, and he's dead.
+					($.inBossLevel && $._activeEnemyCount === 0 && $.levelEnemies[0][0] < $.levelGameTime)) {
+					$.advanceLevel();
+				}
 
-			if (shouldResumeNormal) {
-				$.setTimeMultiplier(1);
+				if (shouldResumeNormal) {
+					$.setTimeMultiplier(1);
+				}
 			}
 
 			if ($.gameState === GameStateConst.WON) {
-				document.body.classList.add('i');
-			} else if ($.gameState === GameStateConst.LOST) {
-				// document.body.classList.add('o');
-				$.setTimeMultiplier(SpeedConst.PAUSE);
 				addEventListener('keydown', e => {
 					if (e.key === ' ') location.reload();
 				});
-			} else {
-				requestAnimationFrame(gameLoop);
+			} else if ($.gameState === GameStateConst.LOST) {
+				addEventListener('keydown', e => {
+					if (e.key === ' ') location.reload();
+				});
 			}
+
+			requestAnimationFrame(gameLoop);
 		}
 
 		$.gameState = GameStateConst.PLAYING;

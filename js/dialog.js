@@ -57,6 +57,14 @@ $.assign($, {
 		$.levelDialog[0][3] += 999999;
 	},
 
+	loadWinDialog: () => {
+		$.levelDialog = [$.prepareDialog([
+			$.levelGameTime,
+			"...GOODBYE. . PRESS 'SPACE' TO PLAY AGAIN"
+		])];
+		$.levelDialog[0][3] += 999999;
+	},
+
 	initializeDialog: () => {
 		$.levelSpec.forEach(level => {
 			if (level[1].length > 0) {

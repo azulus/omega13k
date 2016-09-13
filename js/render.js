@@ -212,7 +212,9 @@ $.assign($, {
 	},
 
 	renderPlayer: (gl, prog, position) => {
-		$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...position)
+		if ($.gameState !== GameStateConst.LOST) {
+			$.drawShapesToCanvasGL(gl, prog, $.playerShapes, ...position)
+		}
 	},
 
 	initializePlumes: () => {
@@ -234,6 +236,7 @@ $.assign($, {
 	},
 
 	renderPlayerPlumes: (gl, prog, position) => {
+		if ($.gameState === GameStateConst.LOST) return;
 		gl.uniform3f(gl.getUniformLocation(prog, 'uColor'), 0.4, 0.4, 0.8);
 		gl.uniform1f(gl.getUniformLocation(prog, 'uDirection'), -0.5);
 
